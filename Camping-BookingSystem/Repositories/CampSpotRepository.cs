@@ -14,7 +14,8 @@ namespace Camping_BookingSystem.Repositories
         }
         public async Task Create(CampSpot campSpot)
         {
-            throw new NotImplementedException();
+            await _context.CampSpots.AddAsync(campSpot);
+            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(CampSpot campSpot)
