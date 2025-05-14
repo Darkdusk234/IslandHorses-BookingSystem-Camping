@@ -12,12 +12,12 @@ namespace Camping_BookingSystem.Repositories
         {
             _context = context;
         }
-        public async Task Create()
+        public async Task Create(CampSpot campSpot)
         {
             throw new NotImplementedException();
         }
 
-        public async Task Delete()
+        public async Task Delete(CampSpot campSpot)
         {
             throw new NotImplementedException();
         }
@@ -27,17 +27,17 @@ namespace Camping_BookingSystem.Repositories
             return await _context.CampSpots.ToListAsync();
         }
 
-        public async Task<ICollection<CampSpot>> GetByCampSiteId()
+        public async Task<ICollection<CampSpot>> GetByCampSiteId(int campSpotId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<CampSpot> GetCampSpotById()
+        public async Task<CampSpot> GetCampSpotById(int campSiteId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task Update()
+        public async Task Update(CampSpot campSpot)
         {
             throw new NotImplementedException();
         }
