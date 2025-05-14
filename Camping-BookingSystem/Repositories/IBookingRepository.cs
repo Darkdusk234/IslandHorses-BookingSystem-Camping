@@ -8,9 +8,9 @@ namespace Camping_BookingSystem.Repositories
         //Default methods for CRUD operations
         Task<IEnumerable<Booking>> GetAllAsync();
         Task<Booking?> GetByIdAsync(int id);
-        Task<Booking> AddAsync(Booking booking);
+        Task AddAsync(Booking booking);
         void Update(Booking booking);
-        void Delete(int id);
+        void Delete(Booking booking);
         Task SaveAsync();
 
         //Custom methods
