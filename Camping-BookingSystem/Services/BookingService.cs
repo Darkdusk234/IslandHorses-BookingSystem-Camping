@@ -20,9 +20,14 @@ namespace Camping_BookingSystem.Services
             return booking;
         }
 
-        public Task DeleteBookingAsync(int id)
+        public async Task DeleteBookingAsync(int id)
         {
-            throw new NotImplementedException();
+            var booking = await _bookingRepository.GetByIdAsync(id);
+            if (booking != null)
+            {
+                _bookingRepository.Delete(booking);
+                await _bookingRepository.SaveAsync();
+            }
         }
 
         public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
