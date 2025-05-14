@@ -11,32 +11,32 @@ namespace Camping_BookingSystem.Repositories
         {
             _context = context;
         }
-        public Task Create()
+        public async Task Create()
         {
             throw new NotImplementedException();
         }
 
-        public Task Delete()
+        public async Task Delete()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<CampSpot>> GetAll()
+        public async Task<ICollection<CampSpot>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<CampSpot>> GetByCampSiteId()
+        public async Task<ICollection<CampSpot>> GetByCampSiteId()
         {
             throw new NotImplementedException();
         }
 
-        public Task<CampSpot> GetCampSpotById()
+        public async Task<CampSpot> GetCampSpotById()
         {
             throw new NotImplementedException();
         }
 
-        public Task Update()
+        public async Task Update()
         {
             throw new NotImplementedException();
         }
