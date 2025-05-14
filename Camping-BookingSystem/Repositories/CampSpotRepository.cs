@@ -34,9 +34,9 @@ namespace Camping_BookingSystem.Repositories
             return await _context.CampSpots.Where(cs => cs.CampSiteId == campSiteId).ToListAsync();
         }
 
-        public async Task<CampSpot> GetCampSpotById(int campSiteId)
+        public async Task<CampSpot?> GetCampSpotById(int campSpotId)
         {
-            throw new NotImplementedException();
+            return await _context.CampSpots.FindAsync(campSpotId);
         }
 
         public async Task Update(CampSpot campSpot)
