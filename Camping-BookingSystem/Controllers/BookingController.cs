@@ -56,7 +56,26 @@ namespace Camping_BookingSystem.Controllers
             var createdBooking = await _bookingService.CreateBookingAsync(booking);
             return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, createdBooking);
         }
-
+        
         [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking updatedBooking)
+        {
+            var existingBooking = await _bookingService.GetBookingByIdAsync(id);
+            if (existingBooking == null)
+            {
+                return NotFound();
+            }
+            
+            existingBooking.CampSpotId = updatedBooking.CampSpotId;
+            existingBooking.CustomerId = updatedBooking.CustomerId;
+            existingBooking.StartDate = updatedBooking.StartDate;
+            existingBooking.EndDate = updatedBooking.EndDate;
+            existingBooking.NumberOfPeople = updatedBooking.NumberOfPeople;
+
+            await _bookingService.UpdateBookingAsync(updatedBooking);
+            return NoContent();
+        }
+
+
     }
 }
