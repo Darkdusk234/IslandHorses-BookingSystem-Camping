@@ -97,4 +97,29 @@ public class BookingRepositoryTests
         Assert.IsNotNull(result);
         Assert.AreEqual(booking.CustomerId, result.CustomerId);
     }
+    [TestMethod]
+    public async Task UpdateBooking_ShouldModifyExistingBooking()
+    {
+        //Given:  A new in-memory database and a booking repository and a booking object to be added
+        using var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+        var booking = new Booking
+        {
+            CustomerId = 1,
+            CampSpotId = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+        context.Bookings.Add(booking);
+        context.SaveChanges();
+        //When: The booking is updated by how many people
+        booking.NumberOfPeople = 5;
+        repository.Update(booking);
+        await repository.SaveAsync();
+        //Then: Expect the updated booking to have the new number of people
+        var result = await repository.GetByIdAsync(booking.Id);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(5, result.NumberOfPeople);
+    }
 }
