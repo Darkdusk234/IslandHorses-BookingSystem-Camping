@@ -74,4 +74,27 @@ public class BookingRepositoryTests
         //Then: Expect the result to contain both bookings
         Assert.AreEqual(2, result.Count());
     }
+
+    [TestMethod]
+    public void GetBookingById_ShouldReturnBooking()
+    {
+        //Given:  A new in-memory database and a booking repository and a booking object to be added
+        using var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+        var booking = new Booking
+        {
+            CustomerId = 1,
+            CampSpotId = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+        context.Bookings.Add(booking);
+        context.SaveChanges();
+        //When: The booking is retrieved by ID
+        var result = repository.GetByIdAsync(booking.Id).Result;
+        //Then: Expect the result to be the same as the added booking
+        Assert.IsNotNull(result);
+        Assert.AreEqual(booking.CustomerId, result.CustomerId);
+    }
 }
