@@ -76,6 +76,16 @@ namespace Camping_BookingSystem.Controllers
             return NoContent();
         }
 
-
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBooking(int id)
+        {
+            var existingBooking = await _bookingService.GetBookingByIdAsync(id);
+            if (existingBooking == null)
+            {
+                return NotFound();
+            }
+            await _bookingService.DeleteBookingAsync(id);
+            return NoContent();
+        }
     }
 }
