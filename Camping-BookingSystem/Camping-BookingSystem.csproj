@@ -16,4 +16,8 @@
     <Folder Include="Repositories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BookingSystem-ClassLibrary\BookingSystem-ClassLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

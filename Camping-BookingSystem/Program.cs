@@ -1,4 +1,7 @@
 
+using BookingSystem_ClassLibrary.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Camping_BookingSystem
 {
     public class Program
@@ -13,6 +16,8 @@ namespace Camping_BookingSystem
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<CampingDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
