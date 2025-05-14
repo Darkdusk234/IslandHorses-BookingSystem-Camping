@@ -22,6 +22,17 @@ namespace Camping_BookingSystem.Controllers
             return Ok(bookings);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookingById(int id)
+        {
+            var booking = await _bookingRepository.GetByIdAsync(id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            return Ok(booking);
+        }
+
 
     }
 }
