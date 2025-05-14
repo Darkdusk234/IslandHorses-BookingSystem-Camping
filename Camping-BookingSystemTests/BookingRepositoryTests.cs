@@ -43,4 +43,35 @@ public class BookingRepositoryTests
         Assert.IsNotNull(result);
         Assert.AreEqual(booking.CustomerId, result.CustomerId);
     }
+
+    [TestMethod]
+    public async Task GetAllAsync_ShouldReturnAllBookings()
+    {
+        //Given:  A new in-memory database and a booking repository and a booking object to be added
+        using var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+        var booking1 = new Booking
+        {
+            CustomerId = 1,
+            CampSpotId = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+        var booking2 = new Booking
+        {
+            CustomerId = 2,
+            CampSpotId = 2,
+            StartDate = DateTime.Now.AddDays(3),
+            EndDate = DateTime.Now.AddDays(5),
+            NumberOfPeople = 4
+        };
+        await repository.AddAsync(booking1);
+        await repository.AddAsync(booking2);
+        await repository.SaveAsync();
+        //When: All bookings are retrieved from the database
+        var result = await repository.GetAllAsync();
+        //Then: Expect the result to contain both bookings
+        Assert.AreEqual(2, result.Count());
+    }
 }
