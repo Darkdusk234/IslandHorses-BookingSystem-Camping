@@ -1,6 +1,7 @@
 
 using BookingSystem_ClassLibrary.Data;
 using Camping_BookingSystem.Repositories;
+using Camping_BookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystem
@@ -12,6 +13,7 @@ namespace Camping_BookingSystem
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
