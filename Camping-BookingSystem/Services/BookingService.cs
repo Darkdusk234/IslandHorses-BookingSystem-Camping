@@ -44,7 +44,7 @@ namespace Camping_BookingSystem.Services
         {
             return await _bookingRepository.GetBookingsByCustomerIdAsync(customerId);
         }
-
+        // bool to check if the camp spot is available by comparing the start and end dates of the booking with the existing bookings
         public async Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate)
         {
             var bookings = await _bookingRepository.GetAllAsync();
