@@ -1,4 +1,6 @@
 using BookingSystem_ClassLibrary.Data;
+using BookingSystem_ClassLibrary.Models;
+using Camping_BookingSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystemTests;
@@ -13,16 +15,17 @@ public class BookingRepositoryTests
             .Options;
         return new CampingDbContext(options);
     }
-
+    /*------------------------------------------------------------------*/
     [TestMethod]
     public async Task AddAsync_ShouldAddBookingToDataBase()
     {
-        //Given:  
+        //Given:  A new in-memory database and a booking repository and a booking object to be added
+        
         using var context = GetInMemoryDbContext();
         var repository = new BookingRepository(context);
 
 
-        var booking = new BookingRepositoryTests
+        var booking = new Booking
         {
             CustomerId = 1,
             CampSpotId = 1,
@@ -31,11 +34,11 @@ public class BookingRepositoryTests
             NumberOfPeople = 3
         };
 
-        //When:
+        //When: Added & saved to the database
         await repository.AddAsync(booking);
         await repository.SaveAsync();
 
-        //Then: 
+        //Then: Expect the booking to not be null and to be added in the database
         var result = await context.Bookings.FirstOrDefaultAsync();
         Assert.IsNotNull(result);
         Assert.AreEqual(booking.CustomerId, result.CustomerId);

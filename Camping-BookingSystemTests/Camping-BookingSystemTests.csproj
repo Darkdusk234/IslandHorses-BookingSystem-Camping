@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookingSystem-ClassLibrary\BookingSystem-ClassLibrary.csproj" />
+    <ProjectReference Include="..\Camping-BookingSystem\Camping-BookingSystem.csproj" />
   </ItemGroup>
 
   <ItemGroup>
