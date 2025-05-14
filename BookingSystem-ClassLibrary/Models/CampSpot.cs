@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BookingSystem_ClassLibrary.Models
@@ -15,8 +16,11 @@ namespace BookingSystem_ClassLibrary.Models
         public int MaxPersonLimit { get; set; }
 
         //Navigational properties
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public CampSite? CampSite { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public SpotType? SpotType { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ICollection<Booking>? Bookings { get; set; }
     }
 }
