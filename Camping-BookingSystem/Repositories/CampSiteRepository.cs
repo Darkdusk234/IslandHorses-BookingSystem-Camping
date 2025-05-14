@@ -16,19 +16,19 @@ namespace BookingSystem_ClassLibrary.Data
         {
             _context = context;
         }
-        public async Task<IEnumerable<CampSite>> GetAllCampSitesAsync() // Get all campsites
+        public async Task<IEnumerable<CampSite>> GetAllCampSitesAsync() // Get all campsites from db
         {
             return await _context.CampSites.ToListAsync();
         }
-
-        public async Task<CampSite?> GetCampSiteByIdAsync(int id) // Get a campsite by ID
+       
+        public async Task<CampSite?> GetCampSiteByIdAsync(int id)  // Get a campsite by ID, including its camp spots
         {
             return await _context.CampSites
                      .Include(c => c.CampSpots)
                      .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task AddCampSiteAsync(CampSite campSite)   // Add a new campsite
+        public async Task AddCampSiteAsync(CampSite campSite)   // Adds a new campsite
         {
             await _context.CampSites.AddAsync(campSite);
             await _context.SaveChangesAsync();
@@ -41,12 +41,12 @@ namespace BookingSystem_ClassLibrary.Data
             return campSite;
         }
 
-        public async Task DeleteAsync(int id)   // Delete a campsite
+        public async Task DeleteCampSiteAsync(int id)   // Delete a campsite
         {
-            var site = await _context.CampSites.FindAsync(id);
-            if (site != null)
+            var campToDelete = await _context.CampSites.FindAsync(id);
+            if (campToDelete != null)
             {
-                _context.CampSites.Remove(site);
+                _context.CampSites.Remove(campToDelete);
                 await _context.SaveChangesAsync();
             }
         }
