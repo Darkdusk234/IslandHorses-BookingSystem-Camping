@@ -1,5 +1,6 @@
 ﻿using BookingSystem_ClassLibrary.Data;
 using BookingSystem_ClassLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystem.Repositories
 {
@@ -23,7 +24,7 @@ namespace Camping_BookingSystem.Repositories
 
         public async Task<ICollection<CampSpot>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.CampSpots.ToListAsync();
         }
 
         public async Task<ICollection<CampSpot>> GetByCampSiteId()
