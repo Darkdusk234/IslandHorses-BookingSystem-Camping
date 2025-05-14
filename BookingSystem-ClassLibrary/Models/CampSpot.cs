@@ -16,7 +16,7 @@ namespace BookingSystem_ClassLibrary.Models
 
         //Navigational properties
         public CampSite? CampSite { get; set; }
-        public Type? Type { get; set; }
+        public SpotType? SpotType { get; set; }
         public ICollection<Booking>? Bookings { get; set; }
     }
 }
