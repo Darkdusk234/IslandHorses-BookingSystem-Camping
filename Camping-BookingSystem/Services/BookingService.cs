@@ -12,9 +12,12 @@ namespace Camping_BookingSystem.Services
             _bookingRepository = bookingRepository;
         }
 
-        public Task<Booking> CreateBookingAsync(Booking booking)
+
+        public async Task<Booking> CreateBookingAsync(Booking booking)
         {
-            throw new NotImplementedException();
+            await _bookingRepository.AddAsync(booking);
+            await _bookingRepository.SaveAsync();
+            return booking;
         }
 
         public Task DeleteBookingAsync(int id)
