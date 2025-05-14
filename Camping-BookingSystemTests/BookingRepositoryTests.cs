@@ -15,7 +15,29 @@ public class BookingRepositoryTests
     }
 
     [TestMethod]
-    public void TestMethod1()
+    public async Task AddAsync_ShouldAddBookingToDataBase()
     {
+        //Given:  
+        using var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+
+
+        var booking = new BookingRepositoryTests
+        {
+            CustomerId = 1,
+            CampSpotId = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+
+        //When:
+        await repository.AddAsync(booking);
+        await repository.SaveAsync();
+
+        //Then: 
+        var result = await context.Bookings.FirstOrDefaultAsync();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(booking.CustomerId, result.CustomerId);
     }
 }
