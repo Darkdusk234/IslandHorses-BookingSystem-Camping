@@ -20,7 +20,7 @@ public class BookingRepositoryTests
     public async Task AddAsync_ShouldAddBookingToDataBase()
     {
         //Given:  A new in-memory database and a booking repository and a booking object to be added
-        
+
         using var context = GetInMemoryDbContext();
         var repository = new BookingRepository(context);
 
@@ -121,5 +121,52 @@ public class BookingRepositoryTests
         var result = await repository.GetByIdAsync(booking.Id);
         Assert.IsNotNull(result);
         Assert.AreEqual(5, result.NumberOfPeople);
+    }
+
+    [TestMethod]
+    public async Task DeleteBooking_ShouldRemoveBookingFromDataBase()
+    {
+        //Given:  A new in-memory database and a booking repository and a booking object to be added    
+        using var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+
+        var booking = new Booking
+        {
+            CustomerId = 1,
+            CampSpotId = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+        await repository.AddAsync(booking);
+        await repository.SaveAsync();
+
+        //When: The booking is deleted from the database
+        repository.Delete(booking);
+        await repository.SaveAsync();
+
+        //Then: Expect the booking to be removed from the database
+        var deleted = await repository.GetByIdAsync(booking.Id);
+        Assert.IsNull(deleted);
+    }
+
+    [TestMethod]
+    public async Task GetBookingsByCustomerIdAsync_ShouldReturnCorrectBookings()
+    {
+        //Given:  A new in-memory database and a booking repository and multiple new booking objects to be added
+        var context = GetInMemoryDbContext();
+        var repository = new BookingRepository(context);
+
+        await repository.AddAsync(new Booking { CustomerId = 1, CampSpotId = 1, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(2), NumberOfPeople = 3 });
+        await repository.AddAsync(new Booking { CustomerId = 1, CampSpotId = 3, StartDate = DateTime.Now.AddDays(6), EndDate = DateTime.Now.AddDays(8), NumberOfPeople = 2 });
+        await repository.AddAsync(new Booking { CustomerId = 2, CampSpotId = 2, StartDate = DateTime.Now.AddDays(3), EndDate = DateTime.Now.AddDays(5), NumberOfPeople = 4 });
+        await repository.SaveAsync();
+
+        //When: The bookings are retrieved by customer ID
+        var results = await repository.GetBookingsByCustomerIdAsync(1);
+
+        //Then: Expect the result to contain two bookings for customer with ID 1
+        Assert.AreEqual(2, results.Count());
+        Assert.IsTrue(results.All(b => b.CustomerId == 1));
     }
 }
