@@ -1,0 +1,1 @@
+![Klassdiagram](ClassDiagram.png)
