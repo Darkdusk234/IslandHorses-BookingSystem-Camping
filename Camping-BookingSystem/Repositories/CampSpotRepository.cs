@@ -20,7 +20,8 @@ namespace Camping_BookingSystem.Repositories
 
         public async Task Delete(CampSpot campSpot)
         {
-            throw new NotImplementedException();
+            _context.CampSpots.Remove(campSpot);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ICollection<CampSpot>> GetAll()
