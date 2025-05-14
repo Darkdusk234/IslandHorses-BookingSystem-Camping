@@ -25,14 +25,14 @@ namespace Camping_BookingSystem.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
         {
-            throw new NotImplementedException();
+            return await _bookingRepository.GetAllAsync();
         }
 
         public Task<Booking?> GetBookingByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return _bookingRepository.GetByIdAsync(id);
         }
 
         public Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId)
