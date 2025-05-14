@@ -30,14 +30,14 @@ namespace Camping_BookingSystem.Services
             return await _bookingRepository.GetAllAsync();
         }
 
-        public Task<Booking?> GetBookingByIdAsync(int id)
+        public async Task<Booking?> GetBookingByIdAsync(int id)
         {
-            return _bookingRepository.GetByIdAsync(id);
+            return await _bookingRepository.GetByIdAsync(id);
         }
 
-        public Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId)
+        public async Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId)
         {
-            throw new NotImplementedException();
+            return await _bookingRepository.GetBookingsByCustomerIdAsync(customerId);
         }
 
         public async Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate)
@@ -49,9 +49,10 @@ namespace Camping_BookingSystem.Services
                 b.StartDate <= endDate);
         }
 
-        public Task UpdateBookingAsync(Booking booking)
+        public async Task UpdateBookingAsync(Booking booking)
         {
-            throw new NotImplementedException();
+            _bookingRepository.Update(booking);
+            await _bookingRepository.SaveAsync();
         }
     }
 }
