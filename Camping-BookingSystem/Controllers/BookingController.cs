@@ -1,4 +1,6 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
+using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +23,8 @@ namespace Camping_BookingSystem.Controllers
         public async Task<IActionResult> GetAllBookings()
         {
             var bookings = await _bookingService.GetAllBookingsAsync();
-            return Ok(bookings);
+            var response = bookings.Select(b => b.ToBookingDetailsResponse());
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -32,33 +35,38 @@ namespace Camping_BookingSystem.Controllers
             {
                 return NotFound();
             }
-            return Ok(booking);
+            var response = booking.ToBookingDetailsResponse();
+            return Ok(response);
         }
 
         [HttpGet("customer/{customerId}")]
         public async Task<IActionResult> GetBookingsByCustomerId(int customerId)
         {
             var bookings = await _bookingService.GetBookingsByCustomerIdAsync(customerId);
-            return Ok(bookings);
+            var response = bookings.Select(b => b.ToBookingDetailsResponse());
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] Booking booking)
+        public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
         {
             var isAvailable = await _bookingService
-                .IsCampSpotAvailableAsync(booking.CampSpotId, booking.StartDate, booking.EndDate);
+                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate);
 
             if (!isAvailable)
             {
                 return BadRequest("Camp spot is not available for the selected dates.");
             }
 
+            var booking = request.ToBooking();
             var createdBooking = await _bookingService.CreateBookingAsync(booking);
+
+            var response = createdBooking.ToBookingDetailsResponse();
             return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, createdBooking);
         }
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking updatedBooking)
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
             var existingBooking = await _bookingService.GetBookingByIdAsync(id);
             if (existingBooking == null)
@@ -66,13 +74,14 @@ namespace Camping_BookingSystem.Controllers
                 return NotFound();
             }
             
-            existingBooking.CampSpotId = updatedBooking.CampSpotId;
-            existingBooking.CustomerId = updatedBooking.CustomerId;
-            existingBooking.StartDate = updatedBooking.StartDate;
-            existingBooking.EndDate = updatedBooking.EndDate;
-            existingBooking.NumberOfPeople = updatedBooking.NumberOfPeople;
+            existingBooking.CampSpotId = request.CampSpotId;
+            existingBooking.CustomerId = request.CustomerId;
+            existingBooking.StartDate = request.StartDate;
+            existingBooking.EndDate = request.EndDate;
+            existingBooking.NumberOfPeople = request.NumberOfPeople;
+            // existingBooking.Status = request.Status; // Assuming status is part of the request
 
-            await _bookingService.UpdateBookingAsync(updatedBooking);
+            await _bookingService.UpdateBookingAsync(existingBooking);
             return NoContent();
         }
 
