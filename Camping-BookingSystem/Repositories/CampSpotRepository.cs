@@ -41,7 +41,8 @@ namespace Camping_BookingSystem.Repositories
 
         public async Task Update(CampSpot campSpot)
         {
-            throw new NotImplementedException();
+            _context.CampSpots.Update(campSpot);
+            await _context.SaveChangesAsync();
         }
     }
 }
