@@ -1,5 +1,6 @@
-﻿using BookingSystem_ClassLibrary.Data;
-using BookingSystem_ClassLibrary.Models;
+﻿using BookingSystem_ClassLibrary.Models.DTOs.CampSiteDTO;
+using Camping_BookingSystem.Mapping;
+using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Camping_BookingSystem.Controllers
@@ -8,71 +9,78 @@ namespace Camping_BookingSystem.Controllers
     [ApiController]
     public class CampsiteController : ControllerBase
     {
-        private readonly ICampSiteRepository _campSiteRepository;
-        
-        public CampsiteController(ICampSiteRepository campSiteRepository)
+        private readonly ICampSiteService _service;
+
+        public CampsiteController(ICampSiteService service)
         {
-            _campSiteRepository = campSiteRepository;
+            _service = service;
         }
 
         // GET: api/campsite 
         [HttpGet]   // Returns all campsites
         public async Task<IActionResult> GetAllCampSites()
         {
-            var campSites = await _campSiteRepository.GetAllCampSitesAsync();
-            return Ok(campSites);
+            var campSites = await _service.GetAllAsync();
+            var result = campSites.Select(c => c.ToCampSiteDetailsResponse());
+            return Ok(result);
         }
 
         // GET: api/campsite/{id}
         [HttpGet("{id}")]   // Returns a campsite by ID
         public async Task<IActionResult> GetCampSiteById(int id)
         {
-            var campSite = await _campSiteRepository.GetCampSiteByIdAsync(id);
+            var campSite = await _service.GetByIdAsync(id);
             if (campSite == null)
             {
                 return NotFound($"Camping plats med id: {id}, finns inte, " +
                     $"Skriv in rätt nästa gång.");
             }
-            return Ok(campSite);
+            return Ok(campSite.ToCampSiteDetailsResponse());
         }
 
         // POST: api/campsite
         [HttpPost]  // Adds/creates a new campsite
-        public async Task<IActionResult> AddCampSite([FromBody] CampSite campSite)
+        public async Task<IActionResult> AddCampSite([FromBody] CreateCampSiteRequest request)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);  // ModelState is invalid, breaks DataAnnotations
-            }
-            await _campSiteRepository.AddCampSiteAsync(campSite);
-            return CreatedAtAction(nameof(GetCampSiteById), new { id = campSite.Id }, campSite);
+                return BadRequest(ModelState);  // if id is wrong or breaks DataAnnotations
+
+            var campSite = request.ToCampSite();
+            await _service.CreateAsync(campSite);
+
+            return CreatedAtAction(nameof(GetCampSiteById), new { id = campSite.Id }, campSite.ToCampSiteDetailsResponse());
         }
 
         // PUT: api/campsite/{id}
         [HttpPut("{id}")]   // Updates an existing campsite
-        public async Task<IActionResult> UpdateCampSite(int id, [FromBody] CampSite campSite)
+        public async Task<IActionResult> UpdateCampSite(int id, [FromBody] UpdateCampSiteRequest request)
         {
-            if (id != campSite.Id || !ModelState.IsValid)   
+            if (id != request.Id || !ModelState.IsValid)
+                return BadRequest();
+
+            var campSite = await _service.GetByIdAsync(id);
+            if (campSite == null)
             {
-                return BadRequest();    // if id is wrong or breaks DataAnnotations
+                return NotFound($"{ id } Finns ej, you silly goose");
             }
-            await _campSiteRepository.UpdateCampSiteAsync(campSite);
-            return NoContent(); 
+            campSite.Name = request.Name;
+            campSite.Description = request.Description;
+            campSite.Adress = request.Adress;
+
+            await _service.UpdateAsync(campSite);
+            return Ok($"{campSite.Name} har blivit uppdaterad");
         }
 
         // DELETE: api/campsite/{id}
         [HttpDelete("{id}")]    // Deletes a campsite
         public async Task<IActionResult> DeleteCampSite(int id)
         {
-            var campSite = await _campSiteRepository.GetCampSiteByIdAsync(id);
+            var campSite = await _service.GetByIdAsync(id);
             if (campSite == null)
-            {
-                return NotFound($"Camping plats med id: {id}, finns inte, " +
-                    $"Skriv in rätt nästa gång.");
-            }
+                return NotFound($"Finns ingen campingplats med id: {id}");
 
-            await _campSiteRepository.DeleteCampSiteAsync(id);
-            return NoContent();
+            await _service.DeleteAsync(id);
+            return Ok($"{campSite.Name} har nu tagits bort");
         }
     }
    
