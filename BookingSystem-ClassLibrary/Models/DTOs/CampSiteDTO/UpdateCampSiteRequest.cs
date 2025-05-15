@@ -19,6 +19,6 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.CampSiteDTO
         public string Adress { get; set; } = string.Empty;
         
         //Navigational properties
-        public ICollection<CreateCampSpotRequest>? CampSpots { get; set; }
+        //public ICollection<CreateCampSpotRequest>? CampSpots { get; set; }
     }
 }
