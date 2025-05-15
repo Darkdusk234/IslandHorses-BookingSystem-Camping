@@ -15,6 +15,6 @@ namespace BookingSystem_ClassLibrary.Data
         Task<CampSite> UpdateCampSiteAsync(CampSite campSite);
         Task DeleteCampSiteAsync(int id);
         
-        // Task<bool> SaveChangesAsync();
+         Task<bool> SaveChangesAsync();
     }
 }

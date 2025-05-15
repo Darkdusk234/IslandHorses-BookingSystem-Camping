@@ -53,10 +53,10 @@ namespace BookingSystem_ClassLibrary.Data
             }
         }
 
-        //public async Task<bool> SaveChangesAsync() // Save changes to the database
-        //{
-        //    return await _context.SaveChangesAsync() > 0;
-        //}
+        public async Task<bool> SaveChangesAsync() // Save changes to the database
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
 
     }
 }
