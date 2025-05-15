@@ -12,10 +12,12 @@ namespace BookingSystem_ClassLibrary.Data
     {
         private readonly CampingDbContext _context;
 
+
         public CampSiteRepository(CampingDbContext context)
         {
             _context = context;
         }
+
         public async Task<IEnumerable<CampSite>> GetAllCampSitesAsync() // Get all campsites from db
         {
             return await _context.CampSites.ToListAsync();
@@ -28,7 +30,7 @@ namespace BookingSystem_ClassLibrary.Data
                      .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task AddCampSiteAsync(CampSite campSite)   // Adds a new campsite
+        public async Task CreateCampSiteAsync(CampSite campSite)   // Adds/creates a new campsite
         {
             await _context.CampSites.AddAsync(campSite);
             await _context.SaveChangesAsync();
@@ -51,10 +53,10 @@ namespace BookingSystem_ClassLibrary.Data
             }
         }
 
-        public async Task<bool> SaveChangesAsync() // Save changes to the database
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
+        //public async Task<bool> SaveChangesAsync() // Save changes to the database
+        //{
+        //    return await _context.SaveChangesAsync() > 0;
+        //}
 
     }
 }
