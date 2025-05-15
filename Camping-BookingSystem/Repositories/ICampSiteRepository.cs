@@ -11,9 +11,10 @@ namespace BookingSystem_ClassLibrary.Data
     {
         Task<IEnumerable<CampSite>> GetAllCampSitesAsync();
         Task<CampSite?> GetCampSiteByIdAsync(int id);
-        Task AddCampSiteAsync(CampSite campSite);
+        Task CreateCampSiteAsync(CampSite campSite);
         Task<CampSite> UpdateCampSiteAsync(CampSite campSite);
         Task DeleteCampSiteAsync(int id);
-        Task<bool> SaveChangesAsync();
+        
+        // Task<bool> SaveChangesAsync();
     }
 }
