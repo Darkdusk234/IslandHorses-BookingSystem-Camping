@@ -1,5 +1,6 @@
 
 using BookingSystem_ClassLibrary.Data;
+using Camping_BookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystem
@@ -18,6 +19,8 @@ namespace Camping_BookingSystem
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<CampingDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
+            builder.Services.AddScoped<ICampSiteService, CampSiteService>();
             builder.Services.AddScoped<ICampSiteRepository, CampSiteRepository>();
 
             var app = builder.Build();
