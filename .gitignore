@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Camping-BookingSystem/appsettings.json
+/Camping-BookingSystem/appsettings.Development.json
+/Camping-BookingSystem/appsettings.Development.json
+/Camping-BookingSystem/appsettings.Development.json
