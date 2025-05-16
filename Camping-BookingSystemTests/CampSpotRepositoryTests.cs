@@ -239,4 +239,46 @@ public class CampSpotRepositoryTests
 
         Assert.IsNull(actual);
     }
+
+    [TestMethod]
+    public async Task Update_InputtingExistingCampSpot_BookInDatabaseUpdated()
+    {
+        var context = GetInMemoryDbContext();
+        var repository = new CampSpotRepository(context);
+        var campSpot1 = new CampSpot
+        {
+            Id = 5,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true,
+            MaxPersonLimit = 10
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 3,
+            TypeId = 5,
+            Electricity = false,
+            MaxPersonLimit = 9
+        };
+        await repository.Create(campSpot1);
+        await repository.Create(campSpot2);
+
+        var campSpotToUpdate = await repository.GetCampSpotById(2);
+        campSpotToUpdate.MaxPersonLimit = 10;
+        campSpotToUpdate.Electricity = true;
+        repository.Update(campSpotToUpdate);
+        var actual = await repository.GetCampSpotById(2);
+        var campSpot2Expected = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 3,
+            TypeId = 5,
+            Electricity = false,
+            MaxPersonLimit = 9
+        };
+
+        Assert.AreNotEqual(JsonConvert.SerializeObject(campSpot2Expected), JsonConvert.SerializeObject(actual));
+        Assert.AreEqual(JsonConvert.SerializeObject(campSpotToUpdate), JsonConvert.SerializeObject(actual));
+    }
 }
