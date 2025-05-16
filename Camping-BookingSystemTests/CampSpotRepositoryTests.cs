@@ -57,4 +57,33 @@ public class CampSpotRepositoryTests
         var actual = await repository.GetCampSpotById(5);
         Assert.IsNull(actual);
     }
+
+    [TestMethod]
+    public async Task GetAll_GetAllCampSpotsInDatabase_ListOfAllCampSpotsInDatabase()
+    {
+        var context = GetInMemoryDbContext();
+        var repository = new CampSpotRepository(context);
+        var campSpot1 = new CampSpot
+        {
+            Id = 5,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true,
+            MaxPersonLimit = 10
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 3,
+            TypeId = 5,
+            Electricity = false,
+            MaxPersonLimit = 9
+        };
+        await repository.Create(campSpot1);
+        await repository.Create(campSpot2);
+
+        var actual = await repository.GetAll();
+
+        Assert.IsTrue(actual.Count() > 0);
+    }
 }
