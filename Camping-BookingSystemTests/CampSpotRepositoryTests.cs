@@ -241,7 +241,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task Update_InputtingExistingCampSpot_BookInDatabaseUpdated()
+    public async Task Update_InputtingExistingCampSpot_CampSpotInDatabaseUpdated()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
