@@ -88,7 +88,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetByCampSiteId_GetAllCampSpotsInDatabaseConnectedToInputtedCampSiteId_ListOfCampSpotsConnectedToCampSite()
+    public async Task GetByCampSiteId_GetAllCampSpotsInDatabaseConnectedToInputtedExistingCampSiteId_ListOfCampSpotsConnectedToCampSite()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
