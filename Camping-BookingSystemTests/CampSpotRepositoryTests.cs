@@ -88,7 +88,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetByCampSiteId_GetAllCampSpotsInDatabaseConnectedToInputtedExistingCampSiteId_ListOfCampSpotsConnectedToCampSite()
+    public async Task GetByCampSiteId_SearchForCampSpotsWithExistingCampSiteId_ListOfCampSpotsConnectedToCampSite()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
@@ -136,7 +136,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetByCampSiteId_InputtingNonExistingId_EmptyList()
+    public async Task GetByCampSiteId_SearchForCampSpotsWithNonExistingCampSiteId_EmptyList()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
@@ -183,7 +183,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetCampSpotById_GetCampSpotInDatabaseWithExistingId_CampSpotWithInputtedId()
+    public async Task GetCampSpotById_SearchForCampSpotWithExistingId_CampSpotWithInputtedId()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
@@ -212,7 +212,7 @@ public class CampSpotRepositoryTests
     }
 
     [TestMethod]
-    public async Task GetCampSpotById_InputNonExistingId_Null()
+    public async Task GetCampSpotById_SearchForCampSpotWithNonExistingId_Null()
     {
         var context = GetInMemoryDbContext();
         var repository = new CampSpotRepository(context);
