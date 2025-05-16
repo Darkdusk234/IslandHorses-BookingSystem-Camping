@@ -134,4 +134,33 @@ public class CampSpotRepositoryTests
         Assert.IsTrue(actual.Count() > 0);
         Assert.AreEqual(3, actual.First().CampSiteId);
     }
+
+    [TestMethod]
+    public async Task GetCampSpotById_GetCampSpotInDatabaseWithExistingId_CampSpotWithInputtedId()
+    {
+        var context = GetInMemoryDbContext();
+        var repository = new CampSpotRepository(context);
+        var campSpot1 = new CampSpot
+        {
+            Id = 5,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true,
+            MaxPersonLimit = 10
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 3,
+            TypeId = 5,
+            Electricity = false,
+            MaxPersonLimit = 9
+        };
+        await repository.Create(campSpot1);
+        await repository.Create(campSpot2);
+
+        var actual = await repository.GetCampSpotById(2);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(campSpot2), JsonConvert.SerializeObject(actual));
+    }
 }
