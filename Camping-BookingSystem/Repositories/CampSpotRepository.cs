@@ -29,7 +29,7 @@ namespace Camping_BookingSystem.Repositories
             return await _context.CampSpots.ToListAsync();
         }
 
-        public async Task<ICollection<CampSpot>> GetByCampSiteId(int campSiteId)
+        public async Task<ICollection<CampSpot>> GetCampSpotsByCampSiteId(int campSiteId)
         {
             return await _context.CampSpots.Where(cs => cs.CampSiteId == campSiteId).ToListAsync();
         }
