@@ -195,7 +195,11 @@ public class CustomerRepositoryTest
         // When city is updated
         customer.City = "Stockholm";
         await repository.UpdateAsync(customer);
-
+        
+        // Clear ChangeTracker to simulate a new database connection
+        context.ChangeTracker.Clear();
+        
+        //Then:
         var updated = await repository.GetByIdAsync(customer.Id);
         Assert.AreEqual("Stockholm", updated.City);
     }
