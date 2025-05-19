@@ -129,7 +129,7 @@ public class CampSpotRepositoryTests
         await repository.Create(campSpot3);
         await repository.Create(campSpot4);
 
-        var actual = await repository.GetByCampSiteId(3);
+        var actual = await repository.GetCampSpotsByCampSiteId(3);
 
         Assert.IsTrue(actual.Count() > 0);
         Assert.AreEqual(3, actual.First().CampSiteId);
@@ -177,7 +177,7 @@ public class CampSpotRepositoryTests
         await repository.Create(campSpot3);
         await repository.Create(campSpot4);
 
-        var actual = await repository.GetByCampSiteId(11);
+        var actual = await repository.GetCampSpotsByCampSiteId(11);
 
         Assert.IsTrue(actual.Count() == 0);
     }
@@ -265,20 +265,13 @@ public class CampSpotRepositoryTests
         await repository.Create(campSpot2);
 
         var campSpotToUpdate = await repository.GetCampSpotById(2);
+        var campSpotBeforeUpdate = JsonConvert.SerializeObject(campSpotToUpdate);
         campSpotToUpdate.MaxPersonLimit = 10;
         campSpotToUpdate.Electricity = true;
         repository.Update(campSpotToUpdate);
         var actual = await repository.GetCampSpotById(2);
-        var campSpot2Expected = new CampSpot
-        {
-            Id = 2,
-            CampSiteId = 3,
-            TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
-        };
 
-        Assert.AreNotEqual(JsonConvert.SerializeObject(campSpot2Expected), JsonConvert.SerializeObject(actual));
+        Assert.AreNotEqual(campSpotBeforeUpdate, JsonConvert.SerializeObject(actual));
         Assert.AreEqual(JsonConvert.SerializeObject(campSpotToUpdate), JsonConvert.SerializeObject(actual));
     }
 }
