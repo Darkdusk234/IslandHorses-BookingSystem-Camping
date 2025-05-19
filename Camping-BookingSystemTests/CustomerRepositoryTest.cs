@@ -52,7 +52,6 @@ public class CustomerRepositoryTest
         var fetchResult = await repository.GetAllAsync();
 
         //Then, both customers should be in fetchResult
-        Assert.IsNotNull(fetchResult);
         Assert.AreEqual(2, fetchResult.Count());
         Assert.IsTrue(fetchResult.Any(c => c.FirstName == "Alice" && c.LastName == "Andersson" ));
         Assert.IsTrue(fetchResult.Any(c => c.FirstName == "Bob" && c.LastName == "Bergström" ));
@@ -110,16 +109,14 @@ public class CustomerRepositoryTest
         await context.SaveChangesAsync();
     
         //When fetching a customer that does not exist
-        var fetchAllCustomers = await repository.GetAllAsync(); 
-        var resultingCustomer = await repository.GetByIdAsync(fetchAllCustomers.Count() + 1); 
-
+        var resultingCustomer = await repository.GetByIdAsync(5); 
         
         //Then
         Assert.IsNull(resultingCustomer);
     }
 
     [TestMethod]
-    public async Task AddAsynchSavesCustomer()
+    public async Task AddAsynchAddCustomer()
     {
         // Given a in-memory database and a customer
         using var context = GetInMemoryDbContext();
