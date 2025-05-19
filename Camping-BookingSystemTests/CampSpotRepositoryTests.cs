@@ -50,7 +50,9 @@ public class CampSpotRepositoryTests
             Electricity = true,
             MaxPersonLimit = 10
         };
-        await repository.Create(campSpot1);
+
+        context.Add(campSpot1);
+        await context.SaveChangesAsync();
 
         await repository.Delete(campSpot1);
 
@@ -79,8 +81,9 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        await context.SaveChangesAsync();
 
         var actual = await repository.GetAll();
 
@@ -124,10 +127,12 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
-        await repository.Create(campSpot3);
-        await repository.Create(campSpot4);
+
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        context.Add(campSpot3);
+        context.Add(campSpot4);
+        await context.SaveChangesAsync();
 
         var actual = await repository.GetCampSpotsByCampSiteId(3);
 
@@ -172,10 +177,12 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
-        await repository.Create(campSpot3);
-        await repository.Create(campSpot4);
+
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        context.Add(campSpot3);
+        context.Add(campSpot4);
+        await context.SaveChangesAsync();
 
         var actual = await repository.GetCampSpotsByCampSiteId(11);
 
@@ -203,8 +210,9 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        await context.SaveChangesAsync();
 
         var actual = await repository.GetCampSpotById(2);
 
@@ -232,8 +240,9 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        await context.SaveChangesAsync();
 
         var actual = await repository.GetCampSpotById(6);
 
@@ -261,8 +270,9 @@ public class CampSpotRepositoryTests
             Electricity = false,
             MaxPersonLimit = 9
         };
-        await repository.Create(campSpot1);
-        await repository.Create(campSpot2);
+        context.Add(campSpot1);
+        context.Add(campSpot2);
+        await context.SaveChangesAsync();
 
         var campSpotToUpdate = await repository.GetCampSpotById(2);
         var campSpotBeforeUpdate = JsonConvert.SerializeObject(campSpotToUpdate);
