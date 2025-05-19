@@ -268,7 +268,9 @@ public class CampSpotRepositoryTests
         var campSpotBeforeUpdate = JsonConvert.SerializeObject(campSpotToUpdate);
         campSpotToUpdate.MaxPersonLimit = 10;
         campSpotToUpdate.Electricity = true;
-        repository.Update(campSpotToUpdate);
+        await repository.Update(campSpotToUpdate);
+        context.ChangeTracker.Clear();
+
         var actual = await repository.GetCampSpotById(2);
 
         Assert.AreNotEqual(campSpotBeforeUpdate, JsonConvert.SerializeObject(actual));
