@@ -2,7 +2,7 @@
 
 namespace Camping_BookingSystem.Repositories
 {
-    public class ISpotTypeRepository
+    public interface ISpotTypeRepository
     {
         //Default methods for CRUD operations
         Task<IEnumerable<SpotType>> GetAllAsync();
