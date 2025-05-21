@@ -68,6 +68,12 @@ namespace Camping_BookingSystem.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
+
+            if (!Enum.IsDefined(typeof(BookingStatus), request.Status ))
+            {
+                return BadRequest("Invalid booking status.");
+            }
+
             var existingBooking = await _bookingService.GetBookingByIdAsync(id);
             if (existingBooking == null)
             {
@@ -79,7 +85,7 @@ namespace Camping_BookingSystem.Controllers
             existingBooking.StartDate = request.StartDate;
             existingBooking.EndDate = request.EndDate;
             existingBooking.NumberOfPeople = request.NumberOfPeople;
-            // existingBooking.Status = request.Status; // Assuming status is part of the request
+            existingBooking.Status = request.Status; // Assuming status is part of the request
 
             await _bookingService.UpdateBookingAsync(existingBooking);
             return NoContent();

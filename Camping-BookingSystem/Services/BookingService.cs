@@ -1,4 +1,6 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
+using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
 
 namespace Camping_BookingSystem.Services
@@ -40,10 +42,22 @@ namespace Camping_BookingSystem.Services
             return await _bookingRepository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId)
+        public async Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId)
         {
-            return await _bookingRepository.GetBookingsByCustomerIdAsync(customerId);
+            var bookings = await _bookingRepository.GetBookingsByCustomerIdAsync(customerId);
+            
+
+            var result = bookings.Select(b =>
+            {
+                var dto = b.ToBookingDetailsResponse();
+                dto.TotalPrice = CalculateTotalPrice(b);
+                return dto;
+            });
+
+            return result;
+
         }
+
         // bool to check if the camp spot is available by comparing the start and end dates of the booking with the existing bookings
         public async Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate)
         {

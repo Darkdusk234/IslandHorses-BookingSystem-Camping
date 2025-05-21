@@ -21,7 +21,7 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
         [Range(1, 10, ErrorMessage = "Number of people must be between 1 and 10.")]
         public int NumberOfPeople { get; set; }
 
-        //public BookingStatus Status { get; set; } = string.Empty;
+        public BookingStatus Status { get; set; }
 
     }
 }

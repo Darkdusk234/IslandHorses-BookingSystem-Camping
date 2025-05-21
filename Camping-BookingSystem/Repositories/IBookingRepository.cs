@@ -1,4 +1,5 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 
 namespace Camping_BookingSystem.Repositories
 {
@@ -14,6 +15,6 @@ namespace Camping_BookingSystem.Repositories
         Task SaveAsync();
 
         //Custom methods
-        Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId);
+        Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId);
     }
 }
