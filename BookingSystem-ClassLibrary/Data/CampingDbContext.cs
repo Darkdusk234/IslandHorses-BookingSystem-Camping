@@ -20,6 +20,15 @@ namespace BookingSystem_ClassLibrary.Data
         {
             base.OnModelCreating(modelBuilder);
             SeedData(modelBuilder);
+
+
+            // Var tvungen att lägga till denna för att få priset att visas korrekt, EF förstod inte att det
+            //fanns någon relation mellan SpotType.Id och TypeId, "SpotTypeId" förväntades. det var antingen detta eller ändra namnet överallt.
+            modelBuilder.Entity<CampSpot>()
+                .HasOne(cs => cs.SpotType)
+                .WithMany(st => st.CampSpots)
+                .HasForeignKey(cs => cs.TypeId);
+
         }
 
         private void SeedData(ModelBuilder modelBuilder)

@@ -11,11 +11,11 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
         public int Id { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string CampSiteName { get; set; } = string.Empty;
-        public string CampSpotName { get; set; } = string.Empty;
+        public string CampSpotType { get; set; } = string.Empty;
         public bool Parking { get; set; }
         public bool Wifi { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string StartDate { get; set; } = string.Empty;
+        public string EndDate { get; set; } = string.Empty;
         public int NumberOfPeople { get; set; }
         public int NumberOfNights { get; set; }
         public decimal TotalPrice { get; set; }

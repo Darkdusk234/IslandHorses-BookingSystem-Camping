@@ -25,8 +25,8 @@ namespace Camping_BookingSystem.Mapping
             return new BookingDetailsResponse
             {
                 Id = booking.Id,
-                StartDate = booking.StartDate,
-                EndDate = booking.EndDate,
+                StartDate = booking.StartDate.ToString("yyyy-MM-dd"),
+                EndDate = booking.EndDate.ToString("yyyy-MM-dd"),
                 NumberOfPeople = booking.NumberOfPeople,
                 Parking = booking.Parking,
                 Wifi = booking.Wifi,
@@ -38,8 +38,8 @@ namespace Camping_BookingSystem.Mapping
                 ? $"{booking.Customer.FirstName} {booking.Customer.LastName}"
                 : string.Empty,
 
-                CampSpotName = booking.CampSpot != null
-                ? $"{booking.CampSpot.Id}"
+                CampSpotType = booking.CampSpot != null
+                ? $"{booking.CampSpot?.SpotType?.Name}"
                 : string.Empty
 
             };
