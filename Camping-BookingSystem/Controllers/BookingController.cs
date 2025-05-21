@@ -62,7 +62,7 @@ namespace Camping_BookingSystem.Controllers
             var createdBooking = await _bookingService.CreateBookingAsync(booking);
 
             var response = createdBooking.ToBookingDetailsResponse();
-            return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, createdBooking);
+            return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
         }
         
         [HttpPut("{id}")]
