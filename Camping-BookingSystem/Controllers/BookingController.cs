@@ -22,8 +22,7 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBookings()
         {
-            var bookings = await _bookingService.GetAllBookingsAsync();
-            var response = bookings.Select(b => b.ToBookingDetailsResponse());
+            var response = await _bookingService.GetAllBookingsAsync();
             return Ok(response);
         }
 

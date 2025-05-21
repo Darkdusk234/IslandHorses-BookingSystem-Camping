@@ -7,7 +7,7 @@ namespace Camping_BookingSystem.Services
     {
         Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate);
         Task<Booking> CreateBookingAsync(Booking booking);
-        Task<IEnumerable<Booking>> GetAllBookingsAsync();
+        Task<IEnumerable<BookingDetailsResponse>> GetAllBookingsAsync();
         Task<Booking?> GetBookingByIdAsync(int id);
         Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId);
         Task UpdateBookingAsync(Booking booking);

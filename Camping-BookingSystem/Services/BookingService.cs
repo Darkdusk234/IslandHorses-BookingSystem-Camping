@@ -32,9 +32,17 @@ namespace Camping_BookingSystem.Services
             }
         }
 
-        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        public async Task<IEnumerable<BookingDetailsResponse>> GetAllBookingsAsync()
         {
-            return await _bookingRepository.GetAllAsync();
+            var bookings = await _bookingRepository.GetAllAsync();
+
+            return bookings.Select(b =>
+            {
+                var dto = b.ToBookingDetailsResponse();
+                dto.NumberOfNights = CalculateTotalNights(b);
+                dto.TotalPrice = CalculateTotalPrice(b);
+                return dto;
+            });
         }
 
         public async Task<Booking?> GetBookingByIdAsync(int id)
