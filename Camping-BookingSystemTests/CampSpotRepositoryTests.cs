@@ -27,8 +27,7 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
 
         await repository.Create(campSpot1);
@@ -47,8 +46,7 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
 
         context.Add(campSpot1);
@@ -70,16 +68,14 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         context.Add(campSpot1);
         context.Add(campSpot2);
@@ -100,32 +96,28 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         var campSpot3 = new CampSpot
         {
             Id = 7,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         var campSpot4= new CampSpot
         {
             Id = 1,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
 
         context.Add(campSpot1);
@@ -150,32 +142,28 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         var campSpot3 = new CampSpot
         {
             Id = 7,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         var campSpot4 = new CampSpot
         {
             Id = 1,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
 
         context.Add(campSpot1);
@@ -199,16 +187,14 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         context.Add(campSpot1);
         context.Add(campSpot2);
@@ -229,16 +215,14 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         context.Add(campSpot1);
         context.Add(campSpot2);
@@ -259,16 +243,14 @@ public class CampSpotRepositoryTests
             Id = 5,
             CampSiteId = 1,
             TypeId = 1,
-            Electricity = true,
-            MaxPersonLimit = 10
+            Electricity = true
         };
         var campSpot2 = new CampSpot
         {
             Id = 2,
             CampSiteId = 3,
             TypeId = 5,
-            Electricity = false,
-            MaxPersonLimit = 9
+            Electricity = false
         };
         context.Add(campSpot1);
         context.Add(campSpot2);
@@ -276,7 +258,6 @@ public class CampSpotRepositoryTests
 
         var campSpotToUpdate = await repository.GetCampSpotById(2);
         var campSpotBeforeUpdate = JsonConvert.SerializeObject(campSpotToUpdate);
-        campSpotToUpdate.MaxPersonLimit = 10;
         campSpotToUpdate.Electricity = true;
         await repository.Update(campSpotToUpdate);
         context.ChangeTracker.Clear();
