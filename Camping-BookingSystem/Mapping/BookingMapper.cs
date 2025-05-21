@@ -28,6 +28,10 @@ namespace Camping_BookingSystem.Mapping
                 NumberOfPeople = booking.NumberOfPeople,
                 // Status = booking.Status.ToString(),
 
+
+                CampSiteName = booking.CampSpot?.CampSite?.Name ?? string.Empty,
+
+
                 CustomerName = booking.Customer !=null
                 ? $"{booking.Customer.FirstName} {booking.Customer.LastName}"
                 : string.Empty,
