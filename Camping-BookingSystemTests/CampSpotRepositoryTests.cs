@@ -258,6 +258,7 @@ public class CampSpotRepositoryTests
 
         var campSpotToUpdate = await repository.GetCampSpotById(2);
         var campSpotBeforeUpdate = JsonConvert.SerializeObject(campSpotToUpdate);
+
         campSpotToUpdate.Electricity = true;
         await repository.Update(campSpotToUpdate);
         context.ChangeTracker.Clear();
