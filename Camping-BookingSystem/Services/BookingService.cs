@@ -50,6 +50,7 @@ namespace Camping_BookingSystem.Services
             var result = bookings.Select(b =>
             {
                 var dto = b.ToBookingDetailsResponse();
+                dto.NumberOfNights = CalculateTotalNights(b);
                 dto.TotalPrice = CalculateTotalPrice(b);
                 return dto;
             });
@@ -74,17 +75,22 @@ namespace Camping_BookingSystem.Services
             await _bookingRepository.SaveAsync();
         }
 
+        private int CalculateTotalNights(Booking booking)
+        {
+            return (booking.EndDate - booking.StartDate).Days;
+        }
+
         private decimal CalculateTotalPrice(Booking booking)
         {
-            int totalDays = (booking.EndDate - booking.StartDate).Days;
+            int totalNights = CalculateTotalNights(booking);
             decimal basePrice = booking.CampSpot?.SpotType?.Price ?? 0;
             decimal extra = 0;
 
-            if(booking.Wifi) extra += 25* totalDays;
-            if(booking.Parking) extra += 50 * totalDays;
+            if(booking.Wifi) extra += 25* totalNights;
+            if(booking.Parking) extra += 50 * totalNights;
 
 
-            return (basePrice * totalDays) + extra;
+            return (basePrice * totalNights) + extra;
         }
     }
 }

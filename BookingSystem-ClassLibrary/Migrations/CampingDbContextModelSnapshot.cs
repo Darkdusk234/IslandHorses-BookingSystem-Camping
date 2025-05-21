@@ -42,8 +42,17 @@ namespace BookingSystem_ClassLibrary.Migrations
                     b.Property<int>("NumberOfPeople")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Parking")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Wifi")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -61,7 +70,10 @@ namespace BookingSystem_ClassLibrary.Migrations
                             CustomerId = 1,
                             EndDate = new DateTime(2025, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfPeople = 2,
-                            StartDate = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Parking = false,
+                            StartDate = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
+                            Wifi = false
                         },
                         new
                         {
@@ -70,7 +82,10 @@ namespace BookingSystem_ClassLibrary.Migrations
                             CustomerId = 2,
                             EndDate = new DateTime(2025, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfPeople = 4,
-                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Parking = false,
+                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
+                            Wifi = false
                         });
                 });
 

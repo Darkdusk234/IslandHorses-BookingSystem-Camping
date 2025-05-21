@@ -15,6 +15,6 @@ namespace Camping_BookingSystem.Repositories
         Task SaveAsync();
 
         //Custom methods
-        Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId);
+        Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId);
     }
 }

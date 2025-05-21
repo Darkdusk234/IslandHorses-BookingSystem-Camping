@@ -43,8 +43,14 @@ namespace Camping_BookingSystem.Controllers
         public async Task<IActionResult> GetBookingsByCustomerId(int customerId)
         {
             var bookings = await _bookingService.GetBookingsByCustomerIdAsync(customerId);
-            var response = bookings.Select(b => b.ToBookingDetailsResponse());
-            return Ok(response);
+            
+            if(!bookings.Any())
+            {
+                return NotFound("No bookings found for the specified customer.");
+            }
+
+            return Ok(bookings);
+
         }
 
         [HttpPost]
