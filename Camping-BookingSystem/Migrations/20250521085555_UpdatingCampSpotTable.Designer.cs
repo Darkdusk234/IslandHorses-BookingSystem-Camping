@@ -4,6 +4,7 @@ using BookingSystem_ClassLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSystem_ClassLibrary.Migrations
 {
     [DbContext(typeof(CampingDbContext))]
-    partial class CampingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521085555_UpdatingCampSpotTable")]
+    partial class UpdatingCampSpotTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
