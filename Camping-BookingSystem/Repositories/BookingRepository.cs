@@ -26,13 +26,18 @@ namespace Camping_BookingSystem.Repositories
 
         public  async Task<IEnumerable<Booking>> GetAllAsync()
         {
-            return await _context.Bookings.ToListAsync();
+            return await _context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.CampSpot)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId)
         {
             return await _context.Bookings
                 .Where(b => b.CustomerId == customerId)
+                .Include(b => b.Customer)
+                .Include(b => b.CampSpot)
                 .ToListAsync();
         }
 
