@@ -29,7 +29,9 @@ namespace Camping_BookingSystem.Repositories
             return await _context.Bookings
                 .Include(c => c.Customer)
                 .Include(b => b.CampSpot)
-                .ThenInclude(cs => cs.CampSite)
+                    .ThenInclude(st => st.SpotType)
+                .Include(b => b.CampSpot)
+                    .ThenInclude(cs => cs.CampSite)
                 .ToListAsync();
         }
 
@@ -39,7 +41,9 @@ namespace Camping_BookingSystem.Repositories
                 .Where(b => b.CustomerId == customerId)
                 .Include(c => c.Customer)
                 .Include(b => b.CampSpot)
-                .ThenInclude(cs => cs.CampSite)
+                    .ThenInclude(st => st.SpotType)
+                .Include(b => b.CampSpot)
+                    .ThenInclude(cs => cs.CampSite)
                 .ToListAsync();
         }
 
