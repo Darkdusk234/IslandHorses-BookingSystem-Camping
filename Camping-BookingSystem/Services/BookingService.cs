@@ -59,5 +59,18 @@ namespace Camping_BookingSystem.Services
             _bookingRepository.Update(booking);
             await _bookingRepository.SaveAsync();
         }
+
+        private decimal CalculateTotalPrice(Booking booking)
+        {
+            int totalDays = (booking.EndDate - booking.StartDate).Days;
+            decimal basePrice = booking.CampSpot?.SpotType?.Price ?? 0;
+            decimal extra = 0;
+
+            if(booking.Wifi) extra += 25* totalDays;
+            if(booking.Parking) extra += 50 * totalDays;
+
+
+            return (basePrice * totalDays) + extra;
+        }
     }
 }
