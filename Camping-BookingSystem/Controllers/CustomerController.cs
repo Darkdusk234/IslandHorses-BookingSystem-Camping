@@ -1,4 +1,5 @@
 using BookingSystem_ClassLibrary.Models;
+using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +21,9 @@ public class CustomerController : ControllerBase
     [HttpGet(Name = "GetallCustomers")]
     public async Task<ActionResult<ICollection<Customer>>> GetAllCustomers()
     {
-        return Ok(await _customerRepository.GetAllAsync()); 
+        var customers = await _customerRepository.GetAllAsync();
+        var response = customers.Select(c => c.ToCustomerResponse());
+        return Ok(response); 
     }
 
     [HttpGet("{id}", Name = "GetCustomerById")]
@@ -33,7 +36,11 @@ public class CustomerController : ControllerBase
             return NotFound(new { errorMessage = "Customer not found!" });
         }
 
-        return Ok(customer); 
+        var response = customer.ToCustomerResponse();
+        return Ok(response); 
     }
+    
+    // [HttpPost(Name = "CreateCustomer")]
+    // public async Task<ActionResult<Customer>>
 
 }
