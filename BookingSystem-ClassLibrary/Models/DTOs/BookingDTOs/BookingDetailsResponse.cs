@@ -18,6 +18,6 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
         public DateTime EndDate { get; set; }
         public int NumberOfPeople { get; set; }
         public decimal TotalPrice { get; set; }
-        public BookingStatus Status { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 }

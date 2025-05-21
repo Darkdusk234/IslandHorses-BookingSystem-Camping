@@ -13,8 +13,10 @@ namespace Camping_BookingSystem.Mapping
                 CampSpotId = dto.CampSpotId,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
-                NumberOfPeople = dto.NumberOfPeople
-                // Status = BookingStatus.Active // Assuming a default status
+                NumberOfPeople = dto.NumberOfPeople,
+                Wifi = dto.Wifi,
+                Parking = dto.Parking,
+                Status = BookingStatus.Pending
             };
         }
 
@@ -26,11 +28,11 @@ namespace Camping_BookingSystem.Mapping
                 StartDate = booking.StartDate,
                 EndDate = booking.EndDate,
                 NumberOfPeople = booking.NumberOfPeople,
-                // Status = booking.Status.ToString(),
-
+                Parking = booking.Parking,
+                Wifi = booking.Wifi,
+                Status = booking.Status.ToString(),
 
                 CampSiteName = booking.CampSpot?.CampSite?.Name ?? string.Empty,
-
 
                 CustomerName = booking.Customer !=null
                 ? $"{booking.Customer.FirstName} {booking.Customer.LastName}"
