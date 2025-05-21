@@ -10,8 +10,8 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
     {
         public int Id { get; set; }
         public string CustomerName { get; set; } = string.Empty;
-        public string CampSpotName { get; set; } = string.Empty;
         public string CampSiteName { get; set; } = string.Empty;
+        public string CampSpotName { get; set; } = string.Empty;
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
