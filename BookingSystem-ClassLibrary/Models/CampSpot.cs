@@ -13,7 +13,6 @@ namespace BookingSystem_ClassLibrary.Models
         public int CampSiteId { get; set; }
         public int TypeId { get; set; }
         public bool Electricity { get; set; } = false;
-        public int MaxPersonLimit { get; set; }
 
         //Navigational properties
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
