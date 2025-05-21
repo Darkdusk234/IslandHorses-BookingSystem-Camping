@@ -90,8 +90,15 @@ namespace Camping_BookingSystem.Services
 
         private decimal CalculateTotalPrice(Booking booking)
         {
+            if (booking.CampSpot?.SpotType == null)
+            {
+                Console.WriteLine($"SpotType is missing for booking {booking.Id}");
+                return 0;
+            }
+            var basePrice = booking.CampSpot.SpotType.Price;
+            Console.WriteLine($"Booking: {booking.Id} - SpotType: {booking.CampSpot.SpotType.Name}, Price per night: {basePrice}");
+
             int totalNights = CalculateTotalNights(booking);
-            decimal basePrice = booking.CampSpot?.SpotType?.Price ?? 0;
             decimal extra = 0;
 
             if(booking.Wifi) extra += 25* totalNights;

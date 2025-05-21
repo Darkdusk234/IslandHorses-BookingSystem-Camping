@@ -31,7 +31,7 @@ namespace Camping_BookingSystem.Mapping
                 Parking = booking.Parking,
                 Wifi = booking.Wifi,
                 Status = booking.Status.ToString(),
-
+                
                 CampSiteName = booking.CampSpot?.CampSite?.Name ?? string.Empty,
 
                 CustomerName = booking.Customer !=null
