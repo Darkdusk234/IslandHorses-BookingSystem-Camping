@@ -117,6 +117,7 @@ public class BookingRepositoryTests
         booking.NumberOfPeople = 5;
         repository.Update(booking);
         await repository.SaveAsync();
+        context.ChangeTracker.Clear(); // Clear the change tracker to ensure we get the latest state from the database
         //Then: Expect the updated booking to have the new number of people
         var result = await repository.GetByIdAsync(booking.Id);
         Assert.IsNotNull(result);
