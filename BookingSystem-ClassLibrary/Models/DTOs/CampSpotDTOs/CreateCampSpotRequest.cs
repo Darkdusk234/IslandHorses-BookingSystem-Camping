@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs
 {
-    internal class CreateCampSpotRequest
+    public class CreateCampSpotRequest
     {
         [Required]
         public int CampSiteId { get; set; }
