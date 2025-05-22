@@ -99,21 +99,13 @@ namespace Camping_BookingSystem.Controllers
         [HttpPatch("{id}/CancelBooking")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            var booking = await _bookingService.GetBookingByIdAsync(id);
-            if (booking == null)
+            var (success, errorMessage) = await _bookingService.CancelBookingAsync(id);
+            if (!success)
             {
-                return NotFound();
+                return BadRequest(errorMessage);
             }
 
-            if (booking.Status == BookingStatus.Cancelled)
-            {
-                return BadRequest("Booking is already cancelled.");
-            }
-
-            booking.Status = BookingStatus.Cancelled;
-
-            await _bookingService.UpdateBookingAsync(booking);
-            return Ok($"Booking with ID {id} has been cancelled. See u next time {booking?.Customer?.FirstName}");
+            return Ok($"Booking with ID {id} has been cancelled. See u next time.");
         }
 
 
