@@ -18,6 +18,31 @@ namespace Camping_BookingSystem.Controllers
         {
             _bookingService = bookingService;
         }
+
+        /*------------------------------------------------ CAMP OWNER -----------------------------------------------------*/
+        
+        [Tags("Camp Owner")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllBookings()
+        {
+            var response = await _bookingService.GetAllBookingsAsync();
+            return Ok(response);
+        }
+
+        [Tags("Camp Owner")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBooking(int id)
+        {
+            var existingBooking = await _bookingService.GetBookingByIdAsync(id);
+            if (existingBooking == null)
+            {
+                return NotFound();
+            }
+            await _bookingService.DeleteBookingAsync(id);
+            return NoContent();
+        }
+        /*----------------------------------------------- RECEPTIONIST ----------------------------------------------------*/
+
         [Tags("Receptionist")]
         [HttpPost("CreateBookingWithCustomer")]
         public async Task<IActionResult> CreateBookingWithCustomer([FromBody] CreateBookingAndCustomer request)
@@ -36,15 +61,31 @@ namespace Camping_BookingSystem.Controllers
             
             return CreatedAtAction(nameof(GetBookingById), new { id = response.Id }, response);
         }
-        
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllBookings()
+        [Tags("Receptionist")]
+        [HttpPut("{id}/UpdateBooking")]
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
-            var response = await _bookingService.GetAllBookingsAsync();
-            return Ok(response);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!Enum.IsDefined(typeof(BookingStatus), request.Status))
+            {
+                return BadRequest("Invalid booking status.");
+            }
+            var (success, errorMessage) = await _bookingService.UpdateBookingAsyn(id, request);
+
+            if (!success)
+            {
+                return BadRequest(errorMessage);
+            }
+
+            return NoContent();
         }
 
+        [Tags("Receptionist")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookingById(int id)
         {
@@ -57,21 +98,22 @@ namespace Camping_BookingSystem.Controllers
             return Ok(response);
         }
 
+        [Tags("Receptionist")]
         [HttpGet("customer/{customerId}")]
         public async Task<IActionResult> GetBookingsByCustomerId(int customerId)
         {
             var bookings = await _bookingService.GetBookingsByCustomerIdAsync(customerId);
-            
-            if(!bookings.Any())
+
+            if (!bookings.Any())
             {
                 return NotFound("No bookings found for the specified customer.");
             }
-
             return Ok(bookings);
-
         }
+        /*------------------------------------------------ G U E S T ------------------------------------------------------*/
 
-        [HttpPost]
+        [Tags("Guest")]
+        [HttpPost("CreateBooking")]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
         {
             var isAvailable = await _bookingService
@@ -88,30 +130,15 @@ namespace Camping_BookingSystem.Controllers
             var response = createdBooking.ToBookingDetailsResponse();
             return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
         }
-        [Tags("Receptionist")]
-        [HttpPut("{id}/UpdateBooking")]
-        public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
+        [Tags("Guest")]
+        [HttpPatch("{id}/Addons")]
+        public async Task<IActionResult> AddAddons(int id, [FromBody] AddonsRequest request)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!Enum.IsDefined(typeof(BookingStatus), request.Status ))
-            {
-                return BadRequest("Invalid booking status.");
-            }
-            var (success, errorMessage) = await _bookingService.UpdateBookingAsyn(id, request);
-
-            if (!success)
-            {
-                return BadRequest(errorMessage);
-            }
-
-            return NoContent();
+            
         }
 
-        [HttpPatch("{id}/CancelBooking")]
+        [Tags("Guest")]
+        [HttpPatch("{id}/GuestCancelBooking")]
         public async Task<IActionResult> CancelBooking(int id)
         {
             var (success, errorMessage) = await _bookingService.CancelBookingAsync(id);
@@ -123,17 +150,12 @@ namespace Camping_BookingSystem.Controllers
             return Ok($"Booking with ID {id} has been cancelled. See u next time.");
         }
 
+        /*----------------------------------------------- BOOKING MISC ----------------------------------------------------*/
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
-        {
-            var existingBooking = await _bookingService.GetBookingByIdAsync(id);
-            if (existingBooking == null)
-            {
-                return NotFound();
-            }
-            await _bookingService.DeleteBookingAsync(id);
-            return NoContent();
-        }
+
+
+
+
+        
     }
 }

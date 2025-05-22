@@ -138,6 +138,11 @@ namespace Camping_BookingSystem.Services
                 b.StartDate <= endDate);
         }
 
+        public Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)
         {
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
