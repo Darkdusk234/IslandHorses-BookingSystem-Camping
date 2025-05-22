@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
+namespace BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs
 {
     internal class CreateCampSpotRequest
     {
