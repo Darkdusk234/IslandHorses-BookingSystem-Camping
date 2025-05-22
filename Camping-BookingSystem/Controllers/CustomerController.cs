@@ -1,4 +1,5 @@
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CustomerDTOs;
 using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;

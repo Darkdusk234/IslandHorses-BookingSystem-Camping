@@ -9,7 +9,7 @@ public static class CustomerMapper
 {
     public static CustomerResponse ToCustomerResponse(this Customer customer)
     {
-        return new CustomerResponse()
+        return new CustomerResponse
         {
             FirstName = customer.FirstName,
             LastName = customer.LastName,
