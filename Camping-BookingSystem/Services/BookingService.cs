@@ -45,6 +45,38 @@ namespace Camping_BookingSystem.Services
             return booking;
         }
 
+        public async Task<Booking> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
+        {
+            
+            var customer = new Customer
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                StreetAddress = request.StreetAddress,
+                ZipCode = request.ZipCode,
+                City = request.City
+            };
+
+            var booking = new Booking
+            {
+                Customer = customer,
+                CampSpotId = request.CampSpotId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                NumberOfPeople = request.NumberOfPeople,
+                Parking = request.Parking,
+                Wifi = request.Wifi,
+                Status = BookingStatus.Pending
+            };
+
+            await _bookingRepository.AddAsync(booking);
+            await _bookingRepository.SaveAsync();
+
+            return booking;
+        }
+
         public async Task DeleteBookingAsync(int id)
         {
             var booking = await _bookingRepository.GetByIdAsync(id);
