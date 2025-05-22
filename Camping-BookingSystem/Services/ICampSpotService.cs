@@ -7,7 +7,7 @@ namespace Camping_BookingSystem.Services
         Task<IEnumerable<CampSpot>> GetAllCampSpotsAsync();
         Task<CampSpot?> GetCampSpotByIdAsync(int id);
         Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId);
-        Task CreateCampSpotAsync(CampSpot campSpot);
+        Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
         Task DeleteCampSpotAsync(int id);
         Task UpdateCampSpotAsync(CampSpot campSpot);
     }
