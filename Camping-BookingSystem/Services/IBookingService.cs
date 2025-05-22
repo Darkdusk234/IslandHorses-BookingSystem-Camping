@@ -10,7 +10,7 @@ namespace Camping_BookingSystem.Services
         Task<IEnumerable<BookingDetailsResponse>> GetAllBookingsAsync();
         Task<Booking?> GetBookingByIdAsync(int id);
         Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId);
-        Task UpdateBookingAsync(Booking booking);
+        Task <(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request);
         Task DeleteBookingAsync(int id);
         Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId);
     }
