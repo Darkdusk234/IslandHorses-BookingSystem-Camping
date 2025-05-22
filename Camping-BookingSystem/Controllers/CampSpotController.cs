@@ -51,5 +51,22 @@ namespace Camping_BookingSystem.Controllers
 
             return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCampSpot(int id, [FromBody] CreateCampSpotRequest request)
+        {
+            var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
+            if (existingCampSpot == null)
+            {
+                return NotFound();
+            }
+
+            existingCampSpot.CampSiteId = request.CampSiteId;
+            existingCampSpot.TypeId = request.TypeId;
+            existingCampSpot.Electricity = request.Electricity;
+
+            await _campSpotService.UpdateCampSpotAsync(existingCampSpot);
+            return NoContent();
+        }
     }
 }
