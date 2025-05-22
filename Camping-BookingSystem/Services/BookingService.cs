@@ -138,9 +138,26 @@ namespace Camping_BookingSystem.Services
                 b.StartDate <= endDate);
         }
 
-        public Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
+        public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
         {
-            throw new NotImplementedException();
+            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+            {
+                return (false, "Booking not found");
+            }
+
+            if (booking.Status == BookingStatus.Completed || booking.Status == BookingStatus.Cancelled)
+            {
+                return (false, "Booking is either completed or cancelled.");
+            }
+
+            booking.Wifi = request.Wifi;
+            booking.Parking = request.Parking;
+
+            _bookingRepository.Update(booking);
+            await _bookingRepository.SaveAsync();
+
+            return (true, null);
         }
 
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)

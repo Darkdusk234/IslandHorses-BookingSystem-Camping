@@ -132,9 +132,15 @@ namespace Camping_BookingSystem.Controllers
         }
         [Tags("Guest")]
         [HttpPatch("{id}/Addons")]
-        public async Task<IActionResult> AddAddons(int id, [FromBody] AddonsRequest request)
+        public async Task<IActionResult> AddAddons(int id, [FromBody] UpdateAddonsRequest request)
         {
-            
+            var (success, errorMessage) = await _bookingService.UpdateBookingAddOnsAsync(id, request);
+            if (!success)
+            {
+                return BadRequest(errorMessage);
+            }
+
+            return Ok($"Booking with ID {id} has been updated with the selected add-ons.");
         }
 
         [Tags("Guest")]
