@@ -15,6 +15,7 @@ namespace Camping_BookingSystem.Services
         Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId);
         Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request);
         Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request);
+       // Task<IEnumerable<AvailableCampSpotResponse>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate);
 
     }
 }
