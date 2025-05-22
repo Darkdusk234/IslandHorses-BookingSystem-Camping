@@ -108,7 +108,7 @@ namespace Camping_BookingSystem.Services
                 return dto;
             });
         }
-
+        // Method to get a booking by id.
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
             return await _bookingRepository.GetByIdAsync(id);
