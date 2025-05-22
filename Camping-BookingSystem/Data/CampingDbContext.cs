@@ -48,9 +48,9 @@ namespace BookingSystem_ClassLibrary.Data
 
             // CampSpots
             modelBuilder.Entity<CampSpot>().HasData(
-                new CampSpot { Id = 1, CampSiteId = 1, TypeId = 1, Electricity = false, MaxPersonLimit = 4 },
-                new CampSpot { Id = 2, CampSiteId = 1, TypeId = 2, Electricity = true, MaxPersonLimit = 6 },
-                new CampSpot { Id = 3, CampSiteId = 2, TypeId = 3, Electricity = true, MaxPersonLimit = 5 }
+                new CampSpot { Id = 1, CampSiteId = 1, TypeId = 1, Electricity = false },
+                new CampSpot { Id = 2, CampSiteId = 1, TypeId = 2, Electricity = true },
+                new CampSpot { Id = 3, CampSiteId = 2, TypeId = 3, Electricity = true }
             );
 
             // Customers

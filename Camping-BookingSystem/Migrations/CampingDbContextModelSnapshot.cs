@@ -147,9 +147,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                     b.Property<bool>("Electricity")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaxPersonLimit")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SpotTypeId")
                         .HasColumnType("int");
 
@@ -170,7 +167,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 1,
                             CampSiteId = 1,
                             Electricity = false,
-                            MaxPersonLimit = 4,
                             TypeId = 1
                         },
                         new
@@ -178,7 +174,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 2,
                             CampSiteId = 1,
                             Electricity = true,
-                            MaxPersonLimit = 6,
                             TypeId = 2
                         },
                         new
@@ -186,7 +181,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 3,
                             CampSiteId = 2,
                             Electricity = true,
-                            MaxPersonLimit = 5,
                             TypeId = 3
                         });
                 });
