@@ -31,9 +31,9 @@ namespace Camping_BookingSystem.Services
             return await _campSpotRepository.GetAll();
         }
 
-        public Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId)
+        public async Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId)
         {
-            throw new NotImplementedException();
+            return await _campSpotRepository.GetCampSpotsByCampSiteId(campSiteId);
         }
 
         public Task<CampSpot> GetCampSpotByIdAsync(int id)
