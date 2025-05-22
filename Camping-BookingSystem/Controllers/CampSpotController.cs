@@ -68,5 +68,18 @@ namespace Camping_BookingSystem.Controllers
             await _campSpotService.UpdateCampSpotAsync(existingCampSpot);
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCampSpot(int id)
+        {
+            var existingCampSpot = _campSpotService.GetCampSpotByIdAsync(id);
+            if (existingCampSpot == null)
+            {
+                return NotFound();
+            }
+
+            await _campSpotService.DeleteCampSpotAsync(id);
+            return NoContent();
+        }
     }
 }
