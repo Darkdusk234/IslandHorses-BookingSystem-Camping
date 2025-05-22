@@ -33,5 +33,12 @@ namespace Camping_BookingSystem.Controllers
 
             return Ok(campSpot);
         }
+
+        [HttpGet("campSite/{campSiteId}")]
+        public async Task<IActionResult> GetCampSpotsByCampSiteId(int campSiteId)
+        {
+            var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            return Ok(campSpots);
+        }
     }
 }
