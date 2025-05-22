@@ -14,5 +14,12 @@ namespace Camping_BookingSystem.Controllers
         {
             _campSpotService = campSpotService;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCampSpots()
+        {
+            var campSpots = await _campSpotService.GetAllCampSpotsAsync();
+            return Ok(campSpots);
+        }
     }
 }
