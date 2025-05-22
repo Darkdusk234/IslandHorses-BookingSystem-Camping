@@ -41,9 +41,9 @@ namespace Camping_BookingSystem.Services
             return await _campSpotRepository.GetCampSpotById(id);
         }
 
-        public Task UpdateCampSpotAsync(CampSpot campSpot)
+        public async Task UpdateCampSpotAsync(CampSpot campSpot)
         {
-            throw new NotImplementedException();
+            await _campSpotRepository.Update(campSpot);
         }
     }
 }
