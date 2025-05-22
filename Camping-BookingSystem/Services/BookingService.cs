@@ -14,6 +14,29 @@ namespace Camping_BookingSystem.Services
             _bookingRepository = bookingRepository;
         }
 
+        public async Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId)
+        {
+            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+            {
+                return (false, "Booking not found");
+            }
+            if (booking.Status == BookingStatus.Cancelled)
+            {
+                return (false, "Booking is already cancelled");
+            }
+            if (booking.Status == BookingStatus.Completed)
+            {
+                return (false, "Booking is already completed");
+            }
+
+            booking.Status = BookingStatus.Cancelled;
+            _bookingRepository.Update(booking);
+            await _bookingRepository.SaveAsync();
+
+            return (true, null);
+
+        }
 
         public async Task<Booking> CreateBookingAsync(Booking booking)
         {
@@ -107,5 +130,7 @@ namespace Camping_BookingSystem.Services
 
             return (basePrice * totalNights) + extra;
         }
+
+
     }
 }
