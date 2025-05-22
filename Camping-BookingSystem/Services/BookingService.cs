@@ -13,7 +13,7 @@ namespace Camping_BookingSystem.Services
         {
             _bookingRepository = bookingRepository;
         }
-
+        // Method to cancel a booking (Guest)
         public async Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId)
         {
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
