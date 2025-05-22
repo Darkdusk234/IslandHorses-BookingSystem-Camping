@@ -1,4 +1,6 @@
-﻿using Camping_BookingSystem.Services;
+﻿using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
+using Camping_BookingSystem.Mapping;
+using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +41,15 @@ namespace Camping_BookingSystem.Controllers
         {
             var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
             return Ok(campSpots);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCampSpot([FromBody] CreateCampSpotRequest request)
+        {
+            var campSpot = request.ToCampSpot();
+            var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+
+            return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
         }
     }
 }
