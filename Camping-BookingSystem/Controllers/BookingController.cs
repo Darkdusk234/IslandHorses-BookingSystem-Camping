@@ -18,6 +18,25 @@ namespace Camping_BookingSystem.Controllers
         {
             _bookingService = bookingService;
         }
+        [Tags("Receptionist")]
+        [HttpPost("CreateBookingWithCustomer")]
+        public async Task<IActionResult> CreateBookingWithCustomer([FromBody] CreateBookingAndCustomer request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var isAvailable = await _bookingService
+                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate);
+            if (!isAvailable)
+            {
+                return BadRequest("Camp spot is not available for the selected dates.");
+            }
+            var booking = await _bookingService.CreateBookingWithCustomerAsync(request);
+            var response = booking.ToBookingDetailsResponse();
+            return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, response);
+        }
+        
 
         [HttpGet]
         public async Task<IActionResult> GetAllBookings()
@@ -69,7 +88,7 @@ namespace Camping_BookingSystem.Controllers
             var response = createdBooking.ToBookingDetailsResponse();
             return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
         }
-        
+        [Tags("Receptionist")]
         [HttpPut("{id}/UpdateBooking")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
