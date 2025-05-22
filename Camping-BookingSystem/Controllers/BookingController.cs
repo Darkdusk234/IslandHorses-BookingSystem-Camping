@@ -70,29 +70,25 @@ namespace Camping_BookingSystem.Controllers
             return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
         }
         
-        [HttpPut("{id}")]
+        [HttpPut("{id}/UpdateBooking")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             if (!Enum.IsDefined(typeof(BookingStatus), request.Status ))
             {
                 return BadRequest("Invalid booking status.");
             }
+            var (success, errorMessage) = await _bookingService.UpdateBookingAsyn(id, request);
 
-            var existingBooking = await _bookingService.GetBookingByIdAsync(id);
-            if (existingBooking == null)
+            if (!success)
             {
-                return NotFound();
+                return BadRequest(errorMessage);
             }
-            
-            existingBooking.CampSpotId = request.CampSpotId;
-            existingBooking.CustomerId = request.CustomerId;
-            existingBooking.StartDate = request.StartDate;
-            existingBooking.EndDate = request.EndDate;
-            existingBooking.NumberOfPeople = request.NumberOfPeople;
-            existingBooking.Status = request.Status;
 
-            await _bookingService.UpdateBookingAsync(existingBooking);
             return NoContent();
         }
 

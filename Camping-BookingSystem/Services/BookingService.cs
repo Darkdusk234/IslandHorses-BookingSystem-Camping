@@ -100,10 +100,29 @@ namespace Camping_BookingSystem.Services
                 b.StartDate <= endDate);
         }
 
-        public async Task UpdateBookingAsync(Booking booking)
+        public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)
         {
-            _bookingRepository.Update(booking);
+            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            if (booking == null)
+            {
+                return (false, "Booking not found");
+            }
+            if (booking.Status == BookingStatus.Completed)
+            {
+                return (false, "Booking is already completed");
+            }
+            booking.CampSpotId = request.CampSpotId;
+            booking.StartDate = request.StartDate;
+            booking.EndDate = request.EndDate;
+            booking.NumberOfPeople = request.NumberOfPeople;
+            booking.Parking = request.Parking;
+            booking.Wifi = request.Wifi;
+            booking.Status = request.Status;
+
             await _bookingRepository.SaveAsync();
+
+            return (true, null);
+
         }
 
         private int CalculateTotalNights(Booking booking)
