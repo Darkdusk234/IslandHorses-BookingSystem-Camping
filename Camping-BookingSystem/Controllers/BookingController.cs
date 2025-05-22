@@ -32,9 +32,9 @@ namespace Camping_BookingSystem.Controllers
             {
                 return BadRequest("Camp spot is not available for the selected dates.");
             }
-            var booking = await _bookingService.CreateBookingWithCustomerAsync(request);
-            var response = booking.ToBookingDetailsResponse();
-            return CreatedAtAction(nameof(GetBookingById), new { id = booking.Id }, response);
+            var response = await _bookingService.CreateBookingWithCustomerAsync(request);
+            
+            return CreatedAtAction(nameof(GetBookingById), new { id = response.Id }, response);
         }
         
 

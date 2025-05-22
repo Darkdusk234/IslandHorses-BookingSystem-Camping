@@ -45,7 +45,7 @@ namespace Camping_BookingSystem.Services
             return booking;
         }
 
-        public async Task<Booking> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
+        public async Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
             
             var customer = new Customer
@@ -73,8 +73,14 @@ namespace Camping_BookingSystem.Services
 
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveAsync();
+            // Get the full booking with customer details (made this so EF has time to present information in response body)
+            var fullBooking = await _bookingRepository.GetByIdAsync(booking.Id);
 
-            return booking;
+            var response = fullBooking.ToBookingDetailsResponse();
+            response.NumberOfNights = CalculateTotalNights(fullBooking);
+            response.TotalPrice = CalculateTotalPrice(fullBooking);
+
+            return response;
         }
 
         public async Task DeleteBookingAsync(int id)
