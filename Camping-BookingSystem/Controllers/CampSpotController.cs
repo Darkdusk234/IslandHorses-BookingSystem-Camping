@@ -21,5 +21,17 @@ namespace Camping_BookingSystem.Controllers
             var campSpots = await _campSpotService.GetAllCampSpotsAsync();
             return Ok(campSpots);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCampSpotById(int id)
+        {
+            var campSpot = await _campSpotService.GetCampSpotByIdAsync(id);
+            if(campSpot == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(campSpot);
+        }
     }
 }
