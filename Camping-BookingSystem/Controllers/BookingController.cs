@@ -90,7 +90,7 @@ namespace Camping_BookingSystem.Controllers
             existingBooking.StartDate = request.StartDate;
             existingBooking.EndDate = request.EndDate;
             existingBooking.NumberOfPeople = request.NumberOfPeople;
-            existingBooking.Status = request.Status; // Assuming status is part of the request
+            existingBooking.Status = request.Status;
 
             await _bookingService.UpdateBookingAsync(existingBooking);
             return NoContent();
