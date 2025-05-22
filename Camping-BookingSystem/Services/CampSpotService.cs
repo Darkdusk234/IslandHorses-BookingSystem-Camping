@@ -12,9 +12,10 @@ namespace Camping_BookingSystem.Services
             _campSpotRepository = campSpotRepository;
         }
 
-        public Task<CampSpot> AddCampSpotAsync(CampSpot campSpot)
+        public async Task<CampSpot> AddCampSpotAsync(CampSpot campSpot)
         {
-            throw new NotImplementedException();
+            await _campSpotRepository.Create(campSpot);
+            return campSpot;
         }
 
         public async Task DeleteCampSpotAsync(int id)
