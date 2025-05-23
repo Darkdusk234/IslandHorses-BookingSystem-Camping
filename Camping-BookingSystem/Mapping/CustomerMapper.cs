@@ -11,13 +11,29 @@ public static class CustomerMapper
     {
         return new CustomerResponse
         {
+            Id = customer.Id,
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email,
             PhoneNumber = customer.PhoneNumber,
             StreetAddress = customer.StreetAddress,
             ZipCode = customer.ZipCode,
-            City = customer.City
+            City = customer.City,
+            Bookings = customer.Bookings?.Select(b => b.ToBookingDetailsResponse()).ToList()
+        };
+    }
+    
+    public static Customer ToCustomer(this CreateCustomerDto dto)
+    {
+        return new Customer
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            PhoneNumber = dto.PhoneNumber,
+            StreetAddress = dto.StreetAddress,
+            ZipCode = dto.ZipCode,
+            City = dto.City
         };
     }
 }
