@@ -194,7 +194,7 @@ public class CustomerRepositoryTest
 
         // When city is updated
         customer.City = "Stockholm";
-        await repository.UpdateAsync(customer);
+        repository.Update(customer);
         
         // Clear ChangeTracker to simulate a new database connection
         context.ChangeTracker.Clear();
