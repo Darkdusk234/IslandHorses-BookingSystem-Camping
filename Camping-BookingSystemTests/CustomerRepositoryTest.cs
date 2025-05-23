@@ -164,7 +164,7 @@ public class CustomerRepositoryTest
         await context.SaveChangesAsync();
         
         //When customer is deleted
-        await repository.DeleteAsynch(customer); 
+        repository.Delete(customer); 
         
         //Then the list of customers chould be empty
         var result = await repository.GetAllAsync(); 
