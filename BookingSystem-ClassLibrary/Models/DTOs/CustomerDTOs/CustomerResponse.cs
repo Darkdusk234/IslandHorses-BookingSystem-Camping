@@ -13,5 +13,5 @@ public record CustomerResponse
     public string ZipCode { get; init; } = string.Empty;
     public string City { get; init; } = string.Empty;
         
-    public ICollection<BookingDetailsResponse>? Bookings { get; set; }
+    public ICollection<BookingDetailsResponse>? Bookings { get; init; }
 }
