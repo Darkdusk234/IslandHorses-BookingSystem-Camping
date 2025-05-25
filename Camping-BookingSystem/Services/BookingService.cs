@@ -141,8 +141,7 @@ namespace Camping_BookingSystem.Services
             return result;
 
         }
-
-        // bool to check if the camp spot is available by comparing the start and end dates of the booking with the existing bookings
+        // Method to validate different conditions for camp spot availability
         public async Task<(bool IsAvailable, string? Reason)> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate, int numberOfPeople)
         {
             if(startDate.Date < DateTime.Today)
@@ -153,9 +152,26 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "End date must be after start date.");
             }
+            if(startDate.Date > startDate.AddMonths(6))
+            {
+                return (false, "Booking cannot be made more than 6 months in advance.");
+            }
 
             var campSpot = await _campSpotRepository.GetCampSpotById(campSpotId);
+            if(campSpot == null)
+            {
+                return (false, "Camp spot not found.");
+            }
+           /* if (campSpot.MaxNumberOfPeople < numberOfPeople)
+            {
+                return (false, "Camp spot cannot accommodate the number of people.");
+            }*/
+           var overlappedBookings = await _bookingRepository.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate);
 
+            if (overlappedBookings.Any())
+            {
+                return (false, "Camp spot is not available for the selected dates.");
+            }
 
             return (true, null);
         }

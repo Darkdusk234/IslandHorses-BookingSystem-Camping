@@ -51,15 +51,23 @@ namespace Camping_BookingSystem.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var isAvailable = await _bookingService
-                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate);
+
+            var (isAvailable, reason) = await _bookingService
+                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate, request.NumberOfPeople);
             if (!isAvailable)
             {
-                return BadRequest("Camp spot is not available for the selected dates.");
+                return BadRequest(reason);
             }
-            var response = await _bookingService.CreateBookingWithCustomerAsync(request);
-            
-            return CreatedAtAction(nameof(GetBookingById), new { id = response.Id }, response);
+
+            try
+            {
+                var response = await _bookingService.CreateBookingWithCustomerAsync(request);
+                return CreatedAtAction(nameof(GetBookingById), new { id = response.Id }, response);
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Tags("Receptionist")]

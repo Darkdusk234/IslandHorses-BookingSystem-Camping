@@ -16,5 +16,6 @@ namespace Camping_BookingSystem.Repositories
 
         //Custom methods
         Task<IEnumerable<Booking>> GetBookingsByCustomerIdAsync(int customerId);
+        Task<IEnumerable<Booking>> GetBookingsByCampSpotAndDate(int campSpotId, DateTime startDate, DateTime endDate);
     }
 }
