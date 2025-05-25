@@ -170,7 +170,7 @@ namespace Camping_BookingSystem.Services
 
             if (overlappedBookings.Any())
             {
-                return (false, "Camp spot is not available for the selected dates.");
+                return (false, "Camp spot is not available for the selected dates. Already booked.");
             }
 
             return (true, null);

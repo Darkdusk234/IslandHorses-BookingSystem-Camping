@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using BookingSystem_ClassLibrary.Data;
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,9 @@ public class BookingServiceTests
             StartDate = DateTime.Today.AddDays(1),
             EndDate = DateTime.Now.AddDays(2),
             NumberOfPeople = 3,
-            Status = BookingStatus.Pending
+            Status = BookingStatus.Pending,
+            Wifi = false,
+            Parking = false
         };
 
         await _context.SpotTypes.AddAsync(spotType);
@@ -198,10 +201,162 @@ public class BookingServiceTests
         Console.WriteLine($"Availability check for invalid date range returned: {reason}");
     }
 
-    
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenCampSpotNotFound()
+    {
+        //Given: A non-existing camp spot ID
+        var nonExistingCampSpotId = 999;
+        var startDate = DateTime.Now.AddDays(1);
+        var endDate = DateTime.Now.AddDays(2);
+        //When: Checking availability for the non-existing camp spot
+        var (isAvailable, reason) = await _bookingService.IsCampSpotAvailableAsync(nonExistingCampSpotId, startDate, endDate, 2);
+        //Then: Expect availability to be false and a reason provided
+        Assert.IsFalse(isAvailable);
+        Assert.IsNotNull(reason);
+        Console.WriteLine($"Availability check for non-existing camp spot returned: {reason}");
+    }
 
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenOverlappingBookingExists()
+    {
+        //Given: A camp spot with an existing booking
+        var existingBooking = new Booking
+        {
+            CampSpot = _campSpot,
+            StartDate = DateTime.Now.AddDays(1),
+            EndDate = DateTime.Now.AddDays(3),
+            NumberOfPeople = 2
+        };
+        await _bookingRepository.AddAsync(existingBooking);
+        await _bookingRepository.SaveAsync();
+        //When: Checking availability for overlapping dates
+        var (isAvailable, reason) = await _bookingService.IsCampSpotAvailableAsync(_campSpot.Id, existingBooking.StartDate, existingBooking.EndDate, 2);
+        //Then: Expect availability to be false and a reason provided
+        Assert.IsFalse(isAvailable);
+        Assert.IsNotNull(reason);
+        Console.WriteLine($"Availability check for overlapping booking returned: {reason}");
+    }
 
-    [TestCleanup]
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnTrue_WhenCampSpotIsAvailable()
+    {
+        //Given: A camp spot with no bookings in the specified date range
+        var startDate = DateTime.Now.AddDays(4);
+        var endDate = DateTime.Now.AddDays(5);
+        //When: Checking availability for the future date range
+        var (isAvailable, reason) = await _bookingService.IsCampSpotAvailableAsync(_campSpot.Id, startDate, endDate, 2);
+        //Then: Expect availability to be true and no reason provided
+        Assert.IsTrue(isAvailable);
+        Assert.IsNull(reason);
+        Console.WriteLine($"Availability check for future date range returned: {isAvailable}");
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldUpdate_WhenValid()
+    {
+        //Given: A booking with no add-ons (Wifi and Parking set to false)
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        //When: The add-ons are updated
+        var result = await _bookingService.UpdateBookingAddOnsAsync(_booking.Id, request);
+        //Then: Expect the booking to be updated successfully
+        Assert.IsTrue(result.Success);
+        var updatedBooking = await _bookingRepository.GetByIdAsync(_booking.Id);
+        Assert.IsTrue(updatedBooking.Wifi);
+        Assert.IsTrue(updatedBooking.Parking);
+        Console.WriteLine($"Wifi: {updatedBooking.Wifi} Parking: {updatedBooking.Parking}");
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldReturnError_WhenBookingNotFound()
+    {
+        //Given: A non-existing booking ID
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        //When: Trying to update add-ons for a non-existing booking
+        var result = await _bookingService.UpdateBookingAddOnsAsync(999, request); // Non-existing booking ID
+        //Then: Expect an error message indicating the booking was not found
+        Assert.IsFalse(result.Success);
+        Assert.IsNotNull(result.ErrorMessage);
+        Assert.AreEqual("Booking not found", result.ErrorMessage);
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldFail_WhenBookingIsCompleted()
+    {
+        //Given: A booking that is already completed
+        _booking.Status = BookingStatus.Completed;
+        _context.Bookings.Update(_booking);
+        await _context.SaveChangesAsync();
+        
+        //When: Trying to update add-ons for a completed booking
+        var result = await _bookingService.UpdateBookingAddOnsAsync(_booking.Id, new UpdateAddonsRequest());
+        //Then: Expect an error message indicating the booking is already completed or cancelled
+        Assert.IsFalse(result.Success);
+        Assert.IsNotNull(result.ErrorMessage);
+        Assert.AreEqual("Booking is either completed or cancelled.", result.ErrorMessage);
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAsync_ShouldUpdate_WhenValid()
+    {
+        //Given: A booking with valid details
+        var updatedBooking = new UpdateBookingRequest
+        {
+            CustomerId = _customer.Id,
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Now.AddDays(3),
+            EndDate = DateTime.Now.AddDays(5),
+            NumberOfPeople = 4,
+            Wifi = true,
+            Parking = true,
+            Status = BookingStatus.Confirmed
+        };
+        //When: The booking is updated
+        var update = await _bookingService.UpdateBookingAsyn(_booking.Id, updatedBooking);
+        Assert.IsTrue(update.Success);
+
+        var result = await _bookingRepository.GetByIdAsync(_booking.Id);
+        await _bookingRepository.SaveAsync();
+        //Then: Expect the booking to be updated successfully
+        Assert.IsNotNull(result);
+        Assert.AreEqual(updatedBooking.StartDate, result.StartDate);
+        Assert.AreEqual(updatedBooking.EndDate, result.EndDate);
+        Assert.AreEqual(updatedBooking.NumberOfPeople, result.NumberOfPeople);
+        Console.WriteLine($"Updated booking with ID:{result.Id} has new start date: {result.StartDate}\n" +
+            $"Wifi: {updatedBooking.Wifi} / Parking: {updatedBooking.Parking}\n" +
+            $"Status: {updatedBooking.Status} / Number of people: {updatedBooking.NumberOfPeople}");
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAsync_ShouldFail_WhenBookingNotFound()
+    {
+        //Given: A non-existing booking ID
+        var updatedBooking = new UpdateBookingRequest
+        {
+            CustomerId = _customer.Id,
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Now.AddDays(3),
+            EndDate = DateTime.Now.AddDays(5),
+            NumberOfPeople = 4,
+            Wifi = true,
+            Parking = true,
+            Status = BookingStatus.Confirmed
+        };
+        //When: Trying to update a booking with a non-existing ID
+        var result = await _bookingService.UpdateBookingAsyn(999, updatedBooking); // Non-existing booking ID
+        //Then: Expect an error message indicating the booking was not found
+        Assert.IsFalse(result.Success);
+        Assert.IsNotNull(result.ErrorMessage);
+        Assert.AreEqual("Booking not found", result.ErrorMessage);
+    }
+        [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
