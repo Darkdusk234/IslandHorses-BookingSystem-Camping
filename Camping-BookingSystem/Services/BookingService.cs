@@ -109,44 +109,6 @@ namespace Camping_BookingSystem.Services
             });
         }
 
-        // För att göra färdigt denna utan att belasta databasen för mycket så hade jag behövt
-        // pilla på andras arbete lite, avvaktar och checkar med TEAMET först.
-
-        //Method to get all available spots between two dates (Guest)
-       /* public async Task<IEnumerable<AvailableCampSpotResponse>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate)
-        {
-            var allSpots = await _bookingRepository.GetAllWithDetailsAsync();
-            var allBookings = await _bookingRepository.GetAllAsync();
-
-            var result = new List<AvailableCampSpotResponse>();
-
-            foreach (var spot in allSpots)
-            {
-                
-                if (IsAvailable(spot, startDate, endDate, allBookings))
-                {
-                    result.Add(new AvailableCampSpotResponse
-                    {
-                        CampSpotId = spot.Id,
-                        CampSpotType = spot.SpotType.Name,
-                        CampSiteName = spot.CampSite.Name,
-                        PricePerNight = spot.SpotType.Price,
-                        IsAvailable = true
-                    });
-                }
-            }
-            return result;
-        }*/
-        // Bool to check if the camp spot is available by comparing the start and end dates of the booking with the existing bookings
-        private bool IsAvailable(CampSpot spot, DateTime startDate, DateTime endDate, IEnumerable<Booking> allBookings)
-        {
-            return !allBookings.Any(b =>
-                b.CampSpotId == spot.Id &&
-                b.Status != BookingStatus.Cancelled &&
-                b.EndDate >= startDate &&
-                b.StartDate <= endDate);
-        }
-
         // Method to get a booking by id.
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
