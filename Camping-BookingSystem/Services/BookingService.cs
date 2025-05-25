@@ -8,10 +8,11 @@ namespace Camping_BookingSystem.Services
     public class BookingService : IBookingService
     {
         private readonly IBookingRepository _bookingRepository;
-
-        public BookingService(IBookingRepository bookingRepository)
+        private readonly ICampSpotRepository _campSpotRepository;
+        public BookingService(IBookingRepository bookingRepository, ICampSpotRepository campSpotRepository)
         {
             _bookingRepository = bookingRepository;
+            _campSpotRepository = campSpotRepository;
         }
 
         // Method to cancel a booking (Guest)
@@ -142,13 +143,21 @@ namespace Camping_BookingSystem.Services
         }
 
         // bool to check if the camp spot is available by comparing the start and end dates of the booking with the existing bookings
-        public async Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate)
+        public async Task<(bool IsAvailable, string? Reason)> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate, int numberOfPeople)
         {
-            var bookings = await _bookingRepository.GetAllAsync();
-            return !bookings.Any(b =>
-                b.CampSpotId == campSpotId &&
-                b.EndDate >= startDate &&
-                b.StartDate <= endDate);
+            if(startDate.Date < DateTime.Today)
+            {
+                return (false, "Start date cannot be in the past.");
+            }
+            if (endDate.Date <= startDate)
+            {
+                return (false, "End date must be after start date.");
+            }
+
+            var campSpot = await _campSpotRepository.GetCampSpotById(campSpotId);
+
+
+            return (true, null);
         }
 
         // Method to update the booking add-ons (Wifi and Parking) (Guest)

@@ -5,7 +5,7 @@ namespace Camping_BookingSystem.Services
 {
     public interface IBookingService
     {
-        Task<bool> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate);
+        Task<(bool IsAvailable, string? Reason)> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate, int numberOfPeople);
         Task<Booking> CreateBookingAsync(Booking booking);
         Task<IEnumerable<BookingDetailsResponse>> GetAllBookingsAsync();
         Task<Booking?> GetBookingByIdAsync(int id);
@@ -15,7 +15,7 @@ namespace Camping_BookingSystem.Services
         Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId);
         Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request);
         Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request);
-       // Task<IEnumerable<AvailableCampSpotResponse>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate);
+       
 
     }
 }
