@@ -48,7 +48,16 @@ namespace Camping_BookingSystem.Services
         // Method to create a booking and add a customer (Receptionist)
         public async Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
-            
+            if (request.StartDate.Date < DateTime.Today) 
+            {
+                throw new ArgumentException("Start date cannot be in the pst.");
+            }
+
+            if (request.EndDate.Date <= request.StartDate) 
+            {
+                throw new ArgumentException("End date must be after start date.");
+            }
+
             var customer = new Customer
             {
                 FirstName = request.FirstName,
@@ -141,6 +150,7 @@ namespace Camping_BookingSystem.Services
                 b.EndDate >= startDate &&
                 b.StartDate <= endDate);
         }
+
         // Method to update the booking add-ons (Wifi and Parking) (Guest)
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
         {
