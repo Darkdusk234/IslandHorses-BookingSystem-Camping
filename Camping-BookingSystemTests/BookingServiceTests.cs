@@ -158,6 +158,17 @@ public class BookingServiceTests
         Console.WriteLine($"Booking with ID:{_booking.Id} has been removed from the database.");
     }
 
+    [TestMethod]
+    public async Task DeleteBookingAsync_ShouldDoNothing_WhenBookingDoesNotExist()
+    {
+        //Given: No booking with the specified ID exists
+        //When: Trying to delete a booking with a non-existing ID
+        await _bookingService.DeleteBookingAsync(999); // Non-existing booking ID
+        //Then: Expect no exception and no change in the database
+        var result = await _bookingRepository.GetByIdAsync(999);
+        Assert.IsNull(result);
+        Console.WriteLine("No changes made to the database for non-existing booking.");
+    }
 
     [TestCleanup]
     public void Cleanup()
