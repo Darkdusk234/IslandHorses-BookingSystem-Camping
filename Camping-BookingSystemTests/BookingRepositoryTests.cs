@@ -187,5 +187,51 @@ public class BookingRepositoryTests
         Assert.IsTrue(results.All(b => b.CustomerId == 1));
     }
 
-    //[TestMethod]
+    [TestMethod]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenBookingDoesNotExist()
+    {
+        //Given:  Nothing.
+
+        //When: The booking is retrieved by a non-existing ID
+        var result = await _repository.GetByIdAsync(999);
+        //Then: Expect the result to be null
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task GetBookingByCustomerIdAsync_ShouldReturnEmpty_WhenNoBookingsExist()
+    {
+        
+        //Given:  A new in-memory database and a booking repository with no bookings
+
+
+        //When: The bookings are retrieved by a customer ID that has no bookings
+        var results = await _repository.GetBookingsByCustomerIdAsync(_customer.Id);
+        //Then: Expect the result to be empty
+        Assert.IsNotNull(results);
+        Assert.AreEqual(0, results.Count());
+    }
+
+    [TestMethod]
+    public async Task Update_ShouldNotThrow_WhenBookingDoesNotExist()
+    {
+        //Given:  A booking to update that is not in the database
+        var booking = new Booking
+        {
+            Id = 999,
+            CustomerId = _customer.Id,
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 3
+        };
+        //When: Update is called and SaveAsync is attempted
+
+        //Then: Expect a DbUpdateConcurrencyException to be thrown
+        await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
+        {
+            _repository.Update(booking);
+            await _repository.SaveAsync();
+        });
+    }
 }
