@@ -77,7 +77,19 @@ public class BookingServiceTests
         Assert.AreEqual("Booking not found", result.ErrorMEssage);
     }
 
+    [TestMethod]
+    public async Task CancelBookingsAsync_ShouldReturnError_WhenBookingAlreadyCancelled()
+    {
+        _booking.Status = BookingStatus.Cancelled;
+        _context.Bookings.Update(_booking);
+        await _context.SaveChangesAsync();
+        var result = await _bookingService.CancelBookingAsync(_booking.Id);
+        Assert.IsFalse(result.Success);
+        Assert.IsNotNull(result.ErrorMEssage);
+        Assert.AreEqual("Booking is already cancelled", result.ErrorMEssage);
+    }
 
+    [TestMethod]
 
     [TestCleanup]
     public void Cleanup()
