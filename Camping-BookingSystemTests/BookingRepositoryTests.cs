@@ -234,4 +234,11 @@ public class BookingRepositoryTests
             await _repository.SaveAsync();
         });
     }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _context.Database.EnsureDeleted();
+        _context.Dispose();
+    }
 }
