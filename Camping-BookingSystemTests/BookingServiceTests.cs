@@ -146,7 +146,17 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    public async Task DeleteBookingAsync_ShouldRemoveBooking_WhenExists()
+    {
+        //Given: A booking exists in the database
+        //When: The booking is deleted
+        await _bookingService.DeleteBookingAsync(_booking.Id);
+        //Then: Expect the booking to be removed successfully
+        var deletedBooking = await _bookingRepository.GetByIdAsync(_booking.Id);
 
+        Assert.IsNull(deletedBooking);
+        Console.WriteLine($"Booking with ID:{_booking.Id} has been removed from the database.");
+    }
 
 
     [TestCleanup]
