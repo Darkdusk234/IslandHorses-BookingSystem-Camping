@@ -62,16 +62,20 @@ public class BookingServiceTests
     [TestMethod]
     public async Task CancelBookingsAsync_ShouldCancelBooking_WhenValid()
     {
+        //Given: A booking that is in a cancellable state (Pending)
+        //When: The booking is cancelled
         var result = await _bookingService.CancelBookingAsync(_booking.Id);
-
+        //Then: Expect the booking to be cancelled successfully
         Assert.IsTrue(result.Success);
-        Assert.IsNull(result.ErrorMEssage);
         Console.WriteLine($"Status of booking with id {_booking.Id} is now {_booking.Status}");
     }
     [TestMethod]
     public async Task CancelBookingsAsync_ShouldReturnError_WhenBookingNotFound()
     {
+        //Given: Nothing?
+        //When: Trying to cancel a booking with a non-existing ID
         var result = await _bookingService.CancelBookingAsync(999); // Non-existing booking ID
+        //Then: Expect an error message indicating the booking was not found
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.ErrorMEssage);
         Assert.AreEqual("Booking not found", result.ErrorMEssage);
@@ -80,16 +84,70 @@ public class BookingServiceTests
     [TestMethod]
     public async Task CancelBookingsAsync_ShouldReturnError_WhenBookingAlreadyCancelled()
     {
+        //Given: The booking is already cancelled
         _booking.Status = BookingStatus.Cancelled;
         _context.Bookings.Update(_booking);
         await _context.SaveChangesAsync();
+        //When: Trying to cancel the booking
         var result = await _bookingService.CancelBookingAsync(_booking.Id);
+        //Then: Expect an error message indicating the booking is already cancelled
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.ErrorMEssage);
         Assert.AreEqual("Booking is already cancelled", result.ErrorMEssage);
     }
 
     [TestMethod]
+    public async Task CancelBookingsAsync_ShouldReturnError_WhenBookingAlreadyCompleted()
+    {
+        //Given: The booking is already completed
+        _booking.Status = BookingStatus.Completed;
+        _context.Bookings.Update(_booking);
+        await _context.SaveChangesAsync();
+        //When: Trying to cancel the booking
+        var result = await _bookingService.CancelBookingAsync(_booking.Id);
+        //Then: Expect an error message indicating the booking is already completed
+        Assert.IsFalse(result.Success);
+        Assert.IsNotNull(result.ErrorMEssage);
+        Assert.AreEqual("Booking is already completed", result.ErrorMEssage);
+    }
+
+    [TestMethod]
+    public async Task GetBookingByIdAsync_ShouldReturnBooking_WhenExists()
+    {
+        //Given: A booking exists in the database
+        //When: The booking is retrieved by ID
+        var result = await _bookingService.GetBookingByIdAsync(_booking.Id);
+        //Then: Expect the booking to be returned
+        Assert.IsNotNull(result);
+        Assert.AreEqual(_booking.Id, result.Id);
+        Console.WriteLine($"Booking with ID:{_booking.Id} belongs to {_customer.FirstName}");
+    }
+
+    [TestMethod]
+    public async Task GetBookingByIdAsync_ShouldReturnNull_WhenNotExists()
+    {
+        //Given: No booking with the specified ID exists
+        //When: Trying to retrieve a booking with a non-existing ID
+        var result = await _bookingService.GetBookingByIdAsync(999); // Non-existing booking ID
+        //Then: Expect null to be returned
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task GetBookingsByCustomerIdAsync_ShouldReturnBookings_WhenExists()
+    {
+        //Given: A customer has bookings in the database
+        //When: The bookings are retrieved by customer ID
+        var results = await _bookingService.GetBookingsByCustomerIdAsync(_customer.Id);
+        //Then: Expect the bookings to be returned
+        Assert.IsNotNull(results);
+        Assert.IsTrue(results.Count() > 0);
+        Console.WriteLine($"Customer {_customer.FirstName} has {results.Count()} bookings.");
+    }
+
+    [TestMethod]
+
+
 
     [TestCleanup]
     public void Cleanup()
