@@ -124,19 +124,30 @@ namespace Camping_BookingSystem.Controllers
         [HttpPost("CreateBooking")]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
         {
-            var isAvailable = await _bookingService
-                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var (isAvailable, reason) = await _bookingService
+                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate, request.NumberOfPeople);
 
             if (!isAvailable)
             {
-                return BadRequest("Camp spot is not available for the selected dates.");
+                return BadRequest(reason);
             }
 
-            var booking = request.ToBooking();
-            var createdBooking = await _bookingService.CreateBookingAsync(booking);
-
-            var response = createdBooking.ToBookingDetailsResponse();
-            return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
+            try 
+            {
+                var booking = request.ToBooking();
+                var createdBooking = await _bookingService.CreateBookingAsync(booking);
+                var response = createdBooking.ToBookingDetailsResponse();
+                return CreatedAtAction(nameof(GetBookingById), new { id = createdBooking.Id }, response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Tags("Guest")]
         [HttpPatch("{id}/Addons")]
