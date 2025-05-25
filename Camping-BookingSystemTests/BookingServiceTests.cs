@@ -170,6 +170,37 @@ public class BookingServiceTests
         Console.WriteLine("No changes made to the database for non-existing booking.");
     }
 
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenStartDateIsInThePast()
+    {   
+        //Given: A camp spot with a booking in the past
+        var startDate = DateTime.Now.AddDays(-1);
+        var endDate = DateTime.Now.AddDays(1);
+        //When: Checking availability for the past date
+        var (isAvailable, reason) = await _bookingService.IsCampSpotAvailableAsync(_campSpot.Id, startDate, endDate, 2);
+        //Then: Expect availability to be false and a reason provided
+        Assert.IsFalse(isAvailable);
+        Assert.IsNotNull(reason);
+        Console.WriteLine($"Availability check for past date returned: {reason}");
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenEndDateIsBeforeStartDate()
+    {
+        //Given: A camp spot with an end date before the start date
+        var startDate = DateTime.Now.AddDays(2);
+        var endDate = DateTime.Now.AddDays(1);
+        //When: Checking availability for the invalid date range
+        var (isAvailable, reason) = await _bookingService.IsCampSpotAvailableAsync(_campSpot.Id, startDate, endDate, 2);
+        //Then: Expect availability to be false and a reason provided
+        Assert.IsFalse(isAvailable);
+        Assert.IsNotNull(reason);
+        Console.WriteLine($"Availability check for invalid date range returned: {reason}");
+    }
+
+    
+
+
     [TestCleanup]
     public void Cleanup()
     {
