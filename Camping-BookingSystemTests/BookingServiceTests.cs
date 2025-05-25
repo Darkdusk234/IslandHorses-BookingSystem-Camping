@@ -350,13 +350,139 @@ public class BookingServiceTests
             Status = BookingStatus.Confirmed
         };
         //When: Trying to update a booking with a non-existing ID
-        var result = await _bookingService.UpdateBookingAsyn(999, updatedBooking); // Non-existing booking ID
-        //Then: Expect an error message indicating the booking was not found
+        var result = await _bookingService.UpdateBookingAsyn(999, updatedBooking);
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.ErrorMessage);
         Assert.AreEqual("Booking not found", result.ErrorMessage);
     }
-        [TestCleanup]
+
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldCreateBooking_WhenValid()
+    {
+        var request = new CreateBookingAndCustomer
+        {
+            FirstName = "Test",
+            LastName = "Person",
+            Email = "test@example.com",
+            PhoneNumber = "123456789",
+            StreetAddress = "Testvägen 1",
+            ZipCode = "12345",
+            City = "Teststad",
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Today.AddDays(1),
+            EndDate = DateTime.Today.AddDays(3),
+            NumberOfPeople = 2,
+            Parking = true,
+            Wifi = true
+        };
+
+        var result = await _bookingService.CreateBookingWithCustomerAsync(request);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.NumberOfNights);
+        Assert.IsTrue(result.TotalPrice > 0);
+        Assert.AreEqual("Test Person", result.CustomerName);
+    }
+
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenStartDateIsInThePast()
+    {
+        var request = new CreateBookingAndCustomer
+        {
+            FirstName = "Fail",
+            LastName = "Case",
+            Email = "fail@example.com",
+            PhoneNumber = "000000000",
+            StreetAddress = "Failvägen 0",
+            ZipCode = "00000",
+            City = "Failtown",
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Today.AddDays(-1),
+            EndDate = DateTime.Today.AddDays(2),
+            NumberOfPeople = 1
+        };
+
+        await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
+            _bookingService.CreateBookingWithCustomerAsync(request));
+    }
+
+    [TestMethod]
+    public async Task GetAllBookingsAsync_ShouldReturnOneBooking_WhenOneExists()
+    {         //Given: A booking exists in the database
+        //When: All bookings are retrieved
+        var bookings = await _bookingService.GetAllBookingsAsync();
+        //Then: Expect one booking to be returned
+        Assert.IsNotNull(bookings);
+        Assert.AreEqual(1, bookings.Count());
+        Console.WriteLine($"Total bookings in the system: {bookings.Count()}");
+    }
+
+    [TestMethod]
+    public async Task GetAllBookingsAsync_ShouldReturnEmpty_WhenNoBookingsExist()
+    {
+        //Given: No bookings exist in the database
+        _context.Bookings.RemoveRange(_context.Bookings);
+        await _context.SaveChangesAsync();
+        //When: All bookings are retrieved
+        var bookings = await _bookingService.GetAllBookingsAsync();
+        //Then: Expect an empty list to be returned
+        Assert.IsNotNull(bookings);
+        Assert.AreEqual(0, bookings.Count());
+        Console.WriteLine("No bookings found in the system.");
+    }
+
+    [TestMethod]
+    public async Task GetAllBookingsAsync_ShouldCalculateTotalPriceCorrectly()
+    {
+        // Given: A booking that is booked for 3 nights with add-ons (Wifi and Parking)
+        _booking.StartDate = DateTime.Today.AddDays(1);
+        _booking.EndDate = DateTime.Today.AddDays(4);
+        _booking.Wifi = true;
+        _booking.Parking = true;
+        _context.Bookings.Update(_booking);
+        await _context.SaveChangesAsync();
+        // When: The booking is retrieved
+        var result = (await _bookingService.GetAllBookingsAsync()).First();
+
+        decimal basePrice = _campSpot.SpotType.Price * 3;
+        decimal addons = (25 + 50) * 3;
+        decimal expected = basePrice + addons;
+        // Then: Expect the total price to be calculated correctly
+        Assert.AreEqual(expected, result.TotalPrice);
+    }
+
+    [TestMethod]
+    public async Task CreateBookingAsync_ShouldCreateBookingAndReturnIt()
+    {
+        // Given: A new booking to be created
+        var newBooking = new Booking
+        {
+            CustomerId = _customer.Id,
+            CampSpotId = _campSpot.Id,
+            StartDate = DateTime.Today.AddDays(1),
+            EndDate = DateTime.Today.AddDays(3),
+            NumberOfPeople = 2,
+            Wifi = true,
+            Parking = false,
+            Status = BookingStatus.Pending
+        };
+        // When: The booking is created
+        var created = await _bookingService.CreateBookingAsync(newBooking);
+        // Get: the booking from the database to verify it was created
+        var fromDb = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == created.Id);
+        Assert.IsNotNull(fromDb);
+
+        // Then: Expect the created booking to match the one retrieved from the database
+        Assert.AreEqual(created.Id, fromDb.Id);
+        Assert.AreEqual(_customer.Id, fromDb.CustomerId);
+        Assert.AreEqual(_campSpot.Id, fromDb.CampSpotId);
+        Assert.AreEqual(BookingStatus.Pending, fromDb.Status);
+        Assert.IsTrue(created.Wifi);
+        Assert.IsFalse(created.Parking);
+    }
+
+
+    [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
