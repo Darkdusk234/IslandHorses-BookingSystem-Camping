@@ -56,7 +56,7 @@ public class CustomerController : ControllerBase
 
         if (customerToUpdate == null)
         {
-            return NotFound(new { errorMessage = "Customer not found to update!" });
+            return NotFound(new { errorMessage = "Customer not found!" });
         }
 
         customerToUpdate.FirstName = updateCustomerDto.FirstName;
@@ -78,7 +78,7 @@ public class CustomerController : ControllerBase
 
         if (customerToDelete == null)
         {
-            return NotFound(new { errorMessage = "Kunden hittades inte." });
+            return NotFound(new { errorMessage = "Customer not found!" });
         }
         await _customerService.DeleteCustomerAsynch(customerToDelete);
 
