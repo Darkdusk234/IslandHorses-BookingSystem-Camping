@@ -1,4 +1,5 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 
 namespace Camping_BookingSystem.Repositories
 {
@@ -10,5 +11,9 @@ namespace Camping_BookingSystem.Repositories
         public Task Create(CampSpot campSpot);
         public Task Update(CampSpot campSpot);
         public Task Delete(CampSpot campSpot);
+        
+         
+        Task<IEnumerable<CampSpot>> SearchAvailableSpots(SearchAvailableSpotsDto searchDto);
+
     }
 }
