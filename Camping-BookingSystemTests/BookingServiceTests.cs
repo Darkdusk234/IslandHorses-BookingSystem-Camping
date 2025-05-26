@@ -5,6 +5,7 @@ using BookingSystem_ClassLibrary.Models;
 using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,13 +22,28 @@ public class BookingServiceTests
     private Customer _customer;
     private CampSpot _campSpot;
     private Booking _booking;
+    private SqliteConnection _connection;
 
     [TestInitialize]
     public async Task Initialize()
     {
-        _context = new CampingDbContext(new DbContextOptionsBuilder<CampingDbContext>()
-            .UseInMemoryDatabase($"BookingServiceTestDb_{Guid.NewGuid()}")
-            .Options);
+        //_context = new CampingDbContext(new DbContextOptionsBuilder<CampingDbContext>()
+        //    .UseInMemoryDatabase($"BookingServiceTestDb_{Guid.NewGuid()}")
+        //    .Options);
+
+        // Using Sqlite in-memory database for testing third times the charm................EF DateDiffDay function does not work with InMemoryDatabase
+
+        _connection = new SqliteConnection("Filename=:memory:");
+        await _connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<CampingDbContext>()
+            .UseSqlite(_connection)
+            .Options;
+
+        _context = new CampingDbContext(options);
+
+        await _context.Database.EnsureCreatedAsync();
+
         _bookingRepository = new BookingRepository(_context);
         _campSpotRepository = new CampSpotRepository(_context);
         _customerRepository = new CustomerRepositoy(_context);
@@ -399,7 +415,7 @@ public class BookingServiceTests
     [TestMethod]
     public async Task GetBookingDetailsByCampSiteIdAsync_ShouldReturnBookings_WhenExists()
     {
-        var result = await _bookingService.GetBookingDetailsByCampSiteIdAsync(_campSpot.CampSite.Id);
+        var result = await _bookingService.GetBookingDetailsByCampSiteIdAsync(1);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Any());
@@ -456,5 +472,7 @@ public class BookingServiceTests
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
+        _connection.Close();
+        _connection.Dispose();
     }
 }
