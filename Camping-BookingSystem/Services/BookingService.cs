@@ -9,10 +9,12 @@ namespace Camping_BookingSystem.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ICampSpotRepository _campSpotRepository;
-        public BookingService(IBookingRepository bookingRepository, ICampSpotRepository campSpotRepository)
+        private readonly ICustomerRepository _customerRepository;
+        public BookingService(IBookingRepository bookingRepository, ICampSpotRepository campSpotRepository, ICustomerRepository customerRepository)
         {
             _bookingRepository = bookingRepository;
             _campSpotRepository = campSpotRepository;
+            _customerRepository = customerRepository;
         }
 
         // Method to cancel a booking (Guest)
@@ -51,7 +53,7 @@ namespace Camping_BookingSystem.Services
         {
             if (request.StartDate.Date < DateTime.Today) 
             {
-                throw new ArgumentException("Start date cannot be in the pst.");
+                throw new ArgumentException("Start date cannot be in the past.");
             }
 
             if (request.EndDate.Date <= request.StartDate) 
@@ -59,16 +61,24 @@ namespace Camping_BookingSystem.Services
                 throw new ArgumentException("End date must be after start date.");
             }
 
-            var customer = new Customer
+            var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
+            
+            Customer customer;
+            if (existingCustomer != null)
             {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                StreetAddress = request.StreetAddress,
-                ZipCode = request.ZipCode,
-                City = request.City
-            };
+                customer = existingCustomer;
+            }
+            else
+                customer = new Customer
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    StreetAddress = request.StreetAddress,
+                    ZipCode = request.ZipCode,
+                    City = request.City
+                };
 
             var booking = new Booking
             {
@@ -80,13 +90,14 @@ namespace Camping_BookingSystem.Services
                 Parking = request.Parking,
                 Wifi = request.Wifi,
                 Status = BookingStatus.Pending
+                
             };
 
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveAsync();
-            // Get the full booking with customer details (made this so EF has time to present information in response body)
-            // Still not getting the expected result, PETTER?! JOHAN?! Hjälp!
-            var fullBooking = await _bookingRepository.GetByIdAsync(booking.Id);
+            // Get the full booking with customer details.
+            var fullBooking = await _bookingRepository
+                .GetByIdAsync(booking.Id);
 
             var response = fullBooking.ToBookingDetailsResponse();
             response.NumberOfNights = CalculateTotalNights(fullBooking);
@@ -104,20 +115,7 @@ namespace Camping_BookingSystem.Services
                 await _bookingRepository.SaveAsync();
             }
         }
-        // Method to get all bookings (Camp Owner)
-        // Detta blir ju för hela databasen? Borde kanske ändras så det är CampSiteId specific?
-        public async Task<IEnumerable<BookingDetailsResponse>> GetAllBookingsAsync()
-        {
-            var bookings = await _bookingRepository.GetAllAsync();
-
-            return bookings.Select(b =>
-            {
-                var dto = b.ToBookingDetailsResponse();
-                dto.NumberOfNights = CalculateTotalNights(b);
-                dto.TotalPrice = CalculateTotalPrice(b);
-                return dto;
-            });
-        }
+        
 
         // Method to get a booking by id.
         public async Task<Booking?> GetBookingByIdAsync(int id)
@@ -125,22 +123,23 @@ namespace Camping_BookingSystem.Services
             return await _bookingRepository.GetByIdAsync(id);
         }
         // Method to get all bookings by customer id (Receptionist)
-        public async Task<IEnumerable<BookingDetailsResponse>> GetBookingsByCustomerIdAsync(int customerId)
+        public async Task<IEnumerable<BookingDetailsResponse>> GetBookingDetailsByCustomerIdAsync(int customerId)
         {
-            var bookings = await _bookingRepository.GetBookingsByCustomerIdAsync(customerId);
-            
-
-            var result = bookings.Select(b =>
-            {
-                var dto = b.ToBookingDetailsResponse();
-                dto.NumberOfNights = CalculateTotalNights(b);
-                dto.TotalPrice = CalculateTotalPrice(b);
-                return dto;
-            });
-
-            return result;
-
+            return await _bookingRepository.GetBookingDetailsByCustomerIdAsync(customerId);
         }
+
+        // Method to get booking details by id (Receptionist)
+        public async Task<BookingDetailsResponse?> GetBookingDetailsByIdAsync(int id)
+        {
+            return await _bookingRepository.GetBookingDetailsByIdAsync(id);
+        }
+        // Method to get all bookings with details by CampSiteId (Camp Owner)
+        public async Task<IEnumerable<BookingDetailsResponse>> GetBookingDetailsByCampSiteIdAsync(int campSiteId)
+        {
+            return await _bookingRepository.GetBookingDetailsByCampSiteIdAsync(campSiteId);
+        }
+
+
         // Method to validate different conditions for camp spot availability
         public async Task<(bool IsAvailable, string? Reason)> IsCampSpotAvailableAsync(int campSpotId, DateTime startDate, DateTime endDate, int numberOfPeople)
         {
@@ -170,7 +169,7 @@ namespace Camping_BookingSystem.Services
 
             if (overlappedBookings.Any())
             {
-                return (false, "Camp spot is not available for the selected dates. Already booked.");
+                return (false, "Camp spot is not available for the selected dates.");
             }
 
             return (true, null);
@@ -184,10 +183,13 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "Booking not found");
             }
-
-            if (booking.Status == BookingStatus.Completed || booking.Status == BookingStatus.Cancelled)
+            if (booking.Status == BookingStatus.Completed)
             {
-                return (false, "Booking is either completed or cancelled.");
+                return (false, "Booking can not be updated, it is already completed.");
+            }
+            if (booking.Status == BookingStatus.Cancelled)
+            {
+                return (false, "Booking can not be updated, it is already cancelled.");
             }
 
             booking.Wifi = request.Wifi;
@@ -233,11 +235,10 @@ namespace Camping_BookingSystem.Services
         {
             if (booking.CampSpot?.SpotType == null)
             {
-                Console.WriteLine($"SpotType is missing for booking {booking.Id}");
                 return 0;
             }
             var basePrice = booking.CampSpot.SpotType.Price;
-            Console.WriteLine($"Booking: {booking.Id} - SpotType: {booking.CampSpot.SpotType.Name}, Price per night: {basePrice}");
+
 
             int totalNights = CalculateTotalNights(booking);
             decimal extra = 0;

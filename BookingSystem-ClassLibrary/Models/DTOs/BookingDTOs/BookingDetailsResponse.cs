@@ -8,7 +8,8 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
 {
     public class BookingDetailsResponse
     {
-        public int Id { get; set; }
+        public int BookingId { get; set; }
+        public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string CampSiteName { get; set; } = string.Empty;
         public string CampSpotType { get; set; } = string.Empty;

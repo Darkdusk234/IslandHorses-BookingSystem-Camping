@@ -22,11 +22,17 @@ namespace Camping_BookingSystem.Controllers
         /*------------------------------------------------ CAMP OWNER -----------------------------------------------------*/
         
         [Tags("Camp Owner")]
-        [HttpGet]
-        public async Task<IActionResult> GetAllBookings()
+        [HttpGet("campsite/{campSiteId}")]
+        public async Task<IActionResult> GetBookingsByCampSiteId(int campSiteId)
         {
-            var response = await _bookingService.GetAllBookingsAsync();
-            return Ok(response);
+            var bookings = await _bookingService.GetBookingDetailsByCampSiteIdAsync(campSiteId);
+
+            if (!bookings.Any())
+            {
+                return NotFound($"No bookings found for CampSite ID {campSiteId}");
+            }
+
+            return Ok(bookings);
         }
 
         [Tags("Camp Owner")]
@@ -62,7 +68,7 @@ namespace Camping_BookingSystem.Controllers
             try
             {
                 var response = await _bookingService.CreateBookingWithCustomerAsync(request);
-                return CreatedAtAction(nameof(GetBookingById), new { id = response.Id }, response);
+                return CreatedAtAction(nameof(GetBookingById), new { id = response.BookingId }, response);
             }
             catch(ArgumentException ex)
             {
@@ -71,7 +77,7 @@ namespace Camping_BookingSystem.Controllers
         }
 
         [Tags("Receptionist")]
-        [HttpPut("{id}/UpdateBooking")]
+        [HttpPut("UpdateBooking/{id}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingRequest request)
         {
             if (!ModelState.IsValid)
@@ -97,20 +103,21 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookingById(int id)
         {
-            var booking = await _bookingService.GetBookingByIdAsync(id);
-            if (booking == null)
+            var response = await _bookingService.GetBookingDetailsByIdAsync(id);
+            if (response == null)
             {
-                return NotFound();
+                return NotFound($"No booking found with ID {id}");
             }
-            var response = booking.ToBookingDetailsResponse();
+
             return Ok(response);
         }
+
 
         [Tags("Receptionist")]
         [HttpGet("customer/{customerId}")]
         public async Task<IActionResult> GetBookingsByCustomerId(int customerId)
         {
-            var bookings = await _bookingService.GetBookingsByCustomerIdAsync(customerId);
+            var bookings = await _bookingService.GetBookingDetailsByCustomerIdAsync(customerId);
 
             if (!bookings.Any())
             {
@@ -150,8 +157,8 @@ namespace Camping_BookingSystem.Controllers
             }
         }
         [Tags("Guest")]
-        [HttpPatch("{id}/Addons")]
-        public async Task<IActionResult> AddAddons(int id, [FromBody] UpdateAddonsRequest request)
+        [HttpPatch("Addons/{id}")]
+        public async Task<IActionResult> UpdateAddons(int id, [FromBody] UpdateAddonsRequest request)
         {
             var (success, errorMessage) = await _bookingService.UpdateBookingAddOnsAsync(id, request);
             if (!success)
@@ -163,7 +170,7 @@ namespace Camping_BookingSystem.Controllers
         }
 
         [Tags("Guest")]
-        [HttpPatch("{id}/GuestCancelBooking")]
+        [HttpPatch("GuestCancelBooking/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
             var (success, errorMessage) = await _bookingService.CancelBookingAsync(id);

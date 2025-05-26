@@ -24,23 +24,22 @@ namespace Camping_BookingSystem.Mapping
         {
             return new BookingDetailsResponse
             {
-                Id = booking.Id,
+                BookingId = booking.Id,
+                CampSiteName = booking.CampSpot?.CampSite?.Name ?? string.Empty,
+                CampSpotType = booking.CampSpot != null
+                ? $"{booking.CampSpot?.SpotType?.Name}"
+                : string.Empty,
                 StartDate = booking.StartDate.ToString("yyyy-MM-dd"),
                 EndDate = booking.EndDate.ToString("yyyy-MM-dd"),
                 NumberOfPeople = booking.NumberOfPeople,
                 Parking = booking.Parking,
                 Wifi = booking.Wifi,
                 Status = booking.Status.ToString(),
-                
-                CampSiteName = booking.CampSpot?.CampSite?.Name ?? string.Empty,
-
+                CustomerId = booking.CustomerId,
                 CustomerName = booking.Customer !=null
                 ? $"{booking.Customer.FirstName} {booking.Customer.LastName}"
-                : string.Empty,
-
-                CampSpotType = booking.CampSpot != null
-                ? $"{booking.CampSpot?.SpotType?.Name}"
                 : string.Empty
+
 
             };
         }

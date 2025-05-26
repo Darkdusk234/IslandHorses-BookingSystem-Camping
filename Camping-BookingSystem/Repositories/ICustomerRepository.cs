@@ -10,4 +10,7 @@ public interface ICustomerRepository
     Task AddAsync(Customer customer);
     Task UpdateAsync(Customer customer);
     Task DeleteAsynch(Customer customer);
+
+    //Custom method for validating customer by email
+    Task<Customer?> GetCustomerByEmailAsync(string email);
 }

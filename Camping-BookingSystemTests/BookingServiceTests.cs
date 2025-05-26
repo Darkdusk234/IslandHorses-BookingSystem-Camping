@@ -17,7 +17,7 @@ public class BookingServiceTests
     private BookingService _bookingService;
     private BookingRepository _bookingRepository;
     private CampSpotRepository _campSpotRepository;
-
+    private CustomerRepositoy _customerRepository;
     private Customer _customer;
     private CampSpot _campSpot;
     private Booking _booking;
@@ -30,7 +30,8 @@ public class BookingServiceTests
             .Options);
         _bookingRepository = new BookingRepository(_context);
         _campSpotRepository = new CampSpotRepository(_context);
-        _bookingService = new BookingService(_bookingRepository, _campSpotRepository);
+        _customerRepository = new CustomerRepositoy(_context);
+        _bookingService = new BookingService(_bookingRepository, _campSpotRepository,_customerRepository);
 
         var spotType = new SpotType { Name = "Tent", Price = 300 };
         var campSite = new CampSite { Name = "Freddans Camping" };
