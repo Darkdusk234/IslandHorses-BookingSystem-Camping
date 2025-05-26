@@ -164,7 +164,8 @@ public class CustomerRepositoryTest
         await context.SaveChangesAsync();
         
         //When customer is deleted
-        repository.Delete(customer); 
+        repository.Delete(customer);
+        await repository.SaveAsync(); 
         
         //Then the list of customers chould be empty
         var result = await repository.GetAllAsync(); 
@@ -195,6 +196,7 @@ public class CustomerRepositoryTest
         // When city is updated
         customer.City = "Stockholm";
         repository.Update(customer);
+        await repository.SaveAsync(); 
         
         // Clear ChangeTracker to simulate a new database connection
         context.ChangeTracker.Clear();

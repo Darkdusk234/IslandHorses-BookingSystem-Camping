@@ -14,7 +14,7 @@ public class CustomerService : ICustomerService
     }
 
     public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
-    {
+    { 
         return await _customerRepository.GetAllAsync();
     }
 
