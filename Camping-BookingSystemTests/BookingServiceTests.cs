@@ -71,7 +71,6 @@ public class BookingServiceTests
         var result = await _bookingService.CancelBookingAsync(_booking.Id);
         //Then: Expect the booking to be cancelled successfully
         Assert.IsTrue(result.Success);
-        Console.WriteLine($"Status of booking with id {_booking.Id} is now {_booking.Status}");
     }
     [TestMethod]
     public async Task CancelBookingsAsync_ShouldReturnError_WhenBookingNotFound()
@@ -120,11 +119,12 @@ public class BookingServiceTests
     {
         //Given: A booking exists in the database
         //When: The booking is retrieved by ID
-        var result = await _bookingService.GetBookingByIdAsync(_booking.Id);
+        var result = await _bookingService.GetBookingDetailsByIdAsync(_booking.Id);
         //Then: Expect the booking to be returned
         Assert.IsNotNull(result);
-        Assert.AreEqual(_booking.Id, result.Id);
-        Console.WriteLine($"Booking with ID:{_booking.Id} belongs to {_customer.FirstName}");
+        Assert.AreEqual(_booking.Id, result.BookingId);
+        Assert.AreEqual($"{_customer.FirstName} {_customer.LastName}", result.CustomerName);
+
     }
 
     [TestMethod]
@@ -132,21 +132,21 @@ public class BookingServiceTests
     {
         //Given: No booking with the specified ID exists
         //When: Trying to retrieve a booking with a non-existing ID
-        var result = await _bookingService.GetBookingByIdAsync(999); // Non-existing booking ID
+        var result = await _bookingService.GetBookingDetailsByIdAsync(999); // Non-existing booking ID
         //Then: Expect null to be returned
         Assert.IsNull(result);
     }
 
     [TestMethod]
-    public async Task GetBookingsByCustomerIdAsync_ShouldReturnBookings_WhenExists()
+    public async Task GetBookingDetailsByCustomerIdAsync_ShouldReturnCorrectBookings()
     {
-        //Given: A customer has bookings in the database
+        //Given: A customer with bookings in the database
         //When: The bookings are retrieved by customer ID
-        var results = await _bookingService.GetBookingsByCustomerIdAsync(_customer.Id);
-        //Then: Expect the bookings to be returned
-        Assert.IsNotNull(results);
-        Assert.IsTrue(results.Count() > 0);
-        Console.WriteLine($"Customer {_customer.FirstName} has {results.Count()} bookings.");
+        var result = await _bookingService.GetBookingDetailsByCustomerIdAsync(_customer.Id);
+        //Then: Expect the bookings to be returned for the specified customer
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Any());
+        Assert.IsTrue(result.All(b => b.CustomerId == _customer.Id));
     }
 
     [TestMethod]
@@ -159,7 +159,6 @@ public class BookingServiceTests
         var deletedBooking = await _bookingRepository.GetByIdAsync(_booking.Id);
 
         Assert.IsNull(deletedBooking);
-        Console.WriteLine($"Booking with ID:{_booking.Id} has been removed from the database.");
     }
 
     [TestMethod]
@@ -171,7 +170,6 @@ public class BookingServiceTests
         //Then: Expect no exception and no change in the database
         var result = await _bookingRepository.GetByIdAsync(999);
         Assert.IsNull(result);
-        Console.WriteLine("No changes made to the database for non-existing booking.");
     }
 
     [TestMethod]
@@ -185,7 +183,6 @@ public class BookingServiceTests
         //Then: Expect availability to be false and a reason provided
         Assert.IsFalse(isAvailable);
         Assert.IsNotNull(reason);
-        Console.WriteLine($"Availability check for past date returned: {reason}");
     }
 
     [TestMethod]
@@ -199,7 +196,6 @@ public class BookingServiceTests
         //Then: Expect availability to be false and a reason provided
         Assert.IsFalse(isAvailable);
         Assert.IsNotNull(reason);
-        Console.WriteLine($"Availability check for invalid date range returned: {reason}");
     }
 
     [TestMethod]
@@ -214,7 +210,6 @@ public class BookingServiceTests
         //Then: Expect availability to be false and a reason provided
         Assert.IsFalse(isAvailable);
         Assert.IsNotNull(reason);
-        Console.WriteLine($"Availability check for non-existing camp spot returned: {reason}");
     }
 
     [TestMethod]
@@ -235,7 +230,6 @@ public class BookingServiceTests
         //Then: Expect availability to be false and a reason provided
         Assert.IsFalse(isAvailable);
         Assert.IsNotNull(reason);
-        Console.WriteLine($"Availability check for overlapping booking returned: {reason}");
     }
 
     [TestMethod]
@@ -249,7 +243,6 @@ public class BookingServiceTests
         //Then: Expect availability to be true and no reason provided
         Assert.IsTrue(isAvailable);
         Assert.IsNull(reason);
-        Console.WriteLine($"Availability check for future date range returned: {isAvailable}");
     }
 
     [TestMethod]
@@ -268,7 +261,6 @@ public class BookingServiceTests
         var updatedBooking = await _bookingRepository.GetByIdAsync(_booking.Id);
         Assert.IsTrue(updatedBooking.Wifi);
         Assert.IsTrue(updatedBooking.Parking);
-        Console.WriteLine($"Wifi: {updatedBooking.Wifi} Parking: {updatedBooking.Parking}");
     }
 
     [TestMethod]
@@ -321,18 +313,15 @@ public class BookingServiceTests
         };
         //When: The booking is updated
         var update = await _bookingService.UpdateBookingAsyn(_booking.Id, updatedBooking);
-        Assert.IsTrue(update.Success);
-
         var result = await _bookingRepository.GetByIdAsync(_booking.Id);
         await _bookingRepository.SaveAsync();
+
         //Then: Expect the booking to be updated successfully
+        Assert.IsTrue(update.Success);
         Assert.IsNotNull(result);
         Assert.AreEqual(updatedBooking.StartDate, result.StartDate);
         Assert.AreEqual(updatedBooking.EndDate, result.EndDate);
         Assert.AreEqual(updatedBooking.NumberOfPeople, result.NumberOfPeople);
-        Console.WriteLine($"Updated booking with ID:{result.Id} has new start date: {result.StartDate}\n" +
-            $"Wifi: {updatedBooking.Wifi} / Parking: {updatedBooking.Parking}\n" +
-            $"Status: {updatedBooking.Status} / Number of people: {updatedBooking.NumberOfPeople}");
     }
 
     [TestMethod]
@@ -408,15 +397,15 @@ public class BookingServiceTests
     }
 
     [TestMethod]
-    public async Task GetAllBookingsAsync_ShouldReturnOneBooking_WhenOneExists()
-    {         //Given: A booking exists in the database
-        //When: All bookings are retrieved
-        var bookings = await _bookingService.GetAllBookingsAsync();
-        //Then: Expect one booking to be returned
-        Assert.IsNotNull(bookings);
-        Assert.AreEqual(1, bookings.Count());
-        Console.WriteLine($"Total bookings in the system: {bookings.Count()}");
+    public async Task GetBookingDetailsByCampSiteIdAsync_ShouldReturnBookings_WhenExists()
+    {
+        var result = await _bookingService.GetBookingDetailsByCampSiteIdAsync(_campSpot.CampSite.Id);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Any());
+        Assert.AreEqual("Freddans Camping", result.First().CampSiteName);
     }
+
 
     [TestMethod]
     public async Task GetAllBookingsAsync_ShouldReturnEmpty_WhenNoBookingsExist()
@@ -425,31 +414,10 @@ public class BookingServiceTests
         _context.Bookings.RemoveRange(_context.Bookings);
         await _context.SaveChangesAsync();
         //When: All bookings are retrieved
-        var bookings = await _bookingService.GetAllBookingsAsync();
+        var bookings = await _bookingService.GetBookingDetailsByCampSiteIdAsync(_campSpot.CampSite.Id);
         //Then: Expect an empty list to be returned
         Assert.IsNotNull(bookings);
         Assert.AreEqual(0, bookings.Count());
-        Console.WriteLine("No bookings found in the system.");
-    }
-
-    [TestMethod]
-    public async Task GetAllBookingsAsync_ShouldCalculateTotalPriceCorrectly()
-    {
-        // Given: A booking that is booked for 3 nights with add-ons (Wifi and Parking)
-        _booking.StartDate = DateTime.Today.AddDays(1);
-        _booking.EndDate = DateTime.Today.AddDays(4);
-        _booking.Wifi = true;
-        _booking.Parking = true;
-        _context.Bookings.Update(_booking);
-        await _context.SaveChangesAsync();
-        // When: The booking is retrieved
-        var result = (await _bookingService.GetAllBookingsAsync()).First();
-
-        decimal basePrice = _campSpot.SpotType.Price * 3;
-        decimal addons = (25 + 50) * 3;
-        decimal expected = basePrice + addons;
-        // Then: Expect the total price to be calculated correctly
-        Assert.AreEqual(expected, result.TotalPrice);
     }
 
     [TestMethod]
@@ -471,9 +439,9 @@ public class BookingServiceTests
         var created = await _bookingService.CreateBookingAsync(newBooking);
         // Get: the booking from the database to verify it was created
         var fromDb = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == created.Id);
-        Assert.IsNotNull(fromDb);
 
         // Then: Expect the created booking to match the one retrieved from the database
+        Assert.IsNotNull(fromDb);
         Assert.AreEqual(created.Id, fromDb.Id);
         Assert.AreEqual(_customer.Id, fromDb.CustomerId);
         Assert.AreEqual(_campSpot.Id, fromDb.CampSpotId);

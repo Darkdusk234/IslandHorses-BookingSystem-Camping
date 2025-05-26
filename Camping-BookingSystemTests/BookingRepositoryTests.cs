@@ -93,7 +93,6 @@ public class BookingRepositoryTests
         await _repository.SaveAsync();
         //When: All bookings are retrieved from the database
         var result = (await _repository.GetAllAsync()).ToList();
-        Console.WriteLine($"Bookings in result: {result.Count}");
         //Then: Expect the result to contain both bookings
         Assert.AreEqual(2, result.Count());
     }
@@ -180,7 +179,7 @@ public class BookingRepositoryTests
         await _repository.SaveAsync();
 
         //When: The bookings are retrieved by customer ID
-        var results = await _repository.GetBookingsByCustomerIdAsync(1);
+        var results = await _repository.GetBookingDetailsByCustomerIdAsync(1);
 
         //Then: Expect the result to contain two bookings for customer with ID 1
         Assert.AreEqual(2, results.Count());
@@ -201,19 +200,19 @@ public class BookingRepositoryTests
     [TestMethod]
     public async Task GetBookingByCustomerIdAsync_ShouldReturnEmpty_WhenNoBookingsExist()
     {
-        
+
         //Given:  A new in-memory database and a booking repository with no bookings
 
 
         //When: The bookings are retrieved by a customer ID that has no bookings
-        var results = await _repository.GetBookingsByCustomerIdAsync(_customer.Id);
+        var results = await _repository.GetBookingDetailsByCustomerIdAsync(_customer.Id);
         //Then: Expect the result to be empty
         Assert.IsNotNull(results);
         Assert.AreEqual(0, results.Count());
     }
 
     [TestMethod]
-    public async Task Update_ShouldNotThrow_WhenBookingDoesNotExist()
+    public async Task Update_ShouldThrow_WhenBookingDoesNotExist()
     {
         //Given:  A booking to update that is not in the database
         var booking = new Booking
