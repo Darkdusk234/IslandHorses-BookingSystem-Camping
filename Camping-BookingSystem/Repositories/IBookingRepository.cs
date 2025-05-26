@@ -20,7 +20,5 @@ namespace Camping_BookingSystem.Repositories
         Task<BookingDetailsResponse?> GetBookingDetailsByIdAsync(int bookingId);
         Task<IEnumerable<BookingDetailsResponse>> GetBookingDetailsByCustomerIdAsync(int customerId);
         Task<IEnumerable<BookingDetailsResponse>> GetBookingDetailsByCampSiteIdAsync(int campSiteId);
-
-
     }
 }

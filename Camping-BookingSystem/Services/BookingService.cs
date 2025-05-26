@@ -41,6 +41,7 @@ namespace Camping_BookingSystem.Services
             return (true, null);
 
         }
+
         // Method to create a booking (Guest)
         public async Task<Booking> CreateBookingAsync(Booking booking)
         {
@@ -48,6 +49,7 @@ namespace Camping_BookingSystem.Services
             await _bookingRepository.SaveAsync();
             return booking;
         }
+
         // Method to create a booking and add a customer (Receptionist)
         public async Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
@@ -112,11 +114,7 @@ namespace Camping_BookingSystem.Services
             }
         }
 
-        // Method to get a booking by id.
-        public async Task<Booking?> GetBookingByIdAsync(int id)
-        {
-            return await _bookingRepository.GetByIdAsync(id);
-        }
+        
         // Method to get all bookings by customer id (Receptionist)
         public async Task<IEnumerable<BookingDetailsResponse>> GetBookingDetailsByCustomerIdAsync(int customerId)
         {
