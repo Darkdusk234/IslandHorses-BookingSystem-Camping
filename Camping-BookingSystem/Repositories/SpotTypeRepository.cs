@@ -23,7 +23,6 @@ namespace Camping_BookingSystem.Repositories
         public async Task AddAsync(SpotType spotType)
         {
             await _context.SpotTypes.AddAsync(spotType);
-            await SaveAsync();
         }
         public void Update(SpotType spotType)
         {
