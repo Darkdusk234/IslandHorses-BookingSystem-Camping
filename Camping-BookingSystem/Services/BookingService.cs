@@ -95,16 +95,12 @@ namespace Camping_BookingSystem.Services
 
             await _bookingRepository.AddAsync(booking);
             await _bookingRepository.SaveAsync();
-            // Get the full booking with customer details.
-            var fullBooking = await _bookingRepository
-                .GetByIdAsync(booking.Id);
 
-            var response = fullBooking.ToBookingDetailsResponse();
-            response.NumberOfNights = CalculateTotalNights(fullBooking);
-            response.TotalPrice = CalculateTotalPrice(fullBooking);
+            var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
 
             return response;
         }
+
         // Method to delete a booking (Camp Owner)
         public async Task DeleteBookingAsync(int id)
         {
@@ -115,7 +111,6 @@ namespace Camping_BookingSystem.Services
                 await _bookingRepository.SaveAsync();
             }
         }
-        
 
         // Method to get a booking by id.
         public async Task<Booking?> GetBookingByIdAsync(int id)
@@ -225,31 +220,5 @@ namespace Camping_BookingSystem.Services
             return (true, null);
 
         }
-        // Method to calculate the total number of nights for a booking
-        private int CalculateTotalNights(Booking booking)
-        {
-            return (booking.EndDate - booking.StartDate).Days;
-        }
-        // Method to calculate the total price for a booking including add-ons
-        private decimal CalculateTotalPrice(Booking booking)
-        {
-            if (booking.CampSpot?.SpotType == null)
-            {
-                return 0;
-            }
-            var basePrice = booking.CampSpot.SpotType.Price;
-
-
-            int totalNights = CalculateTotalNights(booking);
-            decimal extra = 0;
-
-            if(booking.Wifi) extra += 25* totalNights;
-            if(booking.Parking) extra += 50 * totalNights;
-
-
-            return (basePrice * totalNights) + extra;
-        }
-
-
     }
 }
