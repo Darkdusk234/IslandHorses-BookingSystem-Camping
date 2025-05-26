@@ -5,7 +5,7 @@ namespace Camping_BookingSystem.Mapping
 {
     public static class SpotTypeMapper
     {
-        public static SpotType ToSpotType(this CreateSpotTypeRequest dto)
+        public static SpotType ToNewSpotType(this CreateSpotTypeRequest dto)
         {
             return new SpotType
             {
@@ -14,7 +14,7 @@ namespace Camping_BookingSystem.Mapping
                 Price = dto.Price
             };
         }
-        public static SpotType ToSpotType(this UpdateSpotTypeRequest dto)
+        public static SpotType ToUpdatedSpotType(this UpdateSpotTypeRequest dto)
         {
             return new SpotType
             {

@@ -28,12 +28,10 @@ namespace Camping_BookingSystem.Repositories
         public void Update(SpotType spotType)
         {
             _context.SpotTypes.Update(spotType);
-            SaveAsync();
         }
         public void Delete(SpotType spotType)
         {
             _context.SpotTypes.Remove(spotType);
-            SaveAsync();
         }
         public async Task SaveAsync()
         {
