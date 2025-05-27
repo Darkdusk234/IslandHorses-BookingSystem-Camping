@@ -135,6 +135,7 @@ public class CustomerRepositoryTest
 
         //When adding the customer
         await repository.AddAsync(customer);
+        await repository.SaveAsync();
         
         //Then 
         var result = await repository.GetAllAsync(); 
