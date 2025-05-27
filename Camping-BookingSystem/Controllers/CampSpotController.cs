@@ -69,10 +69,22 @@ namespace Camping_BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCampSpot([FromBody] CreateCampSpotRequest request)
         {
-            var campSpot = request.ToCampSpot();
-            var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            try
+            {
+                var campSpot = request.ToCampSpot();
+                var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+
+                return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            } 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
