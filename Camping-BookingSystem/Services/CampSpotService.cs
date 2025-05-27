@@ -1,4 +1,5 @@
-﻿using BookingSystem_ClassLibrary.Models;
+﻿using BookingSystem_ClassLibrary.Data;
+using BookingSystem_ClassLibrary.Models;
 using Camping_BookingSystem.Repositories;
 
 namespace Camping_BookingSystem.Services
@@ -6,10 +7,12 @@ namespace Camping_BookingSystem.Services
     public class CampSpotService : ICampSpotService
     {
         private readonly ICampSpotRepository _campSpotRepository;
+        private readonly ICampSiteRepository _campSiteRepository;
 
-        public CampSpotService(ICampSpotRepository campSpotRepository)
+        public CampSpotService(ICampSpotRepository campSpotRepository, ICampSiteRepository campSiteRepository)
         {
             _campSpotRepository = campSpotRepository;
+            _campSiteRepository = campSiteRepository;
         }
 
         public async Task<CampSpot> AddCampSpotAsync(CampSpot campSpot)
@@ -32,9 +35,15 @@ namespace Camping_BookingSystem.Services
             return await _campSpotRepository.GetAll();
         }
 
-        public async Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId)
+        public async Task<(IEnumerable<CampSpot>?, bool campSiteFound)> GetCampSpotsByCampSiteIdAsync(int campSiteId)
         {
-            return await _campSpotRepository.GetCampSpotsByCampSiteId(campSiteId);
+            var campSite = await _campSiteRepository.GetCampSiteByIdAsync(campSiteId);
+            if(campSite == null)
+            {
+                return (null, false);
+            }
+            var campSpots = await _campSpotRepository.GetCampSpotsByCampSiteId(campSiteId);
+            return (campSpots, true);
         }
 
         public async Task<CampSpot?> GetCampSpotByIdAsync(int id)
