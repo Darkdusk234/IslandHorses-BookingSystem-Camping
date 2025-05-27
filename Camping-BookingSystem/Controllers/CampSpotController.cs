@@ -90,6 +90,11 @@ namespace Camping_BookingSystem.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCampSpot(int id, [FromBody] CreateCampSpotRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
             if (existingCampSpot == null)
             {
