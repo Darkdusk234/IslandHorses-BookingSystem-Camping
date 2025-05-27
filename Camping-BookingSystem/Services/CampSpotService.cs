@@ -1,4 +1,5 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Repositories;
 
 namespace Camping_BookingSystem.Services
@@ -51,6 +52,11 @@ namespace Camping_BookingSystem.Services
         public async Task UpdateCampSpotAsync(CampSpot campSpot)
         {
             await _campSpotRepository.Update(campSpot);
+        }
+
+        public async Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto)
+        {
+            return await _campSpotRepository.SearchAvailableSpots(searchDto);
         }
     }
 }
