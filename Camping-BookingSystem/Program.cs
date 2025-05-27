@@ -19,6 +19,8 @@ namespace Camping_BookingSystem
             builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
             builder.Services.AddScoped<ICampSpotService, CampSpotService>();
             builder.Services.AddScoped<ICampSpotRepository, CampSpotRepository>();
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
+
 
             builder.Services.AddControllers()
                 .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = 

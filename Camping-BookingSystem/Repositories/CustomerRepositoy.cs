@@ -42,4 +42,9 @@ public class CustomerRepositoy : ICustomerRepository
     {
         await _context.SaveChangesAsync();
     }
+    // Custom method for validating customer by email for new bookings with customer details.
+    public async Task<Customer?> GetCustomerByEmailAsync(string email)
+    {
+        return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+    }
 }
