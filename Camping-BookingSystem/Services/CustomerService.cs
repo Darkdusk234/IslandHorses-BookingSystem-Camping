@@ -36,7 +36,7 @@ public class CustomerService : ICustomerService
         await _customerRepository.SaveAsync(); 
     }
 
-    public async Task DeleteCustomerAsynch(Customer customer)
+    public async Task DeleteCustomerAsync(Customer customer)
     {
         _customerRepository.Delete(customer);
         await _customerRepository.SaveAsync(); 

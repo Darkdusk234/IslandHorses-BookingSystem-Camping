@@ -80,7 +80,7 @@ public class CustomerController : ControllerBase
         {
             return NotFound(new { errorMessage = "Customer not found!" });
         }
-        await _customerService.DeleteCustomerAsynch(customerToDelete);
+        await _customerService.DeleteCustomerAsync(customerToDelete);
 
         return NoContent(); 
     }
