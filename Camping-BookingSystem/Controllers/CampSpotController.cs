@@ -98,7 +98,7 @@ namespace Camping_BookingSystem.Controllers
             var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
             if (existingCampSpot == null)
             {
-                return NotFound();
+                return NotFound("Campspot not found.");
             }
 
             existingCampSpot.CampSiteId = request.CampSiteId;
