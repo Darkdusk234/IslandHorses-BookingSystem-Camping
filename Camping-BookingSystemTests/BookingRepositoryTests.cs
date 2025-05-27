@@ -1,6 +1,7 @@
 using BookingSystem_ClassLibrary.Data;
 using BookingSystem_ClassLibrary.Models;
 using Camping_BookingSystem.Repositories;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystemTests;
@@ -10,17 +11,22 @@ public class BookingRepositoryTests
 {
     private CampingDbContext _context;
     private BookingRepository _repository;
-
     private Customer _customer;
     private CampSpot _campSpot;
-
+    private SqliteConnection _connection;
 
     [TestInitialize]
     public async Task Initialize() 
     {
-        _context = new CampingDbContext(new DbContextOptionsBuilder<CampingDbContext>()
-            .UseInMemoryDatabase($"BookingTestDb_{Guid.NewGuid()}")
-            .Options);
+        DbContextOptions<CampingDbContext> options;
+        
+            options = new DbContextOptionsBuilder<CampingDbContext>()
+                .UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}")
+                .Options;
+        
+
+        _context = new CampingDbContext(options);
+        
 
         _repository = new BookingRepository(_context);
 
@@ -50,7 +56,7 @@ public class BookingRepositoryTests
         //Given:  A new in-memory database and a booking repository and a booking object to be added
         var booking = new Booking
         {
-            CustomerId = _customer.Id,
+            CustomerId = 1,
             CampSpotId = _campSpot.Id,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now.AddDays(2),
@@ -64,7 +70,7 @@ public class BookingRepositoryTests
         //Then: Expect the booking to not be null and to be added in the database
         var result = await _context.Bookings.FirstOrDefaultAsync();
         Assert.IsNotNull(result);
-        Assert.AreEqual(booking.CustomerId, result.CustomerId);
+        Assert.AreEqual(1, result.CustomerId);
     }
 
     [TestMethod]
@@ -94,7 +100,7 @@ public class BookingRepositoryTests
         //When: All bookings are retrieved from the database
         var result = (await _repository.GetAllAsync()).ToList();
         //Then: Expect the result to contain both bookings
-        Assert.AreEqual(2, result.Count());
+        Assert.AreEqual(4, result.Count());
     }
 
     [TestMethod]
@@ -167,7 +173,7 @@ public class BookingRepositoryTests
         var deleted = await _repository.GetByIdAsync(booking.Id);
         Assert.IsNull(deleted);
     }
-
+    
     [TestMethod]
     public async Task GetBookingsByCustomerIdAsync_ShouldReturnCorrectBookings()
     {

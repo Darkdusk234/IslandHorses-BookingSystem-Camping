@@ -43,12 +43,12 @@ namespace Camping_BookingSystem.Repositories
                     CampSiteName = b.CampSpot.CampSite.Name,
                     CampSpotType = b.CampSpot.SpotType.Name,
 
-                    NumberOfNights = EF.Functions.DateDiffDay(b.StartDate, b.EndDate),
+                    NumberOfNights = (b.EndDate - b.StartDate).Days,
 
                     TotalPrice =
-                        (b.CampSpot.SpotType.Price * EF.Functions.DateDiffDay(b.StartDate, b.EndDate))
-                        + (b.Wifi ? 25 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
-                        + (b.Parking ? 50 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
+                            (b.CampSpot.SpotType.Price * (b.EndDate - b.StartDate).Days)
+                            + (b.Wifi ? 25 * (b.EndDate - b.StartDate).Days : 0)
+                            + (b.Parking ? 50 * (b.EndDate - b.StartDate).Days : 0)
                 })
                 .ToListAsync();
         }
@@ -72,12 +72,12 @@ namespace Camping_BookingSystem.Repositories
                     CampSiteName = b.CampSpot.CampSite.Name,
                     CampSpotType = b.CampSpot.SpotType.Name,
 
-                    NumberOfNights = EF.Functions.DateDiffDay(b.StartDate, b.EndDate),
+                    NumberOfNights = (b.EndDate - b.StartDate).Days,
 
                     TotalPrice =
-                        (b.CampSpot.SpotType.Price * EF.Functions.DateDiffDay(b.StartDate, b.EndDate))
-                        + (b.Wifi ? 25 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
-                        + (b.Parking ? 50 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
+                                (b.CampSpot.SpotType.Price * (b.EndDate - b.StartDate).Days)
+                                + (b.Wifi ? 25 * (b.EndDate - b.StartDate).Days : 0)
+                                + (b.Parking ? 50 * (b.EndDate - b.StartDate).Days : 0)
                 })
                 .ToListAsync();
         }
@@ -101,12 +101,12 @@ namespace Camping_BookingSystem.Repositories
                     CampSiteName = b.CampSpot.CampSite.Name,
                     CampSpotType = b.CampSpot.SpotType.Name,
 
-                    NumberOfNights = EF.Functions.DateDiffDay(b.StartDate, b.EndDate),
+                    NumberOfNights = (b.EndDate - b.StartDate).Days,
 
                     TotalPrice =
-                        (b.CampSpot.SpotType.Price * EF.Functions.DateDiffDay(b.StartDate, b.EndDate))
-                        + (b.Wifi ? 25 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
-                        + (b.Parking ? 50 * EF.Functions.DateDiffDay(b.StartDate, b.EndDate) : 0)
+                        (b.CampSpot.SpotType.Price * (b.EndDate - b.StartDate).Days)
+                        + (b.Wifi ? 25 * (b.EndDate - b.StartDate).Days : 0)
+                        + (b.Parking ? 50 * (b.EndDate - b.StartDate).Days : 0)
                 })
                 .FirstOrDefaultAsync();
         }

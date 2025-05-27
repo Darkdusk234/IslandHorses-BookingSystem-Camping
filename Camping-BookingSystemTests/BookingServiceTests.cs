@@ -23,26 +23,21 @@ public class BookingServiceTests
     private CampSpot _campSpot;
     private Booking _booking;
     private SqliteConnection _connection;
+    private bool useSqlite = true; // Set to false to use InMemory database
 
     [TestInitialize]
     public async Task Initialize()
     {
-        //_context = new CampingDbContext(new DbContextOptionsBuilder<CampingDbContext>()
-        //    .UseInMemoryDatabase($"BookingServiceTestDb_{Guid.NewGuid()}")
-        //    .Options);
+        DbContextOptions<CampingDbContext> options;
 
-        // Using Sqlite in-memory database for testing third times the charm................EF DateDiffDay function does not work with InMemoryDatabase
 
-        _connection = new SqliteConnection("Filename=:memory:");
-        await _connection.OpenAsync();
-
-        var options = new DbContextOptionsBuilder<CampingDbContext>()
-            .UseSqlite(_connection)
-            .Options;
+            options = new DbContextOptionsBuilder<CampingDbContext>()
+                .UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}")
+                .Options;
+        
 
         _context = new CampingDbContext(options);
 
-        await _context.Database.EnsureCreatedAsync();
 
         _bookingRepository = new BookingRepository(_context);
         _campSpotRepository = new CampSpotRepository(_context);
@@ -78,7 +73,8 @@ public class BookingServiceTests
         await _context.Bookings.AddAsync(_booking);
         await _context.SaveChangesAsync();
     }
-
+    
+    
     [TestMethod]
     public async Task CancelBookingsAsync_ShouldCancelBooking_WhenValid()
     {
@@ -131,8 +127,10 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    [TestCategory("UsesSQLite")]
     public async Task GetBookingByIdAsync_ShouldReturnBooking_WhenExists()
     {
+
         //Given: A booking exists in the database
         //When: The booking is retrieved by ID
         var result = await _bookingService.GetBookingDetailsByIdAsync(_booking.Id);
@@ -154,6 +152,7 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    [TestCategory("UsesSQLite")]
     public async Task GetBookingDetailsByCustomerIdAsync_ShouldReturnCorrectBookings()
     {
         //Given: A customer with bookings in the database
@@ -234,11 +233,14 @@ public class BookingServiceTests
         //Given: A camp spot with an existing booking
         var existingBooking = new Booking
         {
+            Customer = _customer,
             CampSpot = _campSpot,
             StartDate = DateTime.Now.AddDays(1),
             EndDate = DateTime.Now.AddDays(3),
-            NumberOfPeople = 2
+            NumberOfPeople = 2,
+            Status = BookingStatus.Pending
         };
+
         await _bookingRepository.AddAsync(existingBooking);
         await _bookingRepository.SaveAsync();
         //When: Checking availability for overlapping dates
@@ -309,7 +311,7 @@ public class BookingServiceTests
         //Then: Expect an error message indicating the booking is already completed or cancelled
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.ErrorMessage);
-        Assert.AreEqual("Booking is either completed or cancelled.", result.ErrorMessage);
+        Assert.AreEqual("Booking can not be updated, it is already completed.", result.ErrorMessage);
     }
 
     [TestMethod]
@@ -363,8 +365,10 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    [TestCategory("UsesSQLite")]
     public async Task CreateBookingWithCustomerAsync_ShouldCreateBooking_WhenValid()
     {
+
         var request = new CreateBookingAndCustomer
         {
             FirstName = "Test",
@@ -413,6 +417,7 @@ public class BookingServiceTests
     }
 
     [TestMethod]
+    [TestCategory("UsesSQLite")]
     public async Task GetBookingDetailsByCampSiteIdAsync_ShouldReturnBookings_WhenExists()
     {
         var result = await _bookingService.GetBookingDetailsByCampSiteIdAsync(1);
@@ -466,13 +471,11 @@ public class BookingServiceTests
         Assert.IsFalse(created.Parking);
     }
 
-
     [TestCleanup]
     public void Cleanup()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
-        _connection.Close();
-        _connection.Dispose();
+
     }
 }

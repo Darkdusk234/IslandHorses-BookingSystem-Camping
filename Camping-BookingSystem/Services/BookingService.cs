@@ -196,6 +196,7 @@ namespace Camping_BookingSystem.Services
         // Method to update the booking (Receptionist)
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)
         {
+
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
             if (booking == null)
             {
@@ -203,8 +204,32 @@ namespace Camping_BookingSystem.Services
             }
             if (booking.Status == BookingStatus.Completed)
             {
-                return (false, "Booking is already completed");
+                return (false, "Booking can not be updated, it is already completed.");
             }
+            if (booking.Status == BookingStatus.Cancelled)
+            {
+                return (false, "Booking can not be updated, it is already cancelled.");
+            }
+
+            var overappedBookings = await _bookingRepository
+                .GetBookingsByCampSpotAndDate(
+                request.CampSpotId, 
+                request.StartDate, 
+                request.EndDate);
+
+            if (overappedBookings.Any(b => b.Id != bookingId)) 
+            {
+                return (false, "Camp spot is not available for the selected dates.");
+            }
+            if (request.StartDate.Date < DateTime.Today)
+            {
+                return (false, "Start date cannot be in the past.");
+            }
+            if (request.EndDate.Date <= request.StartDate)
+            {
+                return (false, "End date must be after start date.");
+            }
+
             booking.CampSpotId = request.CampSpotId;
             booking.StartDate = request.StartDate;
             booking.EndDate = request.EndDate;
