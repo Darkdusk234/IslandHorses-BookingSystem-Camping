@@ -1,4 +1,5 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 
 namespace Camping_BookingSystem.Services
 {
@@ -13,5 +14,8 @@ namespace Camping_BookingSystem.Services
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
         Task DeleteCampSpotAsync(int id);
         Task UpdateCampSpotAsync(CampSpot campSpot);
+
+        // Receptions for searching available spots
+        Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);
     }
 }
