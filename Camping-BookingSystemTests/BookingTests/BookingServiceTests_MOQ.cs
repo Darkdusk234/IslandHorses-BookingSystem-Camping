@@ -27,7 +27,7 @@ public class BookingServiceTests_MOQ
         );
     }
     [TestMethod]
-    public void CancelBookingAsync_ShouldCancel_IfStatusIsntCompletedOrCancelled()
+    public void CancelBookingAsync_ShouldCancel_WhenValidStatus()
     {
 
         // Given: A booking with a status of Pending
@@ -62,7 +62,7 @@ public class BookingServiceTests_MOQ
         // When: The CancelBookingAsync method is called
         var result = _bookingService.CancelBookingAsync(bookingId).Result;
 
-        // Assert
+        // Then: Expect the booking to not be cancelled, because it does not exist
         Assert.IsFalse(result.Success);
         Assert.AreEqual("Booking not found", result.ErrorMEssage);
         _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
@@ -79,11 +79,34 @@ public class BookingServiceTests_MOQ
             Status = BookingStatus.Cancelled
         };
         _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        
         // When: The CancelBookingAsync method is called
         var result = _bookingService.CancelBookingAsync(bookingId).Result;
-        // Assert
+        
+        // Then: Expect the booking to not be cancelled, because it is already cancelled
         Assert.IsFalse(result.Success);
         Assert.AreEqual("Booking is already cancelled", result.ErrorMEssage);
+        _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
+    }
+
+    [TestMethod]
+    public void CancelBookingAsync_ShouldReturnError_WhenBookingAlreadyCompleted()
+    {
+        // Given: A booking that is already completed
+        var bookingId = 1;
+        var booking = new Booking
+        {
+            Id = bookingId,
+            Status = BookingStatus.Completed
+        };
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        
+        // When: The CancelBookingAsync method is called
+        var result = _bookingService.CancelBookingAsync(bookingId).Result;
+
+        // Then: Expect the booking to not be cancelled, because it is already completed
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual("Booking is already completed", result.ErrorMEssage);
         _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
     }
 }
