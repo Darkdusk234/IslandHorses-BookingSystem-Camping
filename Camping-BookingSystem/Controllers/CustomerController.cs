@@ -50,7 +50,7 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPut(Name = "UpdateCustomer")]
-    public async Task<IActionResult> UpdateCustomre(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
+    public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
     {
         var customerToUpdate = await _customerService.GetCustomerByIdAsync(id);
 
@@ -80,7 +80,7 @@ public class CustomerController : ControllerBase
         {
             return NotFound(new { errorMessage = "Customer not found!" });
         }
-        await _customerService.DeleteCustomerAsynch(customerToDelete);
+        await _customerService.DeleteCustomerAsync(customerToDelete);
 
         return NoContent(); 
     }

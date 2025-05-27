@@ -13,6 +13,7 @@ namespace Camping_BookingSystem.Repositories
         {
             _context = context;
         }
+        
         public async Task Create(CampSpot campSpot)
         {
             await _context.CampSpots.AddAsync(campSpot);
@@ -38,6 +39,17 @@ namespace Camping_BookingSystem.Repositories
         public async Task<CampSpot?> GetCampSpotById(int campSpotId)
         {
             return await _context.CampSpots.FindAsync(campSpotId);
+        }
+        
+        // Lägg till capacity när den finns. 
+        public async Task<List<CampSpot>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate, int typeId/*, int nrGuests*/)
+        {
+            var allSpotsMatchingNeeds = await _context.CampSpots
+                .Include(c => c.Bookings)
+                .Where(c =>
+                    c.TypeId == typeId &&
+                    !c.Bookings.Any(b => (b.StartDate < endDate && b.EndDate > startDate))).ToListAsync();
+            return allSpotsMatchingNeeds; 
         }
 
         public async Task Update(CampSpot campSpot)

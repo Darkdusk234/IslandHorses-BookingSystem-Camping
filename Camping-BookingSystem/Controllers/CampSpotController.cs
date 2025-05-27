@@ -1,7 +1,10 @@
-﻿using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
+﻿using System.Runtime.InteropServices.JavaScript;
+using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Camping_BookingSystem.Controllers
@@ -41,6 +44,22 @@ namespace Camping_BookingSystem.Controllers
         {
             var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
             return Ok(campSpots);
+        }
+        
+        //Som receptionist vill jag kunna söka lediga platser baserat på typ, datum och antal gäster
+        [HttpGet("searchAvailableOnTypeDateCapacity",Name = "GetFreeSpotsMatchingNeeds")]
+        public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingNeeds(
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate,
+            [FromQuery] int typeID)
+        {
+            var availableSpotBasedOnNeeds =  
+                await _campSpotService.GetAvailableSpotsMatchingNeeds(startDate, endDate, typeID);
+            if (availableSpotBasedOnNeeds == null)
+            {
+                return NotFound(); 
+            }
+            return Ok(availableSpotBasedOnNeeds); 
         }
 
         [HttpPost]

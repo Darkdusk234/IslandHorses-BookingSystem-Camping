@@ -4,6 +4,7 @@ using BookingSystem_ClassLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSystem_ClassLibrary.Migrations
 {
     [DbContext(typeof(CampingDbContext))]
-    partial class CampingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521093648_AddedModelStatus")]
+    partial class AddedModelStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,6 +150,12 @@ namespace BookingSystem_ClassLibrary.Migrations
                     b.Property<bool>("Electricity")
                         .HasColumnType("bit");
 
+                    b.Property<int>("MaxPersonLimit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SpotTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
 
@@ -154,7 +163,7 @@ namespace BookingSystem_ClassLibrary.Migrations
 
                     b.HasIndex("CampSiteId");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("SpotTypeId");
 
                     b.ToTable("CampSpots");
 
@@ -164,6 +173,7 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 1,
                             CampSiteId = 1,
                             Electricity = false,
+                            MaxPersonLimit = 4,
                             TypeId = 1
                         },
                         new
@@ -171,6 +181,7 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 2,
                             CampSiteId = 1,
                             Electricity = true,
+                            MaxPersonLimit = 6,
                             TypeId = 2
                         },
                         new
@@ -178,6 +189,7 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 3,
                             CampSiteId = 2,
                             Electricity = true,
+                            MaxPersonLimit = 5,
                             TypeId = 3
                         });
                 });
@@ -323,9 +335,7 @@ namespace BookingSystem_ClassLibrary.Migrations
 
                     b.HasOne("BookingSystem_ClassLibrary.Models.SpotType", "SpotType")
                         .WithMany("CampSpots")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SpotTypeId");
 
                     b.Navigation("CampSite");
 
