@@ -109,4 +109,27 @@ public class BookingServiceTests_MOQ
         Assert.AreEqual("Booking is already completed", result.ErrorMEssage);
         _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateBookingAsync_ShouldAddBooking_WhenValidBooking()
+    {
+        // Given: A valid booking
+        var booking = new Booking
+        {
+            Id = 1,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(2),
+            NumberOfPeople = 2
+        };
+        _bookingRepoMock.Setup(repo => repo.AddAsync(booking)).Returns(Task.CompletedTask);
+        _bookingRepoMock.Setup(repo => repo.SaveAsync()).Returns(Task.CompletedTask);
+        
+        // When: The CreateBookingAsync method is called
+        var result = _bookingService.CreateBookingAsync(booking).Result;
+        
+        // Then: Expect the booking to be added and saved
+        Assert.AreEqual(booking, result);
+        _bookingRepoMock.Verify(repo => repo.AddAsync(booking), Times.Once);
+        _bookingRepoMock.Verify(repo => repo.SaveAsync(), Times.Once);
+    }
 }
