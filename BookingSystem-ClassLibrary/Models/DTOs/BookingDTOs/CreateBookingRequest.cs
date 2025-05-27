@@ -17,6 +17,8 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
         public DateTime StartDate { get; set; }
         [Required]
         public DateTime EndDate { get; set; }
+        public bool Parking { get; set; } = false;
+        public bool Wifi { get; set; } = false;
 
         [Range(1, 10, ErrorMessage = "Number of people must be between 1 and 10.")]
         public int NumberOfPeople { get; set; }
