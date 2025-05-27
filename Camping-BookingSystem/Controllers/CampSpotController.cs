@@ -42,7 +42,11 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet("campSite/{campSiteId}")]
         public async Task<IActionResult> GetCampSpotsByCampSiteId(int campSiteId)
         {
-            var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            var (campSpots, campSiteFound) = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            if(!campSiteFound)
+            {
+                return NotFound("Campsite not found.");
+            }
             return Ok(campSpots);
         }
         
