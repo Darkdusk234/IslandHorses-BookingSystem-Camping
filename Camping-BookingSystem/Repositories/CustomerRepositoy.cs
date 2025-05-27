@@ -26,18 +26,20 @@ public class CustomerRepositoy : ICustomerRepository
     public async Task AddAsync(Customer customer)
     {
         await _context.Customers.AddAsync(customer);
-        await _context.SaveChangesAsync(); 
     }
 
-    public async Task UpdateAsync(Customer customer)
+    public void Update(Customer customer)
     {
         _context.Customers.Update(customer);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsynch(Customer customer)
+    public void Delete(Customer customer)
     {
         _context.Customers.Remove(customer);
+    }
+    
+    public async Task SaveAsync()
+    {
         await _context.SaveChangesAsync();
     }
     // Custom method for validating customer by email for new bookings with customer details.

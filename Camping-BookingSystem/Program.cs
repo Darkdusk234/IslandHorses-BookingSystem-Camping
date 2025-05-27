@@ -14,9 +14,12 @@ namespace Camping_BookingSystem
             // Add services to the container.
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<ICustomerService, CustomerService>();
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
             builder.Services.AddScoped<ICampSpotService, CampSpotService>();
             builder.Services.AddScoped<ICampSpotRepository, CampSpotRepository>();
             builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
+
 
 
             builder.Services.AddControllers();
