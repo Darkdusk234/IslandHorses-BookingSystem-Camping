@@ -1,4 +1,5 @@
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Moq;
@@ -27,7 +28,7 @@ public class BookingServiceTests_MOQ
         );
     }
     [TestMethod]
-    public void CancelBookingAsync_ShouldCancel_WhenValidStatus()
+    public async Task CancelBookingAsync_ShouldCancel_WhenValidStatus()
     {
 
         // Given: A booking with a status of Pending
@@ -42,7 +43,7 @@ public class BookingServiceTests_MOQ
 
 
         // When: The CancelBookingAsync method is called
-        var result = _bookingService.CancelBookingAsync(bookingId).Result;
+        var result = await _bookingService.CancelBookingAsync(bookingId);
 
         // Then: Expect the booking status to be changed to Cancelled
         Assert.IsTrue(result.Success);
@@ -53,14 +54,14 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public void CancelBookingAsync_ShouldReturnError_WhenBookingNotFound()
+    public async Task CancelBookingAsync_ShouldReturnError_WhenBookingNotFound()
     {
         // Given: A booking ID that does not exist
         var bookingId = 999;
         _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync((Booking?)null);
 
         // When: The CancelBookingAsync method is called
-        var result = _bookingService.CancelBookingAsync(bookingId).Result;
+        var result = await _bookingService.CancelBookingAsync(bookingId);
 
         // Then: Expect the booking to not be cancelled, because it does not exist
         Assert.IsFalse(result.Success);
@@ -69,7 +70,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public void CancelBookingAsync_ShouldReturnError_WhenBookingAlreadyCancelled()
+    public async Task CancelBookingAsync_ShouldReturnError_WhenBookingAlreadyCancelled()
     {
         // Given: A booking that is already cancelled
         var bookingId = 1;
@@ -81,7 +82,7 @@ public class BookingServiceTests_MOQ
         _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
         
         // When: The CancelBookingAsync method is called
-        var result = _bookingService.CancelBookingAsync(bookingId).Result;
+        var result = await _bookingService.CancelBookingAsync(bookingId);
         
         // Then: Expect the booking to not be cancelled, because it is already cancelled
         Assert.IsFalse(result.Success);
@@ -90,7 +91,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public void CancelBookingAsync_ShouldReturnError_WhenBookingAlreadyCompleted()
+    public async Task CancelBookingAsync_ShouldReturnError_WhenBookingAlreadyCompleted()
     {
         // Given: A booking that is already completed
         var bookingId = 1;
@@ -102,7 +103,7 @@ public class BookingServiceTests_MOQ
         _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
         
         // When: The CancelBookingAsync method is called
-        var result = _bookingService.CancelBookingAsync(bookingId).Result;
+        var result = await _bookingService.CancelBookingAsync(bookingId);
 
         // Then: Expect the booking to not be cancelled, because it is already completed
         Assert.IsFalse(result.Success);
@@ -111,7 +112,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public void CreateBookingAsync_ShouldAddBooking_WhenValidBooking()
+    public async Task CreateBookingAsync_ShouldAddBooking_WhenValidBooking()
     {
         // Given: A valid booking
         var booking = new Booking
@@ -131,5 +132,58 @@ public class BookingServiceTests_MOQ
         Assert.AreEqual(booking, result);
         _bookingRepoMock.Verify(repo => repo.AddAsync(booking), Times.Once);
         _bookingRepoMock.Verify(repo => repo.SaveAsync(), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenStartDateInPast()
+    {
+        // Given: A booking request with a start date in the past
+        var request = new CreateBookingAndCustomer
+        {
+            FirstName = "Felet",
+            LastName = "Feletsson",
+            Email = "fail@example.com",
+            PhoneNumber = "0700000000",
+            StreetAddress = "Failvägen 1",
+            ZipCode = "00000",
+            City = "Failstad",
+            CampSpotId = 1,
+            StartDate = DateTime.Today.AddDays(-1),
+            EndDate = DateTime.Today.AddDays(2),
+            NumberOfPeople = 1
+        };
+        // When: The CreateBookingWithCustomerAsync method is called
+        // Then: Expect an ArgumentException to be thrown
+        var errorMessage = 
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
+            _bookingService.CreateBookingWithCustomerAsync(request));
+        Assert.AreEqual("Start date cannot be in the past.", errorMessage.Message);
+    }
+
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenEndDateBeforeStartDate()
+    {
+        // Given: A booking request with an end date before the start date
+        var request = new CreateBookingAndCustomer
+        {
+            FirstName = "Felet",
+            LastName = "Feletsson",
+            Email = "fail@example.com",
+            PhoneNumber = "0700000000",
+            StreetAddress = "Failvägen 1",
+            ZipCode = "00000",
+            City = "Failstad",
+            CampSpotId = 1,
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today.AddDays(-2),
+            NumberOfPeople = 1
+        };
+        // When: The CreateBookingWithCustomerAsync method is called
+        // Then: Expect an ArgumentException to be thrown
+        var errorMessage = 
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
+            _bookingService.CreateBookingWithCustomerAsync(request));
+
+        Assert.AreEqual("End date must be after start date.", errorMessage.Message);
     }
 }
