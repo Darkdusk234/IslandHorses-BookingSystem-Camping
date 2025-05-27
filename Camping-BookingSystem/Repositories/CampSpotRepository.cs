@@ -50,7 +50,7 @@ namespace Camping_BookingSystem.Repositories
         public async Task<IEnumerable<CampSpot>> SearchAvailableSpots(SearchAvailableSpotsDto searchDto)
         {
             var query = _context.CampSpots
-                .Include(cs => cs.CampSite)     // Include the related CampSite, spottypes, bookings
+                //.Include(cs => cs.CampSite)     // Include the related CampSite, spottypes, bookings
                 .Include(cs => cs.SpotType)     
                 .Include(cs => cs.Bookings)     
                 .AsQueryable();                 // IQueryable allows for further filtering and chaining
@@ -67,7 +67,7 @@ namespace Camping_BookingSystem.Repositories
                 query = query.Where(cs => cs.Electricity == searchDto.RequiresElectricity.Value);
             }
 
-            query = query.Where(cs => !cs.Bookings.Any(b =>     // Check if spot is already booked
+            query = query.Where(predicate: cs => !cs.Bookings.Any(b =>     // Check if spot is already booked
             b.StartDate < searchDto.EndDate &&                  // Booking starts before the search end date
             b.EndDate > searchDto.StartDate));                  // Booking ends after the search start date
 
