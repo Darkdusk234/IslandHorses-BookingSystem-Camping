@@ -50,7 +50,7 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPut(Name = "UpdateCustomer")]
-    public async Task<IActionResult> UpdateCustomre(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
+    public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
     {
         var customerToUpdate = await _customerService.GetCustomerByIdAsync(id);
 
