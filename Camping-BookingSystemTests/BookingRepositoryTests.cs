@@ -100,7 +100,7 @@ public class BookingRepositoryTests
         //When: All bookings are retrieved from the database
         var result = (await _repository.GetAllAsync()).ToList();
         //Then: Expect the result to contain both bookings
-        Assert.AreEqual(4, result.Count());
+        Assert.AreEqual(2, result.Count());
     }
 
     [TestMethod]
