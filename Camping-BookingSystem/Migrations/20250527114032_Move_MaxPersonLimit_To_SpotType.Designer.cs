@@ -4,6 +4,7 @@ using BookingSystem_ClassLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSystem_ClassLibrary.Migrations
 {
     [DbContext(typeof(CampingDbContext))]
-    partial class CampingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250527114032_Move_MaxPersonLimit_To_SpotType")]
+    partial class Move_MaxPersonLimit_To_SpotType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,102 +87,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             NumberOfPeople = 4,
                             Parking = false,
                             StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CampSpotId = 5,
-                            CustomerId = 3,
-                            EndDate = new DateTime(2025, 6, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 2,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CampSpotId = 6,
-                            CustomerId = 4,
-                            EndDate = new DateTime(2025, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 1,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CampSpotId = 9,
-                            CustomerId = 5,
-                            EndDate = new DateTime(2025, 7, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 3,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CampSpotId = 10,
-                            CustomerId = 6,
-                            EndDate = new DateTime(2025, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 2,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CampSpotId = 12,
-                            CustomerId = 1,
-                            EndDate = new DateTime(2025, 8, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 2,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CampSpotId = 14,
-                            CustomerId = 2,
-                            EndDate = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 4,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 9, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CampSpotId = 16,
-                            CustomerId = 3,
-                            EndDate = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 5,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 0,
-                            Wifi = false
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CampSpotId = 18,
-                            CustomerId = 4,
-                            EndDate = new DateTime(2025, 11, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NumberOfPeople = 6,
-                            Parking = false,
-                            StartDate = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 0,
                             Wifi = false
                         });
@@ -267,119 +174,14 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 2,
                             CampSiteId = 1,
                             Electricity = true,
-                            TypeId = 1
+                            TypeId = 2
                         },
                         new
                         {
                             Id = 3,
                             CampSiteId = 2,
-                            Electricity = false,
-                            TypeId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 2
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CampSiteId = 2,
-                            Electricity = false,
-                            TypeId = 2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CampSiteId = 1,
                             Electricity = true,
                             TypeId = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 3
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 3
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 4
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 4
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 4
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 5
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 5
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 5
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 6
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CampSiteId = 1,
-                            Electricity = true,
-                            TypeId = 6
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CampSiteId = 2,
-                            Electricity = true,
-                            TypeId = 6
                         });
                 });
 
@@ -450,50 +252,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             PhoneNumber = "0739876543",
                             StreetAddress = "Campingvägen 8",
                             ZipCode = "12345"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Falkenberg",
-                            Email = "carina.carlsson@example.com",
-                            FirstName = "Carina",
-                            LastName = "Carlsson",
-                            PhoneNumber = "0705678910",
-                            StreetAddress = "Stugvägen 5",
-                            ZipCode = "54321"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            City = "Laholm",
-                            Email = "david.dahl@example.com",
-                            FirstName = "David",
-                            LastName = "Dahl",
-                            PhoneNumber = "0723456789",
-                            StreetAddress = "Ängsbacken 7",
-                            ZipCode = "67890"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            City = "Kungsbacka",
-                            Email = "eva.ekstrom@example.com",
-                            FirstName = "Eva",
-                            LastName = "Ekström",
-                            PhoneNumber = "0761122334",
-                            StreetAddress = "Tallgatan 22",
-                            ZipCode = "11223"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            City = "Göteborg",
-                            Email = "fredrik.friberg@example.com",
-                            FirstName = "Fredrik",
-                            LastName = "Friberg",
-                            PhoneNumber = "0794455667",
-                            StreetAddress = "Granvägen 3",
-                            ZipCode = "33445"
                         });
                 });
 
@@ -504,9 +262,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MaxPersonLimit")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -525,44 +280,20 @@ namespace BookingSystem_ClassLibrary.Migrations
                         new
                         {
                             Id = 1,
-                            MaxPersonLimit = 8,
                             Name = "Tent",
                             Price = 150m
                         },
                         new
                         {
                             Id = 2,
-                            MaxPersonLimit = 8,
                             Name = "Caravan",
                             Price = 250m
                         },
                         new
                         {
                             Id = 3,
-                            MaxPersonLimit = 8,
-                            Name = "Mobile Home",
-                            Price = 300m
-                        },
-                        new
-                        {
-                            Id = 4,
-                            MaxPersonLimit = 6,
-                            Name = "Cabin - Small",
-                            Price = 600m
-                        },
-                        new
-                        {
-                            Id = 5,
-                            MaxPersonLimit = 8,
-                            Name = "Cabin - Medium",
-                            Price = 800m
-                        },
-                        new
-                        {
-                            Id = 6,
-                            MaxPersonLimit = 12,
-                            Name = "Cabin - Large",
-                            Price = 1200m
+                            Name = "Cabin",
+                            Price = 500m
                         });
                 });
 
