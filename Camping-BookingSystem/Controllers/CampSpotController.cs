@@ -33,7 +33,7 @@ namespace Camping_BookingSystem.Controllers
             var campSpot = await _campSpotService.GetCampSpotByIdAsync(id);
             if(campSpot == null)
             {
-                return NotFound();
+                return NotFound("Camp spot not found.");
             }
 
             return Ok(campSpot);
