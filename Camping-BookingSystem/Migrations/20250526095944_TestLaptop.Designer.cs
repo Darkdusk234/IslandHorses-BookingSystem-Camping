@@ -4,6 +4,7 @@ using BookingSystem_ClassLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSystem_ClassLibrary.Migrations
 {
     [DbContext(typeof(CampingDbContext))]
-    partial class CampingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250526095944_TestLaptop")]
+    partial class TestLaptop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,8 +45,17 @@ namespace BookingSystem_ClassLibrary.Migrations
                     b.Property<int>("NumberOfPeople")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Parking")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Wifi")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -61,7 +73,10 @@ namespace BookingSystem_ClassLibrary.Migrations
                             CustomerId = 1,
                             EndDate = new DateTime(2025, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfPeople = 2,
-                            StartDate = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Parking = false,
+                            StartDate = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
+                            Wifi = false
                         },
                         new
                         {
@@ -70,7 +85,10 @@ namespace BookingSystem_ClassLibrary.Migrations
                             CustomerId = 2,
                             EndDate = new DateTime(2025, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfPeople = 4,
-                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Parking = false,
+                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
+                            Wifi = false
                         });
                 });
 
@@ -132,12 +150,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                     b.Property<bool>("Electricity")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaxPersonLimit")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SpotTypeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
 
@@ -145,7 +157,7 @@ namespace BookingSystem_ClassLibrary.Migrations
 
                     b.HasIndex("CampSiteId");
 
-                    b.HasIndex("SpotTypeId");
+                    b.HasIndex("TypeId");
 
                     b.ToTable("CampSpots");
 
@@ -155,7 +167,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 1,
                             CampSiteId = 1,
                             Electricity = false,
-                            MaxPersonLimit = 4,
                             TypeId = 1
                         },
                         new
@@ -163,7 +174,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 2,
                             CampSiteId = 1,
                             Electricity = true,
-                            MaxPersonLimit = 6,
                             TypeId = 2
                         },
                         new
@@ -171,7 +181,6 @@ namespace BookingSystem_ClassLibrary.Migrations
                             Id = 3,
                             CampSiteId = 2,
                             Electricity = true,
-                            MaxPersonLimit = 5,
                             TypeId = 3
                         });
                 });
@@ -317,7 +326,9 @@ namespace BookingSystem_ClassLibrary.Migrations
 
                     b.HasOne("BookingSystem_ClassLibrary.Models.SpotType", "SpotType")
                         .WithMany("CampSpots")
-                        .HasForeignKey("SpotTypeId");
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CampSite");
 

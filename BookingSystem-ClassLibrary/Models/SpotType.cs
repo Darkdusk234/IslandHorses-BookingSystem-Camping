@@ -13,6 +13,7 @@ namespace BookingSystem_ClassLibrary.Models
         [Required]
         [Precision(8, 2)]
         public decimal Price { get; set; }
+        public int MaxPersonLimit { get; set; }
 
         //Navigational Properties
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
