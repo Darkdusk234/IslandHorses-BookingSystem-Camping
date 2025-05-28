@@ -14,5 +14,8 @@ namespace Camping_BookingSystem.Services
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
         Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id);
         Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request);
+      
+        // Receptions for searching available spots
+        Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);
     }
 }

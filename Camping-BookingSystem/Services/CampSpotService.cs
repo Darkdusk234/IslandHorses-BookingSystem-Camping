@@ -76,5 +76,10 @@ namespace Camping_BookingSystem.Services
 
             return (true, null);
         }
+
+        public async Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto)
+        {
+            return await _campSpotRepository.SearchAvailableSpots(searchDto);
+        }
     }
 }
