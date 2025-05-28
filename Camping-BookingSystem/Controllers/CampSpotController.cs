@@ -95,7 +95,13 @@ namespace Camping_BookingSystem.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _campSpotService.UpdateCampSpotAsync(id, request);
+            var (success, errorMessage) = await _campSpotService.UpdateCampSpotAsync(id, request);
+
+            if(!success)
+            {
+                return NotFound(errorMessage);
+            }
+
             return NoContent();
         }
 
