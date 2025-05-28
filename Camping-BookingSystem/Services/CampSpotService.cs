@@ -22,7 +22,7 @@ namespace Camping_BookingSystem.Services
             return campSpot;
         }
 
-        public async Task DeleteCampSpotAsync(int id)
+        public async Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id)
         {
             var campSpot = await _campSpotRepository.GetCampSpotById(id);
             if(campSpot != null)
