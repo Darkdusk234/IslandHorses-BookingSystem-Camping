@@ -13,6 +13,6 @@ namespace Camping_BookingSystem.Services
             int typeId /*, int nrGuests*/);
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
         Task DeleteCampSpotAsync(int id);
-        Task UpdateCampSpotAsync(int id, CreateCampSpotRequest request);
+        Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request);
     }
 }
