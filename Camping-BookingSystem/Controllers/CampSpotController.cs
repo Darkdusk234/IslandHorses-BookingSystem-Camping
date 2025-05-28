@@ -95,17 +95,7 @@ namespace Camping_BookingSystem.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
-            {
-                return NotFound("Campspot not found.");
-            }
-
-            existingCampSpot.CampSiteId = request.CampSiteId;
-            existingCampSpot.TypeId = request.TypeId;
-            existingCampSpot.Electricity = request.Electricity;
-
-            await _campSpotService.UpdateCampSpotAsync(existingCampSpot);
+            await _campSpotService.UpdateCampSpotAsync(id, request);
             return NoContent();
         }
 
