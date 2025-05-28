@@ -1,4 +1,5 @@
 ﻿using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 
 namespace Camping_BookingSystem.Services
 {
@@ -12,6 +13,6 @@ namespace Camping_BookingSystem.Services
             int typeId /*, int nrGuests*/);
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
         Task DeleteCampSpotAsync(int id);
-        Task UpdateCampSpotAsync(CampSpot campSpot);
+        Task UpdateCampSpotAsync(CreateCampSpotRequest request);
     }
 }
