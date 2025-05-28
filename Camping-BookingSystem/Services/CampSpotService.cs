@@ -1,5 +1,6 @@
 ﻿using BookingSystem_ClassLibrary.Data;
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Repositories;
 
 namespace Camping_BookingSystem.Services
@@ -57,9 +58,20 @@ namespace Camping_BookingSystem.Services
                 nrGuests*/); 
         }
 
-        public async Task UpdateCampSpotAsync(CampSpot campSpot)
+        public async Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request)
         {
-            await _campSpotRepository.Update(campSpot);
+            var existingCampSpot = await _campSpotRepository.GetCampSpotById(id);
+            if (existingCampSpot == null)
+            {
+                return (false, "Camp spot not found.");
+            }
+
+            existingCampSpot.CampSiteId = request.CampSiteId;
+            existingCampSpot.TypeId = request.TypeId;
+            existingCampSpot.Electricity = request.Electricity;
+            await _campSpotRepository.Update(existingCampSpot);
+
+            return (true, null);
         }
     }
 }
