@@ -25,10 +25,13 @@ namespace Camping_BookingSystem.Services
         public async Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id)
         {
             var campSpot = await _campSpotRepository.GetCampSpotById(id);
-            if(campSpot != null)
+            if(campSpot == null)
             {
-                await _campSpotRepository.Delete(campSpot);
+                return (false, "Camp spot not found.");
             }
+
+            await _campSpotRepository.Delete(campSpot);
+            return (true, null);
         }
 
         public async Task<IEnumerable<CampSpot>> GetAllCampSpotsAsync()
