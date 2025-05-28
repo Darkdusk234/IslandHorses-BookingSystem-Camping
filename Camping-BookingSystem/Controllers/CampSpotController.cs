@@ -53,6 +53,16 @@ namespace Camping_BookingSystem.Controllers
             [FromQuery] DateTime endDate,
             [FromQuery] int typeID)
         {
+            if (startDate >= endDate)
+            {
+                return BadRequest(new { errorMessage = "Start date must be earlier than end date." });
+            }
+
+            if (typeID <= 0)
+            {
+                return BadRequest(new { errorMessage = "typeID must be larger than 0" });
+            }
+
             var availableSpotBasedOnNeeds =  
                 await _campSpotService.GetAvailableSpotsMatchingNeeds(startDate, endDate, typeID);
             if (availableSpotBasedOnNeeds == null)
