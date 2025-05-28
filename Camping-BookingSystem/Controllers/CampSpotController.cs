@@ -108,13 +108,12 @@ namespace Camping_BookingSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCampSpot(int id)
         {
-            var existingCampSpot = _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
+            var (success, errorMessage) = await _campSpotService.DeleteCampSpotAsync(id);
+            if(!success)
             {
-                return NotFound();
+                return NotFound(errorMessage);
             }
 
-            await _campSpotService.DeleteCampSpotAsync(id);
             return NoContent();
         }
     }
