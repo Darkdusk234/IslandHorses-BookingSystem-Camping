@@ -9,7 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Camping_BookingSystemTests;
+namespace Camping_BookingSystemTests.BookingTests;
 
 [TestClass]
 public class BookingServiceTests

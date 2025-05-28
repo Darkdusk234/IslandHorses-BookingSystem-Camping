@@ -4,7 +4,7 @@ using Camping_BookingSystem.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace Camping_BookingSystemTests;
+namespace Camping_BookingSystemTests.BookingTests;
 
 [TestClass]
 public class BookingRepositoryTests
