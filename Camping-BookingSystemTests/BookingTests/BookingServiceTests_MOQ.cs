@@ -139,18 +139,9 @@ public class BookingServiceTests_MOQ
     {
         // Given: A booking request with a start date in the past
         var request = new CreateBookingAndCustomer
-        {
-            FirstName = "Felet",
-            LastName = "Feletsson",
-            Email = "fail@example.com",
-            PhoneNumber = "0700000000",
-            StreetAddress = "Failvägen 1",
-            ZipCode = "00000",
-            City = "Failstad",
-            CampSpotId = 1,
+        { 
             StartDate = DateTime.Today.AddDays(-1),
             EndDate = DateTime.Today.AddDays(2),
-            NumberOfPeople = 1
         };
         // When: The CreateBookingWithCustomerAsync method is called
         // Then: Expect an ArgumentException to be thrown
@@ -166,17 +157,8 @@ public class BookingServiceTests_MOQ
         // Given: A booking request with an end date before the start date
         var request = new CreateBookingAndCustomer
         {
-            FirstName = "Felet",
-            LastName = "Feletsson",
-            Email = "fail@example.com",
-            PhoneNumber = "0700000000",
-            StreetAddress = "Failvägen 1",
-            ZipCode = "00000",
-            City = "Failstad",
-            CampSpotId = 1,
             StartDate = DateTime.Today,
             EndDate = DateTime.Today.AddDays(-2),
-            NumberOfPeople = 1
         };
         // When: The CreateBookingWithCustomerAsync method is called
         // Then: Expect an ArgumentException to be thrown
