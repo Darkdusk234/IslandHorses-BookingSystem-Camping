@@ -26,7 +26,7 @@ namespace Camping_BookingSystem.Services
         }
         public async Task UpdateSpotTypeAsync(SpotType spotType)
         {
-            _spotTypeRepository.Update(spotType);
+            await _spotTypeRepository.UpdateAsync(spotType);
             await _spotTypeRepository.SaveAsync();
         }
         public async Task DeleteSpotTypeAsync(int id)
@@ -34,7 +34,7 @@ namespace Camping_BookingSystem.Services
             var spotType = await _spotTypeRepository.GetByIdAsync(id);
             if (spotType != null)
             {
-                _spotTypeRepository.Delete(spotType);
+                await _spotTypeRepository.DeleteAsync(spotType);
                 await _spotTypeRepository.SaveAsync();
             }
         }

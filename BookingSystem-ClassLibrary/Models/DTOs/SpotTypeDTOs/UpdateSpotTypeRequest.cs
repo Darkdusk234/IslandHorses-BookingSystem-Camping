@@ -11,7 +11,8 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.SpotTypeDTOs
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public decimal Price { get; set; }
-        
+        public int MaxPersonLimit { get; set; }
+
         // public ICollection<CampSpot>? CampSpots { get; set; }
     }
 }

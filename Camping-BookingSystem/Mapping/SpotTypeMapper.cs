@@ -9,9 +9,10 @@ namespace Camping_BookingSystem.Mapping
         {
             return new SpotType
             {
-                Id = dto.Id,
+                // Id = dto.Id,
                 Name = dto.Name,
-                Price = dto.Price
+                Price = dto.Price,
+                MaxPersonLimit = dto.MaxPersonLimit
             };
         }
         public static SpotType ToUpdatedSpotType(this UpdateSpotTypeRequest dto)
@@ -29,7 +30,8 @@ namespace Camping_BookingSystem.Mapping
             {
                 Id = spotType.Id,
                 Name = spotType.Name,
-                Price = spotType.Price
+                Price = spotType.Price,
+                MaxPersonLimit = spotType.MaxPersonLimit
             };
         }
     }

@@ -8,8 +8,8 @@ namespace Camping_BookingSystem.Repositories
         Task<IEnumerable<SpotType>> GetAllAsync();
         Task<SpotType?> GetByIdAsync(int id);
         Task AddAsync(SpotType spotType);
-        void Update(SpotType spotType);
-        void Delete(SpotType spotType);
+        Task UpdateAsync(SpotType spotType);
+        Task DeleteAsync(SpotType spotType);
         Task SaveAsync();
 
     }
