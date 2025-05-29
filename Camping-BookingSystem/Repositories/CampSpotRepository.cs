@@ -38,7 +38,9 @@ namespace Camping_BookingSystem.Repositories
 
         public async Task<CampSpot?> GetCampSpotById(int campSpotId)
         {
-            return await _context.CampSpots.FindAsync(campSpotId);
+            return await _context.CampSpots
+                .Include(c => c.SpotType)
+                .FirstOrDefaultAsync(c => c.Id == campSpotId);
         }
         
         // Lägg till capacity när den finns. 
