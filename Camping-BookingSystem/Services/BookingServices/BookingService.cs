@@ -163,10 +163,10 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "Camp spot not found.");
             }
-           /* if (campSpot.MaxNumberOfPeople < numberOfPeople)
+            if (campSpot.SpotType.MaxPersonLimit < numberOfPeople)
             {
-                return (false, "Camp spot cannot accommodate the number of people.");
-            }*/
+                return (false, "Camp spot can not accommodate the number of people.");
+            }
            var overlappedBookings = await _bookingRepository.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate);
 
             if (overlappedBookings.Any())
