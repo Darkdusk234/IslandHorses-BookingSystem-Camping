@@ -57,6 +57,12 @@ namespace Camping_BookingSystem.Services.BookingServices
             if (request.EndDate.Date <= request.StartDate)
                 return (false, "End date must be after start date.");
 
+            if (booking.Status == BookingStatus.Completed)
+                return (false, "Booking can not be updated, it is already completed.");
+
+            if (booking.Status == BookingStatus.Cancelled)
+                return (false, "Booking can not be updated, it is already cancelled.");
+
             var campSpot = await _campSpotRepository.GetCampSpotById(request.CampSpotId);
             if (campSpot == null)
                 return (false, "Camp spot not found.");

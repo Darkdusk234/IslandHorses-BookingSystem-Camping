@@ -197,22 +197,20 @@ namespace Camping_BookingSystem.Services
             return (true, null);
         }
         // Method to update the booking (Receptionist)
-        public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)
+        public async Task<ActionResult> UpdateBookingAsyn(UpdateBookingRequest request)
         {
+            var (isValid, errorMessage) = await _bookingValidator.ValidateUpdateAsync(request);
+            if (!isValid)
+            {
+                return new BadRequestObjectResult(errorMessage);
+            }
 
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var booking = await _bookingRepository.GetByIdAsync(request.CustomerId);
             if (booking == null)
             {
-                return (false, "Booking not found");
+                return new NotFoundResult();
             }
-            if (booking.Status == BookingStatus.Completed)
-            {
-                return (false, "Booking can not be updated, it is already completed.");
-            }
-            if (booking.Status == BookingStatus.Cancelled)
-            {
-                return (false, "Booking can not be updated, it is already cancelled.");
-            }
+            
 
             var overappedBookings = await _bookingRepository
                 .GetBookingsByCampSpotAndDate(
