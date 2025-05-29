@@ -63,8 +63,17 @@ namespace Camping_BookingSystem.Services
                 throw new ArgumentException("End date must be after start date.");
             }
 
+            var campSpot = await _campSpotRepository.GetCampSpotById(request.CampSpotId);
+            if(campSpot == null)
+            {
+                throw new ArgumentException("Camp spot not found.");
+            }
+            if(campSpot.SpotType.MaxPersonLimit < request.NumberOfPeople)
+            {
+                throw new ArgumentException("Camp spot can not accommodate the number of people.");
+            }
+
             var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
-            
             Customer customer;
             if (existingCustomer != null)
             {
