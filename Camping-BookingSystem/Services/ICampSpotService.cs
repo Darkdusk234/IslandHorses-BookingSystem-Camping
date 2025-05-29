@@ -15,7 +15,11 @@ namespace Camping_BookingSystem.Services
         Task DeleteCampSpotAsync(int id);
         Task UpdateCampSpotAsync(CampSpot campSpot);
 
+        
         // Receptions for searching available spots
-        Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);
+        
+        // Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);    // Old one
+        Task<SearchResult<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);  // updated one 
+
     }
 }
