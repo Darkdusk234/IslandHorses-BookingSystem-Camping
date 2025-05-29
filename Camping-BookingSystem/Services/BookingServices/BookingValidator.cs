@@ -26,6 +26,7 @@ namespace Camping_BookingSystem.Services.BookingServices
                 return (false, "End date must be after start date.");
 
             var campSpot = await _campSpotRepository.GetCampSpotById(request.CampSpotId);
+            
             if (campSpot == null)
                 return (false, "Camp spot not found.");
 
