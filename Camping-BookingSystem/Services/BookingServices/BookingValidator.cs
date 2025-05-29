@@ -32,6 +32,16 @@ namespace Camping_BookingSystem.Services.BookingServices
             if (request.NumberOfPeople > campSpot.SpotType.MaxPersonLimit)
                 return (false, $"Too many people for this camp spot. Max allowed is {campSpot.SpotType.MaxPersonLimit}.");
 
+            var overlappedBookings =
+                await _bookingRepository.GetBookingsByCampSpotAndDate(
+                    request.CampSpotId,
+                    request.StartDate,
+                    request.EndDate);
+            if (overlappedBookings.Any())
+                return (false, "Camp spot is not available for the selected dates.");
+
+
+
             return (true, null);
         }
 
@@ -54,6 +64,14 @@ namespace Camping_BookingSystem.Services.BookingServices
             if (request.NumberOfPeople > campSpot.SpotType.MaxPersonLimit)
                 return (false, $"Too many people for this camp spot. Max allowed is {campSpot.SpotType.MaxPersonLimit}.");
 
+            var overlappedBookings =
+                await _bookingRepository.GetBookingsByCampSpotAndDate(
+                    request.CampSpotId,
+                    request.StartDate,
+                    request.EndDate);
+            if (overlappedBookings.Any())
+                return (false, "Camp spot is not available for the selected dates.");
+
             return (true, null);
         }
 
@@ -66,7 +84,7 @@ namespace Camping_BookingSystem.Services.BookingServices
             }
             if(booking.Status == BookingStatus.Completed)
             {
-                return (false, "Only pending bookings can be deleted.");
+                return (false, "Booking is already completed.");
             }
             if(booking.Status == BookingStatus.Cancelled)
             {

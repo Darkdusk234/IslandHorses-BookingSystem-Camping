@@ -2,6 +2,8 @@
 using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
+using Camping_BookingSystem.Services.BookingServices;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Camping_BookingSystem.Services
 {
@@ -10,11 +12,17 @@ namespace Camping_BookingSystem.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly ICampSpotRepository _campSpotRepository;
         private readonly ICustomerRepository _customerRepository;
-        public BookingService(IBookingRepository bookingRepository, ICampSpotRepository campSpotRepository, ICustomerRepository customerRepository)
+        private readonly IBookingValidator _bookingValidator;
+        public BookingService(
+            IBookingValidator bookingValidator,
+            IBookingRepository bookingRepository,
+            ICampSpotRepository campSpotRepository,
+            ICustomerRepository customerRepository)
         {
             _bookingRepository = bookingRepository;
             _campSpotRepository = campSpotRepository;
             _customerRepository = customerRepository;
+            _bookingValidator = bookingValidator;
         }
 
         // Method to cancel a booking (Guest)
@@ -51,26 +59,12 @@ namespace Camping_BookingSystem.Services
         }
 
         // Method to create a booking and add a customer (Receptionist)
-        public async Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
+        public async Task<ActionResult> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
-            if (request.StartDate.Date < DateTime.Today) 
+            var (isValid, errorMessage) = await _bookingValidator.ValidateCreateAsync(request);
+            if (!isValid)
             {
-                throw new ArgumentException("Start date cannot be in the past.");
-            }
-
-            if (request.EndDate.Date <= request.StartDate) 
-            {
-                throw new ArgumentException("End date must be after start date.");
-            }
-
-            var campSpot = await _campSpotRepository.GetCampSpotById(request.CampSpotId);
-            if(campSpot == null)
-            {
-                throw new ArgumentException("Camp spot not found.");
-            }
-            if(campSpot.SpotType.MaxPersonLimit < request.NumberOfPeople)
-            {
-                throw new ArgumentException("Camp spot can not accommodate the number of people.");
+               return new BadRequestObjectResult(errorMessage);
             }
 
             var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
@@ -109,7 +103,7 @@ namespace Camping_BookingSystem.Services
 
             var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
 
-            return response;
+            return response == null? new NotFoundResult(): new OkObjectResult(response);
         }
 
         // Method to delete a booking (Camp Owner)
