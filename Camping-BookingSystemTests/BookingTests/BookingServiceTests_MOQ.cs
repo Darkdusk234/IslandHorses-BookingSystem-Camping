@@ -6,6 +6,11 @@ using Camping_BookingSystem.Services.BookingServices;
 using Moq;
 
 namespace Camping_BookingSystemTests;
+/*The BookingService file became rather messy, 
+ * so i created a validator class instead. 
+ * 
+ * So the tests in this file test both BookingService.cs and BookingValidator.cs*/
+
 
 [TestClass]
 public class BookingServiceTests_MOQ
@@ -25,10 +30,10 @@ public class BookingServiceTests_MOQ
         _bookingValidatorMock = new Mock<IBookingValidator>();
 
         _bookingService = new BookingService(
-            _customerRepoMock.Object,
+            _bookingValidatorMock.Object,
             _bookingRepoMock.Object,
-            _bookingValidatorMock.Object
-            //_campSpotRepoMock.Object
+            _campSpotRepoMock.Object,
+            _customerRepoMock.Object
         );
     }
     [TestMethod]
@@ -147,6 +152,11 @@ public class BookingServiceTests_MOQ
             StartDate = DateTime.Today.AddDays(-1),
             EndDate = DateTime.Today.AddDays(2),
         };
+
+        _bookingValidatorMock
+            .Setup(v => v.ValidateCreateAsync(request))
+            .Throws(new ArgumentException("Start date cannot be in the past."));
+
         // When: The CreateBookingWithCustomerAsync method is called
         // Then: Expect an ArgumentException to be thrown
         var errorMessage = 
@@ -164,6 +174,11 @@ public class BookingServiceTests_MOQ
             StartDate = DateTime.Today,
             EndDate = DateTime.Today.AddDays(-2),
         };
+
+        _bookingValidatorMock
+            .Setup(v => v.ValidateCreateAsync(request))
+            .Throws(new ArgumentException("End date must be after start date."));
+
         // When: The CreateBookingWithCustomerAsync method is called
         // Then: Expect an ArgumentException to be thrown
         var errorMessage = 
@@ -172,4 +187,7 @@ public class BookingServiceTests_MOQ
 
         Assert.AreEqual("End date must be after start date.", errorMessage.Message);
     }
+
+
+    
 }

@@ -29,13 +29,6 @@ namespace Camping_BookingSystem.Services
             _bookingValidator = bookingValidator;
         }
 
-        public BookingService(ICustomerRepository object1, IBookingRepository object2, IBookingValidator object3)
-        {
-            this.object1 = object1;
-            this.object2 = object2;
-            this.object3 = object3;
-        }
-
         // Method to cancel a booking (Guest)
         public async Task<(bool Success, string? ErrorMEssage)> CancelBookingAsync(int bookingId)
         {
