@@ -40,27 +40,42 @@ namespace Camping_BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSpotType([FromBody] CreateSpotTypeRequest request)
         {
-            var spotType = new SpotType
-            {
-                Name = request.Name,
-                Price = request.Price
-            };
+            if (!ModelState.IsValid)  // valedation check
+                return BadRequest(ModelState);
+
+            var spotType = request.ToNewSpotType();  // fixed mapping method name
             await _spotTypeService.CreateSpotTypeAsync(spotType);
-            return CreatedAtAction(nameof(GetSpotTypeById), new { id = spotType.Id }, spotType.ToSpotTypeDetailsResponse());
+
+            return CreatedAtAction(nameof(GetSpotTypeById), new { id = spotType.Id },
+                spotType.ToSpotTypeDetailsResponse());
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSpotType(int id, [FromBody] UpdateSpotTypeRequest request)
         {
-            var spotType = await _spotTypeService.GetSpotTypeByIdAsync(id);
-            if (spotType == null)
+            if (!ModelState.IsValid)  // validation check
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != request.Id)   // check if the ID in the URL matches the ID in the request body
+            {
+                return BadRequest("No ID for taht type");
+            }
+            var existingSpotType = await _spotTypeService.GetSpotTypeByIdAsync(id);
+            if (existingSpotType == null)
             {
                 return NotFound();
             }
-            spotType.Name = request.Name;
-            spotType.Price = request.Price;
-            await _spotTypeService.UpdateSpotTypeAsync(spotType);
+
+            existingSpotType.Name = request.Name;
+            existingSpotType.Price = request.Price;
+            existingSpotType.MaxPersonLimit = request.MaxPersonLimit;  // added max person property
+
+            await _spotTypeService.UpdateSpotTypeAsync(existingSpotType);
             return NoContent();
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpotType(int id)
         {
