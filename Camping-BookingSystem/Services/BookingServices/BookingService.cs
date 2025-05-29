@@ -13,6 +13,10 @@ namespace Camping_BookingSystem.Services
         private readonly ICampSpotRepository _campSpotRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IBookingValidator _bookingValidator;
+        private ICustomerRepository object1;
+        private IBookingRepository object2;
+        private IBookingValidator object3;
+
         public BookingService(
             IBookingValidator bookingValidator,
             IBookingRepository bookingRepository,
@@ -23,6 +27,13 @@ namespace Camping_BookingSystem.Services
             _campSpotRepository = campSpotRepository;
             _customerRepository = customerRepository;
             _bookingValidator = bookingValidator;
+        }
+
+        public BookingService(ICustomerRepository object1, IBookingRepository object2, IBookingValidator object3)
+        {
+            this.object1 = object1;
+            this.object2 = object2;
+            this.object3 = object3;
         }
 
         // Method to cancel a booking (Guest)
@@ -174,7 +185,10 @@ namespace Camping_BookingSystem.Services
         // Method to update the booking add-ons (Wifi and Parking) (Guest)
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
         {
+
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
+
+
             if (booking == null)
             {
                 return (false, "Booking not found");
@@ -210,26 +224,6 @@ namespace Camping_BookingSystem.Services
             {
                 return new NotFoundResult();
             }
-            
-
-            var overappedBookings = await _bookingRepository
-                .GetBookingsByCampSpotAndDate(
-                request.CampSpotId, 
-                request.StartDate, 
-                request.EndDate);
-
-            if (overappedBookings.Any(b => b.Id != bookingId)) 
-            {
-                return (false, "Camp spot is not available for the selected dates.");
-            }
-            if (request.StartDate.Date < DateTime.Today)
-            {
-                return (false, "Start date cannot be in the past.");
-            }
-            if (request.EndDate.Date <= request.StartDate)
-            {
-                return (false, "End date must be after start date.");
-            }
 
             booking.CampSpotId = request.CampSpotId;
             booking.StartDate = request.StartDate;
@@ -239,9 +233,11 @@ namespace Camping_BookingSystem.Services
             booking.Wifi = request.Wifi;
             booking.Status = request.Status;
 
+            _bookingRepository.Update(booking);
             await _bookingRepository.SaveAsync();
 
-            return (true, null);
+            var response = await _bookingRepository.GetBookingDetailsByCampSiteIdAsync(booking.Id);
+            return response == null ? new NotFoundResult() : new OkObjectResult(response);
 
         }
     }

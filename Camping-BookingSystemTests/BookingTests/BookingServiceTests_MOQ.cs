@@ -2,6 +2,7 @@ using BookingSystem_ClassLibrary.Models;
 using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
+using Camping_BookingSystem.Services.BookingServices;
 using Moq;
 
 namespace Camping_BookingSystemTests;
@@ -12,6 +13,7 @@ public class BookingServiceTests_MOQ
     private Mock<IBookingRepository> _bookingRepoMock;
     private Mock<ICampSpotRepository> _campSpotRepoMock;
     private Mock<ICustomerRepository> _customerRepoMock;
+    private Mock<IBookingValidator> _bookingValidatorMock;
     private BookingService _bookingService;
 
     [TestInitialize]
@@ -20,11 +22,13 @@ public class BookingServiceTests_MOQ
         _bookingRepoMock = new Mock<IBookingRepository>();
         _campSpotRepoMock = new Mock<ICampSpotRepository>();
         _customerRepoMock = new Mock<ICustomerRepository>();
+        _bookingValidatorMock = new Mock<IBookingValidator>();
 
         _bookingService = new BookingService(
+            _customerRepoMock.Object,
             _bookingRepoMock.Object,
-            _campSpotRepoMock.Object,
-            _customerRepoMock.Object
+            _bookingValidatorMock.Object
+            //_campSpotRepoMock.Object
         );
     }
     [TestMethod]
