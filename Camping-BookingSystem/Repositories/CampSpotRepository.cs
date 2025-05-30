@@ -14,32 +14,16 @@ namespace Camping_BookingSystem.Repositories
             _context = context;
         }
         
-        public async Task<(bool, string?)> Create(CampSpot campSpot)
+        public async Task Create(CampSpot campSpot)
         {
-            try
-            {
-                await _context.CampSpots.AddAsync(campSpot);
-                await _context.SaveChangesAsync();
-                return (true, null);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
+            await _context.CampSpots.AddAsync(campSpot);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<(bool, string?)> Delete(CampSpot campSpot)
+        public async Task Delete(CampSpot campSpot)
         {
-            try
-            {
-                _context.CampSpots.Remove(campSpot);
-                await _context.SaveChangesAsync();
-                return (true, null);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
+            _context.CampSpots.Remove(campSpot);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ICollection<CampSpot>> GetAll()
@@ -68,18 +52,10 @@ namespace Camping_BookingSystem.Repositories
             return allSpotsMatchingNeeds; 
         }
 
-        public async Task<(bool, string?)> Update(CampSpot campSpot)
+        public async Task Update(CampSpot campSpot)
         {
-            try
-            {
-                _context.CampSpots.Update(campSpot);
-                await _context.SaveChangesAsync();
-                return (true, null);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
+            _context.CampSpots.Update(campSpot);
+            await _context.SaveChangesAsync();
         }
         // As a receptionist, I want to be able to search
         // for vacancies based on type, date and number of guests
