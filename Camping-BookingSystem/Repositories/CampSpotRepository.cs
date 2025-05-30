@@ -28,10 +28,18 @@ namespace Camping_BookingSystem.Repositories
             }
         }
 
-        public async Task Delete(CampSpot campSpot)
+        public async Task<(bool, string?)> Delete(CampSpot campSpot)
         {
-            _context.CampSpots.Remove(campSpot);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.CampSpots.Remove(campSpot);
+                await _context.SaveChangesAsync();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
 
         public async Task<ICollection<CampSpot>> GetAll()
