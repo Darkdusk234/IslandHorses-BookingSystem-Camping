@@ -68,10 +68,18 @@ namespace Camping_BookingSystem.Repositories
             return allSpotsMatchingNeeds; 
         }
 
-        public async Task Update(CampSpot campSpot)
+        public async Task<(bool, string?)> Update(CampSpot campSpot)
         {
-            _context.CampSpots.Update(campSpot);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.CampSpots.Update(campSpot);
+                await _context.SaveChangesAsync();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
         // As a receptionist, I want to be able to search
         // for vacancies based on type, date and number of guests
