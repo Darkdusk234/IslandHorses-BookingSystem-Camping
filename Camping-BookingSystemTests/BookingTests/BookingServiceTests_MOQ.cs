@@ -198,7 +198,7 @@ public class BookingServiceTests_MOQ
         {
             StartDate = DateTime.Today,
             EndDate = DateTime.Today.AddDays(2),
-            NumberOfPeople = 5, // Exceeds the limit of 10
+            NumberOfPeople = 11, // Exceeds the limit of 10
         };
         _bookingValidatorMock
             .Setup(v => v.ValidateCreateAsync(request))
@@ -255,6 +255,7 @@ public class BookingServiceTests_MOQ
         // Then: Expect an error message to be thrown and isValid to be false
         Assert.IsFalse(isValid);
         Assert.AreEqual("Camp spot is not available for the selected dates.", errorMessage);
+        _bookingRepoMock.Verify(repo => repo.GetBookingsByCampSpotAndDate(request.CampSpotId, request.StartDate, request.EndDate), Times.Once);
     }
 
     [TestMethod]
@@ -289,4 +290,203 @@ public class BookingServiceTests_MOQ
         _bookingRepoMock.Verify(repo => repo.Update(booking), Times.Once);
         _bookingRepoMock.Verify(repo => repo.SaveAsync(), Times.Once);
     }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldReturnError_WhenBookingNotFound()
+    {
+        // Given: A booking ID that does not exist
+        var bookingId = 999;
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync((Booking?)null);
+        // When: The UpdateBookingAddOnsAsync method is called
+        var result = await _bookingService.UpdateBookingAddOnsAsync(bookingId, request);
+        // Then: Expect an error message to be returned
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual("Booking not found", result.ErrorMessage);
+        _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldReturnError_WhenBookingAlreadyCompleted()
+    {
+        // Given: A booking that is already completed
+        var bookingId = 1;
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        
+        var booking = new Booking
+        {
+            Id = bookingId,
+            Status = BookingStatus.Completed
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        
+        // When: The UpdateBookingAddOnsAsync method is called
+        var result = await _bookingService.UpdateBookingAddOnsAsync(bookingId, request);
+        
+        // Then: Expect an error message to be returned
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual("Booking can not be updated, it is already completed.", result.ErrorMessage);
+        _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldReturnError_WhenBookingAlreadyCancelled()
+    {
+        // Given: A booking that is already cancelled
+        var bookingId = 1;
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        
+        var booking = new Booking
+        {
+            Id = bookingId,
+            Status = BookingStatus.Cancelled
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        
+        // When: The UpdateBookingAddOnsAsync method is called
+        var result = await _bookingService.UpdateBookingAddOnsAsync(bookingId, request);
+        
+        // Then: Expect an error message to be returned
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual("Booking can not be updated, it is already cancelled.", result.ErrorMessage);
+        _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnTrue_WhenCampSpotIsAvailable()
+    {
+        // Given: A camp spot that is available for the requested dates
+        var campSpotId = 1;
+        var startDate = DateTime.Today.AddDays(1);
+        var endDate = DateTime.Today.AddDays(3);
+        var numberOfPeople = 2;
+        _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
+            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+        _bookingRepoMock.Setup(repo => repo.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate))
+            .ReturnsAsync(new List<Booking>());
+        // When: The IsCampSpotAvailableAsync method is called
+        var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
+        // Then: Expect the camp spot to be available
+        Assert.IsTrue(result.IsAvailable);
+        Assert.IsNull(result.Reason);
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenCampSpotIsNotAvailable()
+    {
+        // Given: A camp spot that is not available for the requested dates
+        var campSpotId = 1;
+        var startDate = DateTime.Today.AddDays(1);
+        var endDate = DateTime.Today.AddDays(3);
+        var numberOfPeople = 2;
+        
+        _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
+            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+        
+        var existingBooking = new Booking
+        {
+            CampSpotId = campSpotId,
+            StartDate = startDate.AddDays(1),
+            EndDate = endDate.AddDays(1),
+            NumberOfPeople = 2
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate))
+            .ReturnsAsync(new List<Booking> { existingBooking });
+        
+        // When: The IsCampSpotAvailableAsync method is called
+        var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
+        
+        // Then: Expect the camp spot to not be available
+        Assert.IsFalse(result.IsAvailable);
+        Assert.AreEqual("Camp spot is not available for the selected dates.", result.Reason);
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenStartDateInPast()
+    {
+        // Given: A start date in the past
+        var campSpotId = 1;
+        var startDate = DateTime.Today.AddDays(-1);
+        var endDate = DateTime.Today.AddDays(1);
+        var numberOfPeople = 2;
+        // When: The IsCampSpotAvailableAsync method is called
+        var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
+        // Then: Expect the camp spot to not be available
+        Assert.IsFalse(result.IsAvailable);
+        Assert.AreEqual("Start date cannot be in the past.", result.Reason);
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenEndDateBeforeStartDate()
+    {
+        // Given: An end date before the start date
+        var campSpotId = 1;
+        var startDate = DateTime.Today.AddDays(2);
+        var endDate = DateTime.Today.AddDays(1);
+        var numberOfPeople = 2;
+        // When: The IsCampSpotAvailableAsync method is called
+        var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
+        // Then: Expect the camp spot to not be available
+        Assert.IsFalse(result.IsAvailable);
+        Assert.AreEqual("End date must be after start date.", result.Reason);
+    }
+
+    [TestMethod]
+    public async Task IsCampSpotAvailableAsync_ShouldReturnFalse_WhenNumberOfPeopleExceedsLimit()
+    {
+        // Given: A number of people that exceeds the camp spot's limit
+        var campSpotId = 1;
+        var startDate = DateTime.Today.AddDays(1);
+        var endDate = DateTime.Today.AddDays(3);
+        var numberOfPeople = 15; // Exceeds the limit of 10
+        
+        _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
+            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+        
+        // When: The IsCampSpotAvailableAsync method is called
+        var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
+        
+        // Then: Expect the camp spot to not be available
+        Assert.IsFalse(result.IsAvailable);
+        Assert.AreEqual("Camp spot can not accommodate the number of people.", result.Reason);
+    }
+
+    [TestMethod]
+    public async Task ValidateDeleteAsync_ShouldReturnTrue_WhenBookingIsValidForDeletion()
+    {
+        // Given: A booking that is valid for deletion
+        var bookingId = 1;
+        var booking = new Booking
+        {
+            Id = bookingId,
+            Status = BookingStatus.Pending
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object);
+        // When: The ValidateDeleteAsync method is called
+        var result = await validator.ValidateDeleteAsync(bookingId);
+        
+        // Then: Expect the booking to be valid for deletion
+        Assert.IsTrue(result.IsValid);
+        Assert.IsNull(result.ErrorMessage);
+        _bookingRepoMock.Verify(repo => repo.GetByIdAsync(bookingId), Times.Once);
+    }
+
 }
