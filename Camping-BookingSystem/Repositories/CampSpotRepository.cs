@@ -14,10 +14,18 @@ namespace Camping_BookingSystem.Repositories
             _context = context;
         }
         
-        public async Task Create(CampSpot campSpot)
+        public async Task<(bool, string?)> Create(CampSpot campSpot)
         {
-            await _context.CampSpots.AddAsync(campSpot);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.CampSpots.AddAsync(campSpot);
+                await _context.SaveChangesAsync();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
 
         public async Task Delete(CampSpot campSpot)
