@@ -10,9 +10,9 @@ namespace Camping_BookingSystem.Repositories
         public Task<CampSpot?> GetCampSpotById(int campSpotId);
         public Task<ICollection<CampSpot>> GetCampSpotsByCampSiteId(int campSiteId);
         public Task<List<CampSpot>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate, int typeId/*, int nrGuests*/);
-        public Task<bool> Create(CampSpot campSpot);
-        public Task<bool> Update(CampSpot campSpot);
-        public Task<bool> Delete(CampSpot campSpot);
+        public Task<(bool, string?)> Create(CampSpot campSpot);
+        public Task<(bool, string?)> Update(CampSpot campSpot);
+        public Task<(bool, string?)> Delete(CampSpot campSpot);
         
          
         Task<IEnumerable<CampSpot>> SearchAvailableSpots(SearchAvailableSpotsDto searchDto);
