@@ -3,6 +3,7 @@ using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Camping_BookingSystem.Services.BookingServices;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Camping_BookingSystemTests;
@@ -59,7 +60,6 @@ public class BookingServiceTests_MOQ
         Assert.IsNull(result.ErrorMEssage);
         Assert.AreEqual(BookingStatus.Cancelled, booking.Status);
         _bookingRepoMock.Verify(repo => repo.SaveAsync(), Times.Once);
-        _bookingRepoMock.Verify(x => x.SaveAsync(), Times.Once);
     }
 
     [TestMethod]
@@ -189,5 +189,104 @@ public class BookingServiceTests_MOQ
     }
 
 
-    
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenNumberOfPeopleExceedsLimit()
+    {
+        // Given: A booking request with a number of people exceeding the limit
+        
+        var request = new CreateBookingAndCustomer
+        {
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today.AddDays(2),
+            NumberOfPeople = 5, // Exceeds the limit of 10
+        };
+        _bookingValidatorMock
+            .Setup(v => v.ValidateCreateAsync(request))
+            .ReturnsAsync((false, "Number of people must be between 1 and 10."));
+        // When: The CreateBookingWithCustomerAsync method is called
+        // Then: Expect an ArgumentException to be thrown
+        var result =
+            await _bookingService.CreateBookingWithCustomerAsync(request);
+
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("Number of people must be between 1 and 10.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenCampSpotNotAvailable()
+    {
+        // Given: A booking request for a camp spot that is not available
+        var request = new CreateBookingAndCustomer
+        {
+            StartDate = DateTime.Today.AddDays(5),
+            EndDate = DateTime.Today.AddDays(8),
+            CampSpotId = 1,
+            NumberOfPeople = 2,
+        };
+        
+        var existingBooking = new Booking
+        {
+            CampSpotId = 1,
+            StartDate = DateTime.Today.AddDays(6),
+            EndDate = DateTime.Today.AddDays(7),
+            NumberOfPeople = 2
+        };
+        _campSpotRepoMock
+            .Setup(repo => repo.GetCampSpotById(request.CampSpotId))
+            .ReturnsAsync(new CampSpot { 
+                Id = request.CampSpotId, 
+                SpotType = new SpotType 
+                { MaxPersonLimit = 10 } });
+
+
+        _bookingRepoMock.Setup(r =>
+        r.GetBookingsByCampSpotAndDate(
+            request.CampSpotId, 
+            request.StartDate, 
+            request.EndDate))
+            .ReturnsAsync(new List<Booking> {existingBooking});
+
+        // When: The CreateBookingWithCustomerAsync method is called
+        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object);
+
+        var (isValid, errorMessage) = 
+            await validator.ValidateCreateAsync(request);
+        // Then: Expect an error message to be thrown and isValid to be false
+        Assert.IsFalse(isValid);
+        Assert.AreEqual("Camp spot is not available for the selected dates.", errorMessage);
+    }
+
+    [TestMethod]
+    public async Task UpdateBookingAddOnsAsync_ShouldUpdateAddOns_WhenValidRequest()
+    {
+        // Given: A valid booking ID and request to update add-ons
+        var bookingId = 1;
+        var request = new UpdateAddonsRequest
+        {
+            Wifi = true,
+            Parking = true
+        };
+        
+        var booking = new Booking
+        {
+            Id = bookingId,
+            Status = BookingStatus.Pending,
+            Wifi = false,
+            Parking = false
+        };
+        
+        _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
+        _bookingRepoMock.Setup(repo => repo.SaveAsync()).Returns(Task.CompletedTask);
+        // When: The UpdateBookingAddOnsAsync method is called
+        var result = await _bookingService.UpdateBookingAddOnsAsync(bookingId, request);
+        // Then: Expect the add-ons to be updated successfully
+        Assert.IsTrue(result.Success);
+        Assert.IsNull(result.ErrorMessage);
+        Assert.IsTrue(booking.Wifi);
+        Assert.IsTrue(booking.Parking);
+        
+        _bookingRepoMock.Verify(repo => repo.Update(booking), Times.Once);
+        _bookingRepoMock.Verify(repo => repo.SaveAsync(), Times.Once);
+    }
 }
