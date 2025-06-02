@@ -2,6 +2,8 @@
 using BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs;
 using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Repositories;
+using Camping_BookingSystem.Services.BookingServices;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Camping_BookingSystem.Services
 {
@@ -10,11 +12,21 @@ namespace Camping_BookingSystem.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly ICampSpotRepository _campSpotRepository;
         private readonly ICustomerRepository _customerRepository;
-        public BookingService(IBookingRepository bookingRepository, ICampSpotRepository campSpotRepository, ICustomerRepository customerRepository)
+        private readonly IBookingValidator _bookingValidator;
+        private ICustomerRepository object1;
+        private IBookingRepository object2;
+        private IBookingValidator object3;
+
+        public BookingService(
+            IBookingValidator bookingValidator,
+            IBookingRepository bookingRepository,
+            ICampSpotRepository campSpotRepository,
+            ICustomerRepository customerRepository)
         {
             _bookingRepository = bookingRepository;
             _campSpotRepository = campSpotRepository;
             _customerRepository = customerRepository;
+            _bookingValidator = bookingValidator;
         }
 
         // Method to cancel a booking (Guest)
@@ -51,20 +63,15 @@ namespace Camping_BookingSystem.Services
         }
 
         // Method to create a booking and add a customer (Receptionist)
-        public async Task<BookingDetailsResponse> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
+        public async Task<ActionResult> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
-            if (request.StartDate.Date < DateTime.Today) 
+            var (isValid, errorMessage) = await _bookingValidator.ValidateCreateAsync(request);
+            if (!isValid)
             {
-                throw new ArgumentException("Start date cannot be in the past.");
-            }
-
-            if (request.EndDate.Date <= request.StartDate) 
-            {
-                throw new ArgumentException("End date must be after start date.");
+               return new BadRequestObjectResult(errorMessage);
             }
 
             var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
-            
             Customer customer;
             if (existingCustomer != null)
             {
@@ -100,7 +107,7 @@ namespace Camping_BookingSystem.Services
 
             var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
 
-            return response;
+            return response == null? new NotFoundResult(): new OkObjectResult(response);
         }
 
         // Method to delete a booking (Camp Owner)
@@ -154,10 +161,10 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "Camp spot not found.");
             }
-           /* if (campSpot.MaxNumberOfPeople < numberOfPeople)
+            if (campSpot.SpotType.MaxPersonLimit < numberOfPeople)
             {
-                return (false, "Camp spot cannot accommodate the number of people.");
-            }*/
+                return (false, "Camp spot can not accommodate the number of people.");
+            }
            var overlappedBookings = await _bookingRepository.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate);
 
             if (overlappedBookings.Any())
@@ -171,7 +178,10 @@ namespace Camping_BookingSystem.Services
         // Method to update the booking add-ons (Wifi and Parking) (Guest)
         public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAddOnsAsync(int bookingId, UpdateAddonsRequest request)
         {
+
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
+
+
             if (booking == null)
             {
                 return (false, "Booking not found");
@@ -194,40 +204,18 @@ namespace Camping_BookingSystem.Services
             return (true, null);
         }
         // Method to update the booking (Receptionist)
-        public async Task<(bool Success, string? ErrorMessage)> UpdateBookingAsyn(int bookingId, UpdateBookingRequest request)
+        public async Task<ActionResult> UpdateBookingAsyn(UpdateBookingRequest request)
         {
+            var (isValid, errorMessage) = await _bookingValidator.ValidateUpdateAsync(request);
+            if (!isValid)
+            {
+                return new BadRequestObjectResult(errorMessage);
+            }
 
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var booking = await _bookingRepository.GetByIdAsync(request.CustomerId);
             if (booking == null)
             {
-                return (false, "Booking not found");
-            }
-            if (booking.Status == BookingStatus.Completed)
-            {
-                return (false, "Booking can not be updated, it is already completed.");
-            }
-            if (booking.Status == BookingStatus.Cancelled)
-            {
-                return (false, "Booking can not be updated, it is already cancelled.");
-            }
-
-            var overappedBookings = await _bookingRepository
-                .GetBookingsByCampSpotAndDate(
-                request.CampSpotId, 
-                request.StartDate, 
-                request.EndDate);
-
-            if (overappedBookings.Any(b => b.Id != bookingId)) 
-            {
-                return (false, "Camp spot is not available for the selected dates.");
-            }
-            if (request.StartDate.Date < DateTime.Today)
-            {
-                return (false, "Start date cannot be in the past.");
-            }
-            if (request.EndDate.Date <= request.StartDate)
-            {
-                return (false, "End date must be after start date.");
+                return new NotFoundResult();
             }
 
             booking.CampSpotId = request.CampSpotId;
@@ -238,9 +226,11 @@ namespace Camping_BookingSystem.Services
             booking.Wifi = request.Wifi;
             booking.Status = request.Status;
 
+            _bookingRepository.Update(booking);
             await _bookingRepository.SaveAsync();
 
-            return (true, null);
+            var response = await _bookingRepository.GetBookingDetailsByCampSiteIdAsync(booking.Id);
+            return response == null ? new NotFoundResult() : new OkObjectResult(response);
 
         }
     }
