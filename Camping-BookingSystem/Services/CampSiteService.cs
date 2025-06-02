@@ -26,10 +26,10 @@ namespace Camping_BookingSystem.Services
 
         public async Task<CampSite> CreateAsync(CampSite campSite)  // create a new campsite
         {
-            if (campSite == null)
+            if (campSite == null)   // check if campsite is null
                 throw new ArgumentNullException(nameof(campSite));
 
-            if (string.IsNullOrWhiteSpace(campSite.Name))
+            if (string.IsNullOrWhiteSpace(campSite.Name))   // check if name is empty or whitespace
                 throw new ArgumentException("Name cannot be empty or whitespace", nameof(campSite));
 
             await _campSiteRepository.CreateCampSiteAsync(campSite);
@@ -38,7 +38,7 @@ namespace Camping_BookingSystem.Services
 
         public async Task UpdateAsync(CampSite campSite)    // update an existing campsite
         {
-            if (campSite == null)
+            if (campSite == null)   // check if campsite is null
                 throw new ArgumentNullException(nameof(campSite));
 
             await _campSiteRepository.UpdateCampSiteAsync(campSite);
