@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystem.Repositories
 {
-    public class SpotTypeRepository
+    public class SpotTypeRepository : ISpotTypeRepository
     {
         private readonly CampingDbContext _context;
         public SpotTypeRepository(CampingDbContext context)
