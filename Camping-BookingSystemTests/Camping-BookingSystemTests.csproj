@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="BookingTests\" />
+    <Folder Include="CampSiteTests\" />
     <Folder Include="CampSpotTests\" />
     <Folder Include="CustomerTests\" />
   </ItemGroup>
