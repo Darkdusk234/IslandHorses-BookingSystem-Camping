@@ -74,4 +74,17 @@ public class CampSpotControllerTests
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.GetCampSpotByIdAsync(It.IsAny<int>()), Times.Once());
     }
+    
+    [TestMethod]
+    public async Task GetCampSpotById_WhenInputtingAnNonExistingId_NotFoundStatusCodeWithErrorMessage()
+    {
+        var id = 210;
+        _campSpotServiceMock.Setup(m => m.GetCampSpotByIdAsync(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+        var expected = new NotFoundObjectResult("Camp spot not found.");
+
+        var actual = await _campSpotController.GetCampSpotById(id);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.GetCampSpotByIdAsync(It.IsAny<int>()), Times.Once());
+    }
 }
