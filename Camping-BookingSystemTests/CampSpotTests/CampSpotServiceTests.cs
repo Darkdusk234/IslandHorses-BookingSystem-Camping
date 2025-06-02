@@ -228,4 +228,23 @@ public class CampSpotServiceTests
         _campSpotRepoMock.Verify(m => m.GetCampSpotById(It.IsAny<int>()), Times.Once);
         _campSpotRepoMock.Verify(m => m.Update(It.IsAny<CampSpot>()), Times.Once);
     }
+    
+    [TestMethod]
+    public async Task UpdateCampSpotAsync_WhenInputtingAnNonExistingIdAndAValidDTO_FalseAndErrorMessage()
+    {
+        var id = 210;
+        var request = new CreateCampSpotRequest
+        {
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true
+        };
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+
+        var (success, message) = await _campSpotService.UpdateCampSpotAsync(id, request);
+
+        Assert.IsFalse(success);
+        Assert.AreEqual("Camp spot not found.", message);
+        _campSpotRepoMock.Verify(m => m.GetCampSpotById(It.IsAny<int>()), Times.Once);
+    }
 }
