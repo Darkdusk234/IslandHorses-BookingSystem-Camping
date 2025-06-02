@@ -110,4 +110,48 @@ public class CampSpotServiceTests
         Assert.AreEqual(JsonConvert.SerializeObject(list), JsonConvert.SerializeObject(result));
         _campSpotRepoMock.Verify(repo => repo.GetAll(), Times.Once);
     }
+
+    [TestMethod]
+    public async Task GetCampSpotsByCampSiteIdAsync_WhenInputtingAnExistingId_ListOfCampSpotsForThatCampSite()
+    {
+        var id = 4;
+        var campSite = new CampSite
+        {
+            Id = 4,
+            Name = "Flexans Camping",
+            Description = "Flexar hela tiden",
+            Adress = "Flexans Väg 18"
+        };
+
+        var campSpot1 = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 4,
+            TypeId = 1,
+            Electricity = false
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 4,
+            TypeId = 7,
+            Electricity = true
+        };
+        var campSpot3 = new CampSpot
+        {
+            Id = 3,
+            CampSiteId = 4,
+            TypeId = 6,
+            Electricity = false
+        };
+        var list = new List<CampSpot> { campSpot1, campSpot2, campSpot3 };
+        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(id)).ReturnsAsync(campSite);
+        _campSpotRepoMock.Setup(m => m.GetCampSpotsByCampSiteId(id)).ReturnsAsync(list);
+        var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(list), JsonConvert.SerializeObject(result.Item1));
+        Assert.IsTrue(result.campSiteFound);
+        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(id), Times.Once());
+        _campSpotRepoMock.Verify(m => m.GetCampSpotsByCampSiteId(id), Times.Once());
+    }
 }
