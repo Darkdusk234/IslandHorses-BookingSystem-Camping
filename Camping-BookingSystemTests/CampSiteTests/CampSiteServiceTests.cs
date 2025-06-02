@@ -6,7 +6,7 @@ using Moq;
 namespace Camping_BookingSystemTests;
 
 [TestClass]
-public class CampSiteTests
+public class CampSiteServiceTests
 {
     private Mock<ICampSiteRepository> _mockRepository;
     private CampSiteService _service;

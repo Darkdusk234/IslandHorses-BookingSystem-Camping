@@ -8,7 +8,7 @@ using Camping_BookingSystem.Repositories;
 namespace Camping_BookingSystemTests
 {
     [TestClass]
-    public class SpotTypeTests
+    public class SpotTypeServiceTests
     {
         private Mock<ISpotTypeRepository> _mockRepository;
         private SpotTypeService _service;
