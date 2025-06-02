@@ -76,4 +76,37 @@ public class CampSpotServiceTests
         Assert.AreEqual("Camp spot not found.", message);
         _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
     }
+
+    [TestMethod]
+    public async Task GetAllCampSpotsAsync_GettingAllCampSpots_IEnumerableOfCampSpots()
+    {
+        var campSpot1 = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = false
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 2,
+            CampSiteId = 4,
+            TypeId = 7,
+            Electricity = true
+        };
+        var campSpot3 = new CampSpot
+        {
+            Id = 3,
+            CampSiteId = 4,
+            TypeId = 6,
+            Electricity = false
+        };
+        var list = new List<CampSpot> { campSpot1, campSpot2, campSpot3 };
+        _campSpotRepoMock.Setup(m => m.GetAll()).ReturnsAsync(list);
+
+        var result = await _campSpotService.GetAllCampSpotsAsync();
+
+        Assert.AreEqual(JsonConvert.SerializeObject(list), JsonConvert.SerializeObject(result));
+        _campSpotRepoMock.Verify(repo => repo.GetAll(), Times.Once);
+    }
 }
