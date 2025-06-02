@@ -50,6 +50,7 @@ public class CampSpotServiceTests
         var campSpot = new CampSpot
         {
             Id = id,
+            CampSiteId = 1,
             TypeId = 1,
             Electricity = true
         };
