@@ -121,7 +121,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public async Task CreateBookingAsync_ShouldAddBooking_WhenValidBooking()
+    public async Task CreateBookingAsync_ShouldAddBooking_WhenCalledWithValidBooking()
     {
         // Given: A valid booking
         var booking = new Booking
@@ -144,7 +144,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenStartDateInPast()
+    public async Task CreateBookingWithCustomerAsync_ShouldReturnBadRequest_WhenStartDateInPast()
     {
         // Given: A booking request with a start date in the past
         var request = new CreateBookingAndCustomer
@@ -190,7 +190,7 @@ public class BookingServiceTests_MOQ
 
 
     [TestMethod]
-    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenNumberOfPeopleExceedsLimit()
+    public async Task CreateBookingWithCustomerAsync_ShouldReturnBadRequest_WhenNumberOfPeopleExceedsLimit()
     {
         // Given: A booking request with a number of people exceeding the limit
         
@@ -214,7 +214,7 @@ public class BookingServiceTests_MOQ
     }
 
     [TestMethod]
-    public async Task CreateBookingWithCustomerAsync_ShouldThrow_WhenCampSpotNotAvailable()
+    public async Task ValidateCreateAsync_ShouldReturnBadRequest_WhenCampSpotNotAvailable()
     {
         // Given: A booking request for a camp spot that is not available
         var request = new CreateBookingAndCustomer
@@ -247,7 +247,7 @@ public class BookingServiceTests_MOQ
             request.EndDate))
             .ReturnsAsync(new List<Booking> {existingBooking});
 
-        // When: The CreateBookingWithCustomerAsync method is called
+        // When: The ValidateCreateAsync method is called
         var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object);
 
         var (isValid, errorMessage) = 
