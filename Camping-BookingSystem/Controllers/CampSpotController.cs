@@ -101,7 +101,7 @@ namespace Camping_BookingSystem.Controllers
             return NoContent();
         }
 
-        [Tags("Reseptionist")]
+        [Tags("Receptionist")]
         [HttpGet("SearchAvailableSpot")]
         public async Task<IActionResult> SearchAvailableSpot([FromQuery] SearchAvailableSpotsDto searchDto)
         {
