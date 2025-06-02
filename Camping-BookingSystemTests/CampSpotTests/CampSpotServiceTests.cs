@@ -11,7 +11,6 @@ namespace Camping_BookingSystemTests;
 [TestClass]
 public class CampSpotServiceTests
 {
-    private CampingDbContext _context;
     private CampSpotService _campSpotService;
     private Mock<ICampSpotRepository> _campSpotRepoMock;
     private Mock<ICampSiteRepository> _campSiteRepoMock;
@@ -28,7 +27,6 @@ public class CampSpotServiceTests
     [TestMethod]
     public void AddCampSpotAsync_InputtingValidCampSpot_CampSpotThatWasAdded()
     {
-        
         var campSpot = new CampSpot
         {
             Id = 1,
@@ -43,5 +41,39 @@ public class CampSpotServiceTests
 
         Assert.AreEqual(JsonConvert.SerializeObject(campSpot), JsonConvert.SerializeObject(result));
         _campSpotRepoMock.Verify(repo => repo.Create(It.IsAny<CampSpot>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task DeleteCampSpotAsync_InputtingExistingCampSpotId_TrueAndNullErrorMessageAsync()
+    {
+        int id = 1;
+        var campSpot = new CampSpot
+        {
+            Id = id,
+            TypeId = 1,
+            Electricity = true
+        };
+
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync(campSpot);
+        _campSpotRepoMock.Setup(m => m.Delete(It.IsAny<CampSpot>())).Returns(Task.CompletedTask);
+        var (success, message) = await _campSpotService.DeleteCampSpotAsync(id);
+
+        Assert.AreEqual(success, true);
+        Assert.IsNull(message);
+        _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
+        _campSpotRepoMock.Verify(repo => repo.Delete(It.IsAny<CampSpot>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task DeleteCampSpotAsync_InputtingNonExistingCampSpotId_FalseAndErrorMessageAsync()
+    {
+        int id = 20;
+
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+        var (success, message) = await _campSpotService.DeleteCampSpotAsync(id);
+
+        Assert.IsFalse(success);
+        Assert.AreEqual("Camp spot not found.", message);
+        _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
     }
 }
