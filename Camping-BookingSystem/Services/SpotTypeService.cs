@@ -46,6 +46,11 @@ namespace Camping_BookingSystem.Services
         }
         public async Task UpdateSpotTypeAsync(SpotType spotType)
         {
+            if (spotType == null)   // check if spotType is null
+            {
+                throw new ArgumentNullException(nameof(spotType));
+            }
+
             await _spotTypeRepository.UpdateAsync(spotType);
             await _spotTypeRepository.SaveAsync();
         }
