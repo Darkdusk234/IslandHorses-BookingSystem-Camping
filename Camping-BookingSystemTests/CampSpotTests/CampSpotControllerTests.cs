@@ -22,7 +22,7 @@ public class CampSpotControllerTests
     }
 
     [TestMethod]
-    public async Task GetAllCampSpots_WhenGettingAllCampSpots_ListOfAllCampSpotsAsync()
+    public async Task GetAllCampSpots_WhenGettingAllCampSpots_OkStatusCodeWithListOfAllCampSpots()
     {
         var campSpot1 = new CampSpot
         {
