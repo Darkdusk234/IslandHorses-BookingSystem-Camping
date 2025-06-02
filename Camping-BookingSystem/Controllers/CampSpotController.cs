@@ -33,7 +33,7 @@ namespace Camping_BookingSystem.Controllers
             var campSpot = await _campSpotService.GetCampSpotByIdAsync(id);
             if (campSpot == null)
             {
-                return NotFound();
+                return NotFound("Camp spot not found.");
             }
 
             return Ok(campSpot);
@@ -42,7 +42,11 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet("campSite/{campSiteId}")]
         public async Task<IActionResult> GetCampSpotsByCampSiteId(int campSiteId)
         {
-            var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            var (campSpots, campSiteFound) = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            if(!campSiteFound)
+            {
+                return NotFound("Campsite not found.");
+            }
             return Ok(campSpots);
         }
         
@@ -65,39 +69,51 @@ namespace Camping_BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCampSpot([FromBody] CreateCampSpotRequest request)
         {
-            var campSpot = request.ToCampSpot();
-            var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            try
+            {
+                var campSpot = request.ToCampSpot();
+                var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+
+                return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            } 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCampSpot(int id, [FromBody] CreateCampSpotRequest request)
         {
-            var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            existingCampSpot.CampSiteId = request.CampSiteId;
-            existingCampSpot.TypeId = request.TypeId;
-            existingCampSpot.Electricity = request.Electricity;
+            var (success, errorMessage) = await _campSpotService.UpdateCampSpotAsync(id, request);
 
-            await _campSpotService.UpdateCampSpotAsync(existingCampSpot);
+            if(!success)
+            {
+                return NotFound(errorMessage);
+            }
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCampSpot(int id)
         {
-            var existingCampSpot = _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
+            var (success, errorMessage) = await _campSpotService.DeleteCampSpotAsync(id);
+            if(!success)
             {
-                return NotFound();
+                return NotFound(errorMessage);
             }
 
-            await _campSpotService.DeleteCampSpotAsync(id);
             return NoContent();
         }
 

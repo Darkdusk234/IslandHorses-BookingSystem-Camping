@@ -1,4 +1,5 @@
-﻿using BookingSystem_ClassLibrary.Models;
+﻿using BookingSystem_ClassLibrary.Data;
+using BookingSystem_ClassLibrary.Models;
 using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Repositories;
 
@@ -7,10 +8,12 @@ namespace Camping_BookingSystem.Services
     public class CampSpotService : ICampSpotService
     {
         private readonly ICampSpotRepository _campSpotRepository;
+        private readonly ICampSiteRepository _campSiteRepository;
 
-        public CampSpotService(ICampSpotRepository campSpotRepository)
+        public CampSpotService(ICampSpotRepository campSpotRepository, ICampSiteRepository campSiteRepository)
         {
             _campSpotRepository = campSpotRepository;
+            _campSiteRepository = campSiteRepository;
         }
 
         public async Task<CampSpot> AddCampSpotAsync(CampSpot campSpot)
@@ -19,13 +22,16 @@ namespace Camping_BookingSystem.Services
             return campSpot;
         }
 
-        public async Task DeleteCampSpotAsync(int id)
+        public async Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id)
         {
             var campSpot = await _campSpotRepository.GetCampSpotById(id);
-            if(campSpot != null)
+            if(campSpot == null)
             {
-                await _campSpotRepository.Delete(campSpot);
+                return (false, "Camp spot not found.");
             }
+
+            await _campSpotRepository.Delete(campSpot);
+            return (true, null);
         }
 
         public async Task<IEnumerable<CampSpot>> GetAllCampSpotsAsync()
@@ -33,9 +39,15 @@ namespace Camping_BookingSystem.Services
             return await _campSpotRepository.GetAll();
         }
 
-        public async Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId)
+        public async Task<(IEnumerable<CampSpot>?, bool campSiteFound)> GetCampSpotsByCampSiteIdAsync(int campSiteId)
         {
-            return await _campSpotRepository.GetCampSpotsByCampSiteId(campSiteId);
+            var campSite = await _campSiteRepository.GetCampSiteByIdAsync(campSiteId);
+            if(campSite == null)
+            {
+                return (null, false);
+            }
+            var campSpots = await _campSpotRepository.GetCampSpotsByCampSiteId(campSiteId);
+            return (campSpots, true);
         }
 
         public async Task<CampSpot?> GetCampSpotByIdAsync(int id)
@@ -49,9 +61,20 @@ namespace Camping_BookingSystem.Services
                 nrGuests*/); 
         }
 
-        public async Task UpdateCampSpotAsync(CampSpot campSpot)
+        public async Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request)
         {
-            await _campSpotRepository.Update(campSpot);
+            var existingCampSpot = await _campSpotRepository.GetCampSpotById(id);
+            if (existingCampSpot == null)
+            {
+                return (false, "Camp spot not found.");
+            }
+
+            existingCampSpot.CampSiteId = request.CampSiteId;
+            existingCampSpot.TypeId = request.TypeId;
+            existingCampSpot.Electricity = request.Electricity;
+            await _campSpotRepository.Update(existingCampSpot);
+
+            return (true, null);
         }
 
         public async Task<SearchResult<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto)

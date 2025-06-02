@@ -13,7 +13,7 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs
         public int CampSiteId { get; set; }
         [Required]
         public int TypeId { get; set; }
-        public bool Electricity { get; set; }
+        public bool Electricity { get; set; } = false;
 
     }
 }
