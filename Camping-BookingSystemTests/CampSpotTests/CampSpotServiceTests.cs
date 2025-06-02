@@ -25,7 +25,7 @@ public class CampSpotServiceTests
     }
 
     [TestMethod]
-    public void AddCampSpotAsync_InputtingValidCampSpot_CampSpotThatWasAdded()
+    public async Task AddCampSpotAsync_InputtingValidCampSpot_CampSpotThatWasAddedAsync()
     {
         var campSpot = new CampSpot
         {
@@ -37,7 +37,7 @@ public class CampSpotServiceTests
 
         _campSpotRepoMock.Setup(m => m.Create(It.IsAny<CampSpot>())).Returns(Task.CompletedTask);
 
-        var result = _campSpotService.AddCampSpotAsync(campSpot).Result;
+        var result = await _campSpotService.AddCampSpotAsync(campSpot);
 
         Assert.AreEqual(JsonConvert.SerializeObject(campSpot), JsonConvert.SerializeObject(result));
         _campSpotRepoMock.Verify(repo => repo.Create(It.IsAny<CampSpot>()), Times.Once);
