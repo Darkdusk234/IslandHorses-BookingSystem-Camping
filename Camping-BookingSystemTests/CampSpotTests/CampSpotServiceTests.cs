@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 namespace Camping_BookingSystemTests;
 
 [TestClass]
@@ -145,25 +146,43 @@ public class CampSpotServiceTests
             Electricity = false
         };
         var list = new List<CampSpot> { campSpot1, campSpot2, campSpot3 };
-        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(id)).ReturnsAsync(campSite);
-        _campSpotRepoMock.Setup(m => m.GetCampSpotsByCampSiteId(id)).ReturnsAsync(list);
+        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(It.IsAny<int>())).ReturnsAsync(campSite);
+        _campSpotRepoMock.Setup(m => m.GetCampSpotsByCampSiteId(It.IsAny<int>())).ReturnsAsync(list);
         var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
 
         Assert.AreEqual(JsonConvert.SerializeObject(list), JsonConvert.SerializeObject(result.Item1));
         Assert.IsTrue(result.campSiteFound);
-        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(id), Times.Once());
-        _campSpotRepoMock.Verify(m => m.GetCampSpotsByCampSiteId(id), Times.Once());
+        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(It.IsAny<int>()), Times.Once());
+        _campSpotRepoMock.Verify(m => m.GetCampSpotsByCampSiteId(It.IsAny<int>()), Times.Once());
     }
     
     [TestMethod]
     public async Task GetCampSpotsByCampSiteIdAsync_WhenInputtingANonExistingId_ListOfCampSpotsForThatCampSite()
     {
         var id = 5;
-        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(id)).ReturnsAsync((CampSite)null);
+        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(It.IsAny<int>())).ReturnsAsync((CampSite)null);
         var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
         
         Assert.IsNull(result.Item1);
         Assert.IsFalse(result.campSiteFound);
-        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(id), Times.Once());
+        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(It.IsAny<int>()), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task GetCampSpotByIdAsync_WhenInputtingAnExistingId_CampSpot()
+    {
+        var id = 1;
+        var campSpot = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = false
+        };
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync(campSpot);
+        var result = await _campSpotService.GetCampSpotByIdAsync(id);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(campSpot), JsonConvert.SerializeObject(result));
+        _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
     }
 }
