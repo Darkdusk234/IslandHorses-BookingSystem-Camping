@@ -154,4 +154,16 @@ public class CampSpotServiceTests
         _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(id), Times.Once());
         _campSpotRepoMock.Verify(m => m.GetCampSpotsByCampSiteId(id), Times.Once());
     }
+    
+    [TestMethod]
+    public async Task GetCampSpotsByCampSiteIdAsync_WhenInputtingANonExistingId_ListOfCampSpotsForThatCampSite()
+    {
+        var id = 5;
+        _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(id)).ReturnsAsync((CampSite)null);
+        var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
+        
+        Assert.IsNull(result.Item1);
+        Assert.IsFalse(result.campSiteFound);
+        _campSiteRepoMock.Verify(m => m.GetCampSiteByIdAsync(id), Times.Once());
+    }
 }
