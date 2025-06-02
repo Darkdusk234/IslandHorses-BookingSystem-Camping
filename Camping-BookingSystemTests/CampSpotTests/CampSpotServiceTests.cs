@@ -1,5 +1,6 @@
 using BookingSystem_ClassLibrary.Data;
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,6 @@ public class CampSpotServiceTests
             TypeId = 1,
             Electricity = true
         };
-
         _campSpotRepoMock.Setup(m => m.Create(It.IsAny<CampSpot>())).Returns(Task.CompletedTask);
 
         var result = await _campSpotService.AddCampSpotAsync(campSpot);
@@ -55,9 +55,9 @@ public class CampSpotServiceTests
             TypeId = 1,
             Electricity = true
         };
-
         _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync(campSpot);
         _campSpotRepoMock.Setup(m => m.Delete(It.IsAny<CampSpot>())).Returns(Task.CompletedTask);
+
         var (success, message) = await _campSpotService.DeleteCampSpotAsync(id);
 
         Assert.AreEqual(success, true);
@@ -70,8 +70,8 @@ public class CampSpotServiceTests
     public async Task DeleteCampSpotAsync_InputtingNonExistingCampSpotId_FalseAndErrorMessageAsync()
     {
         int id = 20;
-
         _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+
         var (success, message) = await _campSpotService.DeleteCampSpotAsync(id);
 
         Assert.IsFalse(success);
@@ -148,6 +148,7 @@ public class CampSpotServiceTests
         var list = new List<CampSpot> { campSpot1, campSpot2, campSpot3 };
         _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(It.IsAny<int>())).ReturnsAsync(campSite);
         _campSpotRepoMock.Setup(m => m.GetCampSpotsByCampSiteId(It.IsAny<int>())).ReturnsAsync(list);
+
         var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
 
         Assert.AreEqual(JsonConvert.SerializeObject(list), JsonConvert.SerializeObject(result.Item1));
@@ -161,6 +162,7 @@ public class CampSpotServiceTests
     {
         var id = 5;
         _campSiteRepoMock.Setup(m => m.GetCampSiteByIdAsync(It.IsAny<int>())).ReturnsAsync((CampSite)null);
+
         var result = await _campSpotService.GetCampSpotsByCampSiteIdAsync(id);
         
         Assert.IsNull(result.Item1);
@@ -180,6 +182,7 @@ public class CampSpotServiceTests
             Electricity = false
         };
         _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync(campSpot);
+
         var result = await _campSpotService.GetCampSpotByIdAsync(id);
 
         Assert.AreEqual(JsonConvert.SerializeObject(campSpot), JsonConvert.SerializeObject(result));
@@ -191,9 +194,38 @@ public class CampSpotServiceTests
     {
         var id = 213;
         _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+
         var result = await _campSpotService.GetCampSpotByIdAsync(id);
 
         Assert.IsNull(result);
         _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateCampSpotAsync_WhenInputtingAnExistingIdAndAValidDTO_TrueAndNullErrorMessage()
+    {
+        var id = 1;
+        var campSpot = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 2,
+            TypeId = 1,
+            Electricity = false
+        };
+        var request = new CreateCampSpotRequest
+        {
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true
+        };
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync(campSpot);
+        _campSpotRepoMock.Setup(m => m.Update(It.IsAny<CampSpot>())).Returns(Task.CompletedTask);
+
+        var (success, message) = await _campSpotService.UpdateCampSpotAsync(id, request);
+
+        Assert.IsTrue(success);
+        Assert.IsNull(message);
+        _campSpotRepoMock.Verify(m => m.GetCampSpotById(It.IsAny<int>()), Times.Once);
+        _campSpotRepoMock.Verify(m => m.Update(It.IsAny<CampSpot>()), Times.Once);
     }
 }
