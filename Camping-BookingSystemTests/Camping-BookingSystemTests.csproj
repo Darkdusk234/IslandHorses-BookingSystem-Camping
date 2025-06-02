@@ -38,7 +38,6 @@
 
   <ItemGroup>
     <Folder Include="BookingTests\" />
-    <Folder Include="CampSiteTests\" />
     <Folder Include="CampSpotTests\" />
     <Folder Include="CustomerTests\" />
     <Folder Include="SpotTypeTests\" />
