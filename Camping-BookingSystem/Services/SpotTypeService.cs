@@ -20,6 +20,26 @@ namespace Camping_BookingSystem.Services
         }
         public async Task<SpotType> CreateSpotTypeAsync(SpotType spotType)
         {
+            if (spotType == null)
+            {
+                throw new ArgumentNullException(nameof(spotType));
+            }
+
+            if (string.IsNullOrWhiteSpace(spotType.Name))
+            {
+                throw new ArgumentException("Name cannot be empty", nameof(spotType));
+            }
+
+            if (spotType.Price < 0)
+            {
+                throw new ArgumentException("Price cannot be negative", nameof(spotType));
+            }
+
+            if (spotType.MaxPersonLimit <= 0)
+            {
+                throw new ArgumentException("MaxPersonLimit must be greater than 0", nameof(spotType));
+            }
+
             await _spotTypeRepository.AddAsync(spotType);
             await _spotTypeRepository.SaveAsync();
             return spotType;
