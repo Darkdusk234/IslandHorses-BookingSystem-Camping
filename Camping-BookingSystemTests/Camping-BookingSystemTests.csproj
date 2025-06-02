@@ -40,7 +40,6 @@
     <Folder Include="BookingTests\" />
     <Folder Include="CampSpotTests\" />
     <Folder Include="CustomerTests\" />
-    <Folder Include="SpotTypeTests\" />
   </ItemGroup>
 
 </Project>
