@@ -185,4 +185,15 @@ public class CampSpotServiceTests
         Assert.AreEqual(JsonConvert.SerializeObject(campSpot), JsonConvert.SerializeObject(result));
         _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
     }
+    
+    [TestMethod]
+    public async Task GetCampSpotByIdAsync_WhenInputtingAnNonExistingId_CampSpot()
+    {
+        var id = 213;
+        _campSpotRepoMock.Setup(m => m.GetCampSpotById(It.IsAny<int>())).ReturnsAsync((CampSpot)null);
+        var result = await _campSpotService.GetCampSpotByIdAsync(id);
+
+        Assert.IsNull(result);
+        _campSpotRepoMock.Verify(repo => repo.GetCampSpotById(It.IsAny<int>()), Times.Once);
+    }
 }
