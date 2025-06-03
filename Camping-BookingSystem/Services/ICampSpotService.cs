@@ -7,15 +7,19 @@ namespace Camping_BookingSystem.Services
     {
         Task<IEnumerable<CampSpot>> GetAllCampSpotsAsync();
         Task<CampSpot?> GetCampSpotByIdAsync(int id);
-        Task<IEnumerable<CampSpot>> GetCampSpotsByCampSiteIdAsync(int campSiteId);
+        Task<(IEnumerable<CampSpot>?, bool campSiteFound)> GetCampSpotsByCampSiteIdAsync(int campSiteId);
 
         Task<IEnumerable<CampSpot>> GetAvailableSpotsMatchingNeeds(DateTime startDate, DateTime endDate,
             int typeId /*, int nrGuests*/);
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
-        Task DeleteCampSpotAsync(int id);
-        Task UpdateCampSpotAsync(CampSpot campSpot);
+
+        Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id);
+        Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request);
 
         // Receptions for searching available spots
-        Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);
+        
+        // Task<IEnumerable<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);    // Old one
+        Task<SearchResult<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto);  // updated one 
+
     }
 }

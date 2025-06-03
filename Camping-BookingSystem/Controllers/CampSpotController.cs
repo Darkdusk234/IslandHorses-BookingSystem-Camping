@@ -33,7 +33,7 @@ namespace Camping_BookingSystem.Controllers
             var campSpot = await _campSpotService.GetCampSpotByIdAsync(id);
             if (campSpot == null)
             {
-                return NotFound();
+                return NotFound("Camp spot not found.");
             }
 
             return Ok(campSpot);
@@ -42,7 +42,11 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet("campSite/{campSiteId}")]
         public async Task<IActionResult> GetCampSpotsByCampSiteId(int campSiteId)
         {
-            var campSpots = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            var (campSpots, campSiteFound) = await _campSpotService.GetCampSpotsByCampSiteIdAsync(campSiteId);
+            if(!campSiteFound)
+            {
+                return NotFound("Campsite not found.");
+            }
             return Ok(campSpots);
         }
         
@@ -65,98 +69,76 @@ namespace Camping_BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCampSpot([FromBody] CreateCampSpotRequest request)
         {
-            var campSpot = request.ToCampSpot();
-            var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            try
+            {
+                var campSpot = request.ToCampSpot();
+                var createdCampSpot = await _campSpotService.AddCampSpotAsync(campSpot);
+
+                return CreatedAtAction(nameof(GetCampSpotById), new { id = createdCampSpot.Id }, createdCampSpot);
+            } 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCampSpot(int id, [FromBody] CreateCampSpotRequest request)
         {
-            var existingCampSpot = await _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            existingCampSpot.CampSiteId = request.CampSiteId;
-            existingCampSpot.TypeId = request.TypeId;
-            existingCampSpot.Electricity = request.Electricity;
+            var (success, errorMessage) = await _campSpotService.UpdateCampSpotAsync(id, request);
 
-            await _campSpotService.UpdateCampSpotAsync(existingCampSpot);
+            if(!success)
+            {
+                return NotFound(errorMessage);
+            }
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCampSpot(int id)
         {
-            var existingCampSpot = _campSpotService.GetCampSpotByIdAsync(id);
-            if (existingCampSpot == null)
+            var (success, errorMessage) = await _campSpotService.DeleteCampSpotAsync(id);
+            if(!success)
             {
-                return NotFound();
+                return NotFound(errorMessage);
             }
 
-            await _campSpotService.DeleteCampSpotAsync(id);
             return NoContent();
         }
-        [Tags("Reseptionist")]
+
+        [Tags("Receptionist")]
         [HttpGet("SearchAvailableSpot")]
-        public async Task<IActionResult> GetAvailableCampSpots([FromQuery] SearchAvailableSpotsDto searchDto)
+        public async Task<IActionResult> SearchAvailableSpot([FromQuery] SearchAvailableSpotsDto searchDto)
         {
-            if (searchDto == null)      // Check if search criteria is null
-            {
-                return BadRequest("Search criteria cannot be null.");
-            }
+            var result = await _campSpotService.SearchAvailableSpotsAsync(searchDto);
 
-            if (searchDto. StartDate >= searchDto.EndDate)      // Check if start date is before end date
+            if (result.IsSuccess)
             {
-                return BadRequest("Start date must be before end date.");
+                return Ok(result);
             }
-            if (searchDto.StartDate < DateTime.Today)       // Check if start date is in the past
+            else
             {
-                return BadRequest("This is not a time traveling campspot. You silly goose!");
-            }
-
-            if (searchDto.NumberOfPeople <= 0)          // Check if number of people is valid
-            {
-                return BadRequest("You can not be negativ 1 people when you are booking");
-            }
-
-            try
-            {
-                var availableSpots = await _campSpotService.SearchAvailableSpotsAsync(searchDto);   // avaiable spots based on search criteria
-                var spotsList = availableSpots.ToList();                            // convert to "avaiable spots" to list for easier handling
-
-                if (spotsList.Any())    // if any spots are avaiable
+                // if server says no
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    return Ok(new   // return if they found avaiable spots based on criteria
-                    {
-                        Success = true,
-                        Message = $"Found {spotsList.Count} available camping spots for your search criteria.",
-                        Count = spotsList.Count,
-                        AvailableSpots = spotsList
-                    });
+                    return StatusCode(500, result);
                 }
                 else
                 {
-                    return Ok(new   // return if no spots are avaiable based on "right" criteria
-                    {
-                        Success = false,
-                        Message = "No available camping spots found for the specified criteria. Please try different dates or requirements.",
-                        Count = 0,
-                        AvailableSpots = new List<object>()
-                    });
+                    // Validetion error
+                    return BadRequest(result);
                 }
-            }
-            catch (Exception ex)    // if users input is not valid/wrong and they are a silly goose
-            {
-                return StatusCode(500, new
-                {
-                    Success = false,
-                    Message = "An error occurred while searching for available spots.",
-                    Error = ex.Message
-                });
             }
         }
     }
