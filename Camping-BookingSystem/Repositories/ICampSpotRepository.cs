@@ -15,7 +15,5 @@ namespace Camping_BookingSystem.Repositories
         
          
         Task<IEnumerable<CampSpot>> SearchAvailableSpots(SearchAvailableSpotsDto searchDto);
-
-
     }
 }

@@ -75,7 +75,7 @@ namespace Camping_BookingSystem.Services
 
             return (true, null);
         }
-
+        
         public async Task<SearchResult<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto)
         {
             try
@@ -161,7 +161,6 @@ namespace Camping_BookingSystem.Services
                     ErrorMessage = ex.Message
                 };
             }
-
         }
     }
 }

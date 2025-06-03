@@ -3,7 +3,7 @@ using BookingSystem_ClassLibrary.Models;
 using Camping_BookingSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Camping_BookingSystemTests;
+namespace Camping_BookingSystemTests.CustomerTests;
 
 [TestClass]
 public class CustomerRepositoryTest
