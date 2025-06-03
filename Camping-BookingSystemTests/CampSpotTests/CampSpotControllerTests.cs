@@ -214,4 +214,17 @@ public class CampSpotControllerTests
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.UpdateCampSpotAsync(It.IsAny<int>(), It.IsAny<CreateCampSpotRequest>()), Times.Once());
     }
+
+    [TestMethod]
+    public async Task DeleteCampSpot_WhenExistingIdIsInputted_NoContentStatusCode()
+    {
+        var id = 1;
+        _campSpotServiceMock.Setup(m => m.DeleteCampSpotAsync(It.IsAny<int>())).ReturnsAsync((true, null));
+        var expected = new NoContentResult();
+
+        var actual = await _campSpotController.DeleteCampSpot(1);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.DeleteCampSpotAsync(It.IsAny<int>()), Times.Once());
+    }
 }
