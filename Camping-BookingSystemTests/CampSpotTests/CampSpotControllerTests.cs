@@ -87,4 +87,40 @@ public class CampSpotControllerTests
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.GetCampSpotByIdAsync(It.IsAny<int>()), Times.Once());
     }
+
+    [TestMethod]
+    public async Task GetCampSpotByCampSiteId_WhenInputtingAnExistingId_OkStatusCodeWithCampSpots()
+    {
+        var id = 1;
+        var campSpot1 = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = false
+        };
+        var campSpot2 = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true
+        };
+        var campSpot3 = new CampSpot
+        {
+            Id = 1,
+            CampSiteId = 1,
+            TypeId = 1,
+            Electricity = true
+        };
+        var list = new List<CampSpot> { campSpot1, campSpot2, campSpot3 };
+        _campSpotServiceMock.Setup(m => m.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>())).ReturnsAsync((list, true));
+        var expected = new OkObjectResult(list);
+
+        var actual = await _campSpotController.GetCampSpotsByCampSiteId(id);
+        
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>()), Times.Once());
+    }
+
 }
