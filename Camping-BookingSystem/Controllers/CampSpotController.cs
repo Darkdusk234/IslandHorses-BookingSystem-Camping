@@ -51,7 +51,7 @@ namespace Camping_BookingSystem.Controllers
         }
         
         //Som gäst vill jag kunna söka alla lediga platser baserat på datum enbart
-        [Tags("Guests")]
+        [Tags("Guest")]
         [HttpGet("searchAvailableSpotsMatchingDates",Name = "GetFreeSpotsMatchingDates")]
         public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingDates(
             [FromQuery] DateTime startDate,
