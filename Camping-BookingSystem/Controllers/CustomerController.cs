@@ -42,10 +42,6 @@ public class CustomerController : ControllerBase
     [HttpPost(Name = "CreateCustomer")] 
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDto dto)
     {
-        if (dto == null)
-        {
-            return BadRequest(new { errorMessage = "Invalid customer data." });
-        }
         
         if (!ModelState.IsValid)
         {
@@ -66,10 +62,6 @@ public class CustomerController : ControllerBase
     [HttpPut("{id}", Name = "UpdateCustomer")]
     public async Task<IActionResult> UpdateCustomer([FromRoute] int id, [FromBody] UpdateCustomerDto dto)
     {
-        // if (dto == null)
-        // {
-        //     return BadRequest(new { errorMessage = "Invalid customer data." });
-        // }
         if (!ModelState.IsValid)
         {
             return BadRequest(new
