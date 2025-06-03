@@ -43,13 +43,21 @@ namespace Camping_BookingSystem.Repositories
                 .FirstOrDefaultAsync(c => c.Id == campSpotId);
         }
         
-        public async Task<List<CampSpot>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate, int campSiteId)
+        public async Task<List<SpotsBasedOnDatesRequest>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate, int campSiteId)
         {
             var allSpotsMatchingNeeds = await _context.CampSpots
-                .Include(c => c.Bookings)
                 .Where(c =>
                     c.CampSiteId == campSiteId &&
-                    !c.Bookings.Any(b => (b.StartDate < endDate && b.EndDate > startDate))).ToListAsync();
+                    !c.Bookings.Any(b => (b.StartDate < endDate && b.EndDate > startDate)))
+                .Select(c => new SpotsBasedOnDatesRequest()
+                {
+                    Id = c.Id,
+                    CampSiteName = c.CampSite.Name,
+                    TypeName = c.SpotType.Name,
+                    Capacity = c.SpotType.MaxPersonLimit,
+                    Electricity = c.Electricity
+                }).ToListAsync();
+            
             return allSpotsMatchingNeeds; 
         }
 
