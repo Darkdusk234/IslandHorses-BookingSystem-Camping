@@ -195,4 +195,23 @@ public class CampSpotControllerTests
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.UpdateCampSpotAsync(It.IsAny<int>(), It.IsAny<CreateCampSpotRequest>()), Times.Once());
     }
+
+    [TestMethod]
+    public async Task UpdateCampSpot_WhenNonExistingIdAndValidDataIsInputted_NoContentStatusCode()
+    {
+        var id = 2415;
+        var campSpotToUpdate = new CreateCampSpotRequest
+        {
+            CampSiteId = 1,
+            TypeId = 2,
+            Electricity = false
+        };
+        _campSpotServiceMock.Setup(m => m.UpdateCampSpotAsync(It.IsAny<int>(), It.IsAny<CreateCampSpotRequest>())).ReturnsAsync((false, "Camp spot not found."));
+        var expected = new NotFoundObjectResult("Camp spot not found.");
+
+        var actual = await _campSpotController.UpdateCampSpot(id, campSpotToUpdate);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.UpdateCampSpotAsync(It.IsAny<int>(), It.IsAny<CreateCampSpotRequest>()), Times.Once());
+    }
 }
