@@ -63,13 +63,13 @@ public class CustomerController : ControllerBase
         return CreatedAtAction(nameof(GetCustomerById), new { id = response.Id }, response);
     }
 
-    [HttpPut(Name = "UpdateCustomer")]
+    [HttpPut("{id}", Name = "UpdateCustomer")]
     public async Task<IActionResult> UpdateCustomer([FromRoute] int id, [FromBody] UpdateCustomerDto dto)
     {
-        if (dto == null)
-        {
-            return BadRequest(new { errorMessage = "Invalid customer data." });
-        }
+        // if (dto == null)
+        // {
+        //     return BadRequest(new { errorMessage = "Invalid customer data." });
+        // }
         if (!ModelState.IsValid)
         {
             return BadRequest(new
