@@ -50,15 +50,16 @@ namespace Camping_BookingSystem.Controllers
             return Ok(campSpots);
         }
         
-        //Som receptionist vill jag kunna söka lediga platser baserat på typ, datum och antal gäster
-        [HttpGet("searchAvailableOnTypeDateCapacity",Name = "GetFreeSpotsMatchingNeeds")]
-        public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingNeeds(
+        //Som gäst vill jag kunna söka alla lediga platser baserat på datum enbart
+        [Tags("Guest")]
+        [HttpGet("searchAvailableSpotsMatchingDates",Name = "GetFreeSpotsMatchingDates")]
+        public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingDates(
             [FromQuery] DateTime startDate,
             [FromQuery] DateTime endDate,
-            [FromQuery] int typeID)
+            [FromQuery] int campSiteId)
         {
             var availableSpotBasedOnNeeds =  
-                await _campSpotService.GetAvailableSpotsMatchingNeeds(startDate, endDate, typeID);
+                await _campSpotService.GetAvailableSpotsMatchingDates(startDate, endDate, campSiteId);
             if (availableSpotBasedOnNeeds == null)
             {
                 return NotFound(); 

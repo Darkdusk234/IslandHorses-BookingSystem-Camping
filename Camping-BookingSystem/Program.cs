@@ -20,7 +20,9 @@ namespace Camping_BookingSystem
             builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
             builder.Services.AddScoped<ICampSpotService, CampSpotService>();
             builder.Services.AddScoped<ICampSpotRepository, CampSpotRepository>();
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepositoy>();
+            builder.Services.AddScoped<ISpotTypeService, SpotTypeService>();
+            builder.Services.AddScoped<ISpotTypeRepository, SpotTypeRepository>();
+            
             builder.Services.AddScoped<IBookingValidator, BookingValidator>();
 
             builder.Services.AddControllers()
