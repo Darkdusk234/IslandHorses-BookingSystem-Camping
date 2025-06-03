@@ -1,7 +1,6 @@
 using BookingSystem_ClassLibrary.Models;
 using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 
-
 namespace Camping_BookingSystem.Repositories
 {
     public interface ICampSpotRepository
@@ -16,6 +15,7 @@ namespace Camping_BookingSystem.Repositories
         
          
         Task<IEnumerable<CampSpot>> SearchAvailableSpots(SearchAvailableSpotsDto searchDto);
+
 
     }
 }
