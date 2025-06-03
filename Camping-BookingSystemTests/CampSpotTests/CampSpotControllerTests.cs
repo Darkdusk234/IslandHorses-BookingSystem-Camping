@@ -197,7 +197,7 @@ public class CampSpotControllerTests
     }
 
     [TestMethod]
-    public async Task UpdateCampSpot_WhenNonExistingIdAndValidDataIsInputted_NoContentStatusCode()
+    public async Task UpdateCampSpot_WhenNonExistingIdAndValidDataIsInputted_NoTFoundStatusCodeWithErrorMessage()
     {
         var id = 2415;
         var campSpotToUpdate = new CreateCampSpotRequest
