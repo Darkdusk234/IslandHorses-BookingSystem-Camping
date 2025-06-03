@@ -156,4 +156,24 @@ public class CampSpotControllerTests
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.AddCampSpotAsync(It.IsAny<CampSpot>()), Times.Once());
     }
+
+    [TestMethod]
+    public async Task CreateCampSpot_WhenMethodEncountersErrorTryingToAddData_BadRequestWithErrorMessage()
+    {
+        var campSpotToCreate = new CreateCampSpotRequest
+        {
+            CampSiteId = 1,
+            TypeId = 2,
+            Electricity = false
+        };
+        var campSpot = campSpotToCreate.ToCampSpot();
+        var exception = new ArgumentException("Error happened.");
+        _campSpotServiceMock.Setup(m => m.AddCampSpotAsync(It.IsAny<CampSpot>())).Throws(exception);
+        var expected = new BadRequestObjectResult("Error happened.");
+
+        var actual = await _campSpotController.CreateCampSpot(campSpotToCreate);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.AddCampSpotAsync(It.IsAny<CampSpot>()), Times.Once());
+    }
 }
