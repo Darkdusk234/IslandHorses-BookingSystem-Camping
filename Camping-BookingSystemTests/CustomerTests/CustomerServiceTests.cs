@@ -1,7 +1,6 @@
 using BookingSystem_ClassLibrary.Models;
 using Camping_BookingSystem.Services;
 using Camping_BookingSystem.Repositories;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace Camping_BookingSystemTests.CustomerTests;
