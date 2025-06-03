@@ -52,13 +52,12 @@ namespace Camping_BookingSystem.Controllers
         
         //Som receptionist vill jag kunna söka lediga platser baserat på typ, datum och antal gäster
         [HttpGet("searchAvailableOnTypeDateCapacity",Name = "GetFreeSpotsMatchingNeeds")]
-        public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingNeeds(
+        public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingDates(
             [FromQuery] DateTime startDate,
-            [FromQuery] DateTime endDate,
-            [FromQuery] int typeID)
+            [FromQuery] DateTime endDate)
         {
             var availableSpotBasedOnNeeds =  
-                await _campSpotService.GetAvailableSpotsMatchingNeeds(startDate, endDate, typeID);
+                await _campSpotService.GetAvailableSpotsMatchingDates(startDate, endDate);
             if (availableSpotBasedOnNeeds == null)
             {
                 return NotFound(); 

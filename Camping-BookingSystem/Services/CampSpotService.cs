@@ -55,10 +55,9 @@ namespace Camping_BookingSystem.Services
             return await _campSpotRepository.GetCampSpotById(id);
         }
         
-        public async Task<IEnumerable<CampSpot>> GetAvailableSpotsMatchingNeeds(DateTime startDate, DateTime endDate, int typeId/*, int nrGuests*/)
+        public async Task<IEnumerable<CampSpot>> GetAvailableSpotsMatchingDates(DateTime startDate, DateTime endDate)
         {
-            return await _campSpotRepository.GetAvailableCampSpotsAsync(startDate, endDate, typeId/*, 
-                nrGuests*/); 
+            return await _campSpotRepository.GetAvailableCampSpotsAsync(startDate, endDate); 
         }
 
         public async Task<(bool success, string? errorMessage)> UpdateCampSpotAsync(int id, CreateCampSpotRequest request)

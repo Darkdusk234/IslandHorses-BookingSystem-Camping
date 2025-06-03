@@ -44,12 +44,11 @@ namespace Camping_BookingSystem.Repositories
         }
         
         // Lägg till capacity när den finns. 
-        public async Task<List<CampSpot>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate, int typeId/*, int nrGuests*/)
+        public async Task<List<CampSpot>> GetAvailableCampSpotsAsync(DateTime startDate, DateTime endDate)
         {
             var allSpotsMatchingNeeds = await _context.CampSpots
                 .Include(c => c.Bookings)
                 .Where(c =>
-                    c.TypeId == typeId &&
                     !c.Bookings.Any(b => (b.StartDate < endDate && b.EndDate > startDate))).ToListAsync();
             return allSpotsMatchingNeeds; 
         }
