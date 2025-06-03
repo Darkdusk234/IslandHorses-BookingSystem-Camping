@@ -1,5 +1,7 @@
 using BookingSystem_ClassLibrary.Models;
+using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Controllers;
+using Camping_BookingSystem.Mapping;
 using Camping_BookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -134,5 +136,24 @@ public class CampSpotControllerTests
 
         Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
         _campSpotServiceMock.Verify(repo => repo.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>()), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task CreateCampSpot_WhenValidCampSpotDataIsInputted_CreatedAtActionStatusCodeWithCampSpotCreated()
+    {
+        var campSpotToCreate = new CreateCampSpotRequest
+        {
+            CampSiteId = 1,
+            TypeId = 2,
+            Electricity = false
+        };
+        var campSpot = campSpotToCreate.ToCampSpot();
+        _campSpotServiceMock.Setup(m => m.AddCampSpotAsync(It.IsAny<CampSpot>())).ReturnsAsync(campSpot);
+        var expected = new CreatedAtActionResult("GetCampSpotById", null, new { id = campSpot.Id }, campSpot);
+
+        var actual = await _campSpotController.CreateCampSpot(campSpotToCreate);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.AddCampSpotAsync(It.IsAny<CampSpot>()), Times.Once());
     }
 }
