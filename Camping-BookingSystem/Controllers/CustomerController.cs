@@ -73,7 +73,7 @@ public class CustomerController : ControllerBase
 
         if (id <= 0)
         {
-            return BadRequest(new { erroMessage = "Invalid customer ID" });
+            return BadRequest(new { errorMessage = "Invalid customer ID" });
         }
 
         var customerToUpdate = await _customerService.GetCustomerByIdAsync(id);
