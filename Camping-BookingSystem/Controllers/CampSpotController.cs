@@ -116,63 +116,29 @@ namespace Camping_BookingSystem.Controllers
 
             return NoContent();
         }
-        [Tags("Reseptionist")]
+
+        [Tags("Receptionist")]
         [HttpGet("SearchAvailableSpot")]
-        public async Task<IActionResult> GetAvailableCampSpots([FromQuery] SearchAvailableSpotsDto searchDto)
+        public async Task<IActionResult> SearchAvailableSpot([FromQuery] SearchAvailableSpotsDto searchDto)
         {
-            if (searchDto == null)      // Check if search criteria is null
-            {
-                return BadRequest("Search criteria cannot be null.");
-            }
+            var result = await _campSpotService.SearchAvailableSpotsAsync(searchDto);
 
-            if (searchDto. StartDate >= searchDto.EndDate)      // Check if start date is before end date
+            if (result.IsSuccess)
             {
-                return BadRequest("Start date must be before end date.");
+                return Ok(result);
             }
-            if (searchDto.StartDate < DateTime.Today)       // Check if start date is in the past
+            else
             {
-                return BadRequest("This is not a time traveling campspot. You silly goose!");
-            }
-
-            if (searchDto.NumberOfPeople <= 0)          // Check if number of people is valid
-            {
-                return BadRequest("You can not be negativ 1 people when you are booking");
-            }
-
-            try
-            {
-                var availableSpots = await _campSpotService.SearchAvailableSpotsAsync(searchDto);   // avaiable spots based on search criteria
-                var spotsList = availableSpots.ToList();                            // convert to "avaiable spots" to list for easier handling
-
-                if (spotsList.Any())    // if any spots are avaiable
+                // if server says no
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
                 {
-                    return Ok(new   // return if they found avaiable spots based on criteria
-                    {
-                        Success = true,
-                        Message = $"Found {spotsList.Count} available camping spots for your search criteria.",
-                        Count = spotsList.Count,
-                        AvailableSpots = spotsList
-                    });
+                    return StatusCode(500, result);
                 }
                 else
                 {
-                    return Ok(new   // return if no spots are avaiable based on "right" criteria
-                    {
-                        Success = false,
-                        Message = "No available camping spots found for the specified criteria. Please try different dates or requirements.",
-                        Count = 0,
-                        AvailableSpots = new List<object>()
-                    });
+                    // Validetion error
+                    return BadRequest(result);
                 }
-            }
-            catch (Exception ex)    // if users input is not valid/wrong and they are a silly goose
-            {
-                return StatusCode(500, new
-                {
-                    Success = false,
-                    Message = "An error occurred while searching for available spots.",
-                    Error = ex.Message
-                });
             }
         }
     }
