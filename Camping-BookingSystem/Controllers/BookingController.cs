@@ -57,23 +57,11 @@ namespace Camping_BookingSystem.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var (isAvailable, reason) = await _bookingService
-                .IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate, request.NumberOfPeople);
-            if (!isAvailable)
-            {
-                return BadRequest(reason);
-            }
-
-            try
-            {
-                var response = await _bookingService.CreateBookingWithCustomerAsync(request);
-                return CreatedAtAction(nameof(GetBookingById), new { id = response.BookingId }, response);
-            }
-            catch(ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                
+            var response = await _bookingService.CreateBookingWithCustomerAsync(request);
+                
+            return response;
+          
         }
 
         [Tags("Receptionist")]
@@ -85,18 +73,8 @@ namespace Camping_BookingSystem.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!Enum.IsDefined(typeof(BookingStatus), request.Status))
-            {
-                return BadRequest("Invalid booking status.");
-            }
-            var (success, errorMessage) = await _bookingService.UpdateBookingAsyn(id, request);
-
-            if (!success)
-            {
-                return BadRequest(errorMessage);
-            }
-
-            return NoContent();
+            request.CustomerId = id;
+            return await _bookingService.UpdateBookingAsyn(request);
         }
 
         [Tags("Receptionist")]
