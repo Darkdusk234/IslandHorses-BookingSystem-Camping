@@ -123,4 +123,16 @@ public class CampSpotControllerTests
         _campSpotServiceMock.Verify(repo => repo.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>()), Times.Once());
     }
 
+    [TestMethod]
+    public async Task GetCampSpotByCampSiteId_WhenInputtingAnNonExistingId_OkStatusCodeWithCampSpots()
+    {
+        var id = 20143;
+        _campSpotServiceMock.Setup(m => m.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>())).ReturnsAsync((null, false));
+        var expected = new NotFoundObjectResult("Campsite not found.");
+
+        var actual = await _campSpotController.GetCampSpotsByCampSiteId(id);
+
+        Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        _campSpotServiceMock.Verify(repo => repo.GetCampSpotsByCampSiteIdAsync(It.IsAny<int>()), Times.Once());
+    }
 }
