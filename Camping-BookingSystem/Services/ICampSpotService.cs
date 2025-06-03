@@ -9,7 +9,7 @@ namespace Camping_BookingSystem.Services
         Task<CampSpot?> GetCampSpotByIdAsync(int id);
         Task<(IEnumerable<CampSpot>?, bool campSiteFound)> GetCampSpotsByCampSiteIdAsync(int campSiteId);
 
-        Task<IEnumerable<CampSpot>> GetAvailableSpotsMatchingDates(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<CampSpot>> GetAvailableSpotsMatchingDates(DateTime startDate, DateTime endDate, int campSiteId);
         Task<CampSpot> AddCampSpotAsync(CampSpot campSpot);
 
         Task<(bool success, string? errorMessage)> DeleteCampSpotAsync(int id);

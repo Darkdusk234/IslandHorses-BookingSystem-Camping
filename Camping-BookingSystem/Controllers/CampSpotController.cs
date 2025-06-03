@@ -55,10 +55,11 @@ namespace Camping_BookingSystem.Controllers
         [HttpGet("searchAvailableSpotsMatchingDates",Name = "GetFreeSpotsMatchingDates")]
         public async Task<ActionResult<IEnumerable<CampSpot>>> GetFreeSpotsMatchingDates(
             [FromQuery] DateTime startDate,
-            [FromQuery] DateTime endDate)
+            [FromQuery] DateTime endDate,
+            [FromQuery] int campSiteId)
         {
             var availableSpotBasedOnNeeds =  
-                await _campSpotService.GetAvailableSpotsMatchingDates(startDate, endDate);
+                await _campSpotService.GetAvailableSpotsMatchingDates(startDate, endDate, campSiteId);
             if (availableSpotBasedOnNeeds == null)
             {
                 return NotFound(); 
