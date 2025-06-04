@@ -462,8 +462,9 @@ public class BookingServiceTests_MOQ
         var numberOfPeople = 15; // Exceeds the limit of 10
         
         _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
-            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
-        
+            .ReturnsAsync(new CampSpot { Id = campSpotId, TypeId = 1 });
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new SpotType { MaxPersonLimit = 10 });
+
         // When: The IsCampSpotAvailableAsync method is called
         var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
         
