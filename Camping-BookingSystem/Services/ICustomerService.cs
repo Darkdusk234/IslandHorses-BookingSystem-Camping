@@ -6,7 +6,7 @@ public interface ICustomerService
 {
     Task<IEnumerable<Customer>> GetAllCustomersAsync();
     Task<Customer?> GetCustomerByIdAsync(int id);
-    Task<Customer> CreateCustomerAsync(Customer customer);
-    Task UpdateCustomerAsync(Customer customer);
+    Task<(bool Success, string? ErrorMessage)> CreateCustomerAsync(Customer customer);
+    public Task<(bool Success, string? ErrorMessage)> UpdateCustomerAsync(Customer customer);
     Task DeleteCustomerAsync(Customer customer);
 }

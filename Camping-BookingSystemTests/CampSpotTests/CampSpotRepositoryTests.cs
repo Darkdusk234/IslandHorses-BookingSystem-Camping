@@ -4,7 +4,7 @@ using Camping_BookingSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Camping_BookingSystemTests;
+namespace Camping_BookingSystemTests.CampSpotTests;
 
 [TestClass]
 public class CampSpotRepositoryTests

@@ -40,6 +40,13 @@
     <Folder Include="BookingTests\" />
     <Folder Include="CampSpotTests\" />
     <Folder Include="CustomerTests\" />
+    <Folder Include="CampSiteTests\" />
+    <Folder Include="SpotTypeTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="BookingTests\BookingServiceTests.cs" />
+
   </ItemGroup>
 
 </Project>
