@@ -106,7 +106,8 @@ public class CustomerControllerTests
 
         _customerServiceMock
             .Setup(s => s.CreateCustomerAsync(It.IsAny<Customer>()))
-            .ReturnsAsync(createdCustomer);
+            .Callback<Customer>(c => c.Id = 99)
+            .ReturnsAsync((true, null));
 
         // When
         var result = await _controller.CreateCustomer(dto);

@@ -97,16 +97,19 @@ public class CustomerServiceTests
             City = "Borlänge"
         };
 
+        _customerRepoMock.Setup(r => r.AddAsync(It.IsAny<Customer>())).Returns(Task.CompletedTask);
+        _customerRepoMock.Setup(r => r.SaveAsync()).Returns(Task.CompletedTask);
+
         // When
-        var result = await _customerService.CreateCustomerAsync(customer);
+        var (success, errorMessage) = await _customerService.CreateCustomerAsync(customer);
 
         // Then
-        // Verifies that AddAsync() is called once and once only with this customer object. If not, an error is thrown.
-        // Setup is not needed since nothing is returned.
-        _customerRepoMock.Verify(r => r.AddAsync(customer), Times.Once);
-        // Verifies that SaveAsync() is called once and once. If not, an error is thrown.
+        _customerRepoMock.Verify(r => r.AddAsync(It.Is<Customer>(c => 
+            c.FirstName == "Olle")), Times.Once);
         _customerRepoMock.Verify(r => r.SaveAsync(), Times.Once);
-        Assert.AreEqual("Olle", result.FirstName);
+        
+        Assert.IsTrue(success);
+        Assert.IsNull(errorMessage);
     }
 
     [TestMethod]
@@ -130,7 +133,6 @@ public class CustomerServiceTests
 
         // Then
         // Verifies that Update() is called once and once only with this customer object. If not, an error is thrown.
-        // Setup is not needed since nothing is returned.
         _customerRepoMock.Verify(r => r.Update(customer), Times.Once);
         // Verifies that SaveAsync() is called once and once. If not, an error is thrown.
         _customerRepoMock.Verify(r => r.SaveAsync(), Times.Once);
@@ -157,7 +159,6 @@ public class CustomerServiceTests
 
         // Then
         // Verifies that Delete() is called once and once only with this customre object. If not, an error is thrown.
-        // Setup is not needed since nothing is returned.
         _customerRepoMock.Verify(r => r.Delete(customer), Times.Once);
         // Verifies that SaveAsync() is called once and once. If not, an error is thrown.
         _customerRepoMock.Verify(r => r.SaveAsync(), Times.Once);   
