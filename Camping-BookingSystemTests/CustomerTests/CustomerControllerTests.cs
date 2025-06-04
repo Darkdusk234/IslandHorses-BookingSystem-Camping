@@ -26,7 +26,17 @@ public class CustomerControllerTests
         // Given
         var customers = new List<Customer>
         {
-            new Customer { Id = 1, FirstName = "Anna" }
+            new Customer
+            {
+                Id = 1,
+                FirstName = "Anna",
+                LastName = "Andersson",
+                Email = "anna@example.com",
+                PhoneNumber = "0701234567",
+                StreetAddress = "Storgatan 1",
+                ZipCode = "12345",
+                City = "Stockholm"
+            }
         };
         _customerServiceMock.Setup(s => s.GetAllCustomersAsync()).ReturnsAsync(customers);
 
@@ -44,7 +54,17 @@ public class CustomerControllerTests
     public async Task GetCustomerById_GivenCustomerExists_WhenCalled_ThenReturnsOkWithCustomer()
     {
         // Given
-        var customer = new Customer { Id = 1, FirstName = "Anna" };
+        var customer = new Customer
+        {
+            Id = 1,
+            FirstName = "Anna",
+            LastName = "Andersson",
+            Email = "anna@example.com",
+            PhoneNumber = "0701234567",
+            StreetAddress = "Storgatan 1",
+            ZipCode = "12345",
+            City = "Stockholm"
+        };
         _customerServiceMock.Setup(s => s.GetCustomerByIdAsync(1)).ReturnsAsync(customer);
 
         // When
@@ -60,10 +80,33 @@ public class CustomerControllerTests
     [TestMethod]
     public async Task CreateCustomer_GivenValidDto_WhenCalled_ThenReturnsCreatedAtAction()
     {
-        // Given
-        var dto = new CreateCustomerDto { FirstName = "Lisa" };
-        var createdCustomer = new Customer { Id = 99, FirstName = "Lisa" };
-        _customerServiceMock.Setup(s => s.CreateCustomerAsync(It.IsAny<Customer>())).ReturnsAsync(createdCustomer);
+        // Given: a dto object and a customer
+        var dto = new CreateCustomerDto
+        {
+            FirstName = "Sven",
+            LastName = "Svensson",
+            Email = "sven@svenssons.com",
+            PhoneNumber = "0732333333",
+            StreetAddress = "Ohmgatan 3",
+            ZipCode = "67892",
+            City = "Östersund"
+        };
+        
+        var createdCustomer = new Customer
+        {
+            Id = 99,
+            FirstName = "Sven",
+            LastName = "Svensson",
+            Email = "sven@svenssons.com",
+            PhoneNumber = "0732333333",
+            StreetAddress = "Ohmgatan 3",
+            ZipCode = "67892",
+            City = "Östersund"
+        };
+
+        _customerServiceMock
+            .Setup(s => s.CreateCustomerAsync(It.IsAny<Customer>()))
+            .ReturnsAsync(createdCustomer);
 
         // When
         var result = await _controller.CreateCustomer(dto);
@@ -71,16 +114,34 @@ public class CustomerControllerTests
         // Then
         var createdResult = result as CreatedAtActionResult;
         Assert.IsNotNull(createdResult);
+
         var response = createdResult.Value as CustomerResponse;
-        Assert.AreEqual("Lisa", response.FirstName);
+        Assert.IsNotNull(response);
         Assert.AreEqual(99, response.Id);
+        Assert.AreEqual("Sven", response.FirstName);
+        Assert.AreEqual("Svensson", response.LastName);
+        Assert.AreEqual("sven@svenssons.com", response.Email);
+        Assert.AreEqual("0732333333", response.PhoneNumber);
+        Assert.AreEqual("Ohmgatan 3", response.StreetAddress);
+        Assert.AreEqual("67892", response.ZipCode);
+        Assert.AreEqual("Östersund", response.City);
     }
 
     [TestMethod]
     public async Task DeleteCustomer_GivenCustomerExists_WhenCalled_ThenReturnsNoContent()
     {
         // Given
-        var customer = new Customer { Id = 5 };
+        var customer = new Customer
+        {
+            Id = 5,
+            FirstName = "Lars",
+            LastName = "Larsson",
+            Email = "lars@larsson.com",
+            PhoneNumber = "0740444444",
+            StreetAddress = "Stolpgatan 4",
+            ZipCode = "444444",
+            City = "Lillgrund"
+        };
         _customerServiceMock.Setup(s => s.GetCustomerByIdAsync(5)).ReturnsAsync(customer);
 
         // When
