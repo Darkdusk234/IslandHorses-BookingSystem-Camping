@@ -328,7 +328,7 @@ public class SpotTypeControllerTests
         // Assert
         Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         var badRequestResult = (BadRequestObjectResult)result;
-        Assert.AreEqual("No ID for taht type", badRequestResult.Value); // Note: keeping your typo
+        Assert.AreEqual("No ID for that type", badRequestResult.Value); 
 
         // Verify service was never called
         _mockSpotTypeService.Verify(s => s.GetSpotTypeByIdAsync(It.IsAny<int>()), Times.Never);
