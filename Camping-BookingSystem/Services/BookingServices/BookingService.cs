@@ -13,6 +13,7 @@ namespace Camping_BookingSystem.Services
         private readonly ICampSpotRepository _campSpotRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IBookingValidator _bookingValidator;
+        private readonly ISpotTypeRepository _spotTypeRepository;
         private ICustomerRepository object1;
         private IBookingRepository object2;
         private IBookingValidator object3;
@@ -21,12 +22,14 @@ namespace Camping_BookingSystem.Services
             IBookingValidator bookingValidator,
             IBookingRepository bookingRepository,
             ICampSpotRepository campSpotRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            ISpotTypeRepository spotTypeRepository)
         {
             _bookingRepository = bookingRepository;
             _campSpotRepository = campSpotRepository;
             _customerRepository = customerRepository;
             _bookingValidator = bookingValidator;
+            _spotTypeRepository = spotTypeRepository;
         }
 
         // Method to cancel a booking (Guest)
@@ -88,6 +91,13 @@ namespace Camping_BookingSystem.Services
                     ZipCode = request.ZipCode,
                     City = request.City
                 };
+
+            var available = await IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate, request.NumberOfPeople);
+
+            if(!available.IsAvailable)
+            {
+                return new BadRequestObjectResult(available.Reason);
+            }
 
             var booking = new Booking
             {
@@ -161,7 +171,13 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "Camp spot not found.");
             }
-            if (campSpot.SpotType.MaxPersonLimit < numberOfPeople)
+
+            var spotType = await _spotTypeRepository.GetByIdAsync(campSpot.TypeId);
+            if (spotType == null)
+            {
+                return (false, "Spot type not found.");
+            }
+            if (spotType.MaxPersonLimit < numberOfPeople)
             {
                 return (false, "Camp spot can not accommodate the number of people.");
             }

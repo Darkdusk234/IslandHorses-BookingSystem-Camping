@@ -20,6 +20,7 @@ public class BookingServiceTests_MOQ
     private Mock<ICampSpotRepository> _campSpotRepoMock;
     private Mock<ICustomerRepository> _customerRepoMock;
     private Mock<IBookingValidator> _bookingValidatorMock;
+    private Mock<ISpotTypeRepository> _spotTypeRepoMock;
     private BookingService _bookingService;
 
     [TestInitialize]
@@ -29,12 +30,14 @@ public class BookingServiceTests_MOQ
         _campSpotRepoMock = new Mock<ICampSpotRepository>();
         _customerRepoMock = new Mock<ICustomerRepository>();
         _bookingValidatorMock = new Mock<IBookingValidator>();
+        _spotTypeRepoMock = new Mock<ISpotTypeRepository>();
 
         _bookingService = new BookingService(
             _bookingValidatorMock.Object,
             _bookingRepoMock.Object,
             _campSpotRepoMock.Object,
-            _customerRepoMock.Object
+            _customerRepoMock.Object,
+            _spotTypeRepoMock.Object
         );
     }
     [TestMethod]
