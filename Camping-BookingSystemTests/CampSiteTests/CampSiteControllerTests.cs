@@ -367,21 +367,21 @@ public class CampSiteControllerTests
     }
 
     [TestMethod]
-    public async Task DeleteCampSite_InvalidId_ReturnsNotFoundAndSillyText()
+    public async Task DeleteCampSite_NonExistingId_ReturnsNotFoundAndSillyText()
     {
         // Arrange
-        var invalidId = 666;
+        var NonExistingId = 666;
         _mockCampSite
-            .Setup(s => s.GetByIdAsync(invalidId))
+            .Setup(s => s.GetByIdAsync(NonExistingId))
             .ReturnsAsync((CampSite)null);
 
         // Act
-        var resultat = await _controller.DeleteCampSite(invalidId);
+        var resultat = await _controller.DeleteCampSite(NonExistingId);
 
         // Assert
         Assert.IsInstanceOfType(resultat, typeof(NotFoundObjectResult));
         var notFoundResult = (NotFoundObjectResult)resultat;
-        var expectedMessage = $"Finns ingen campingplats med id: {invalidId}";
+        var expectedMessage = $"Finns ingen campingplats med id: {NonExistingId}";
         Assert.AreEqual(expectedMessage, notFoundResult.Value);
     }
 
