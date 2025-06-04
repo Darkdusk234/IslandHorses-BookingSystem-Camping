@@ -384,6 +384,19 @@ public class CampSiteControllerTests
         var expectedMessage = $"Finns ingen campingplats med id: {NonExistingId}";
         Assert.AreEqual(expectedMessage, notFoundResult.Value);
     }
+    [TestMethod]
+    public async Task DeleteCampSite_NegativId_ReturnsBadRequest()
+    {
+        // Arrange
+        var negativeId = -666;
+        // Act
+        var result = await _controller.DeleteCampSite(negativeId);
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var badRequestResult = (BadRequestObjectResult)result;
+        var expectedMessage = "Id måste vara större än 0, silly goose";
+        Assert.AreEqual(expectedMessage, badRequestResult.Value);
+    }
 
     [TestMethod]
     public async Task DeleteCampSite_CampSiteNotFound_ReturnsNotFound()
