@@ -20,6 +20,7 @@ public class BookingServiceTests_MOQ
     private Mock<ICampSpotRepository> _campSpotRepoMock;
     private Mock<ICustomerRepository> _customerRepoMock;
     private Mock<IBookingValidator> _bookingValidatorMock;
+    private Mock<ISpotTypeRepository> _spotTypeRepoMock;
     private BookingService _bookingService;
 
     [TestInitialize]
@@ -29,12 +30,14 @@ public class BookingServiceTests_MOQ
         _campSpotRepoMock = new Mock<ICampSpotRepository>();
         _customerRepoMock = new Mock<ICustomerRepository>();
         _bookingValidatorMock = new Mock<IBookingValidator>();
+        _spotTypeRepoMock = new Mock<ISpotTypeRepository>();
 
         _bookingService = new BookingService(
             _bookingValidatorMock.Object,
             _bookingRepoMock.Object,
             _campSpotRepoMock.Object,
-            _customerRepoMock.Object
+            _customerRepoMock.Object,
+            _spotTypeRepoMock.Object
         );
     }
     [TestMethod]
@@ -372,11 +375,13 @@ public class BookingServiceTests_MOQ
     {
         // Given: A camp spot that is available for the requested dates
         var campSpotId = 1;
+        var typeId = 1;
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         var numberOfPeople = 2;
         _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
-            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+            .ReturnsAsync(new CampSpot { Id = campSpotId, TypeId = typeId });
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new SpotType { MaxPersonLimit = 10 });
         _bookingRepoMock.Setup(repo => repo.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate))
             .ReturnsAsync(new List<Booking>());
         // When: The IsCampSpotAvailableAsync method is called
@@ -391,12 +396,14 @@ public class BookingServiceTests_MOQ
     {
         // Given: A camp spot that is not available for the requested dates
         var campSpotId = 1;
+        var typeId = 1;
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         var numberOfPeople = 2;
         
         _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
-            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+            .ReturnsAsync(new CampSpot { Id = campSpotId, TypeId = typeId });
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new SpotType { MaxPersonLimit = 10 });
         
         var existingBooking = new Booking
         {
@@ -452,13 +459,15 @@ public class BookingServiceTests_MOQ
     {
         // Given: A number of people that exceeds the camp spot's limit
         var campSpotId = 1;
+        var typeId = 1;
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         var numberOfPeople = 15; // Exceeds the limit of 10
         
         _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
-            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
-        
+            .ReturnsAsync(new CampSpot { Id = campSpotId, TypeId = typeId });
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new SpotType { MaxPersonLimit = 10 });
+
         // When: The IsCampSpotAvailableAsync method is called
         var result = await _bookingService.IsCampSpotAvailableAsync(campSpotId, startDate, endDate, numberOfPeople);
         
