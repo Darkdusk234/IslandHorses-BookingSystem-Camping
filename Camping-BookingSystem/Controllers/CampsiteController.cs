@@ -75,6 +75,10 @@ namespace Camping_BookingSystem.Controllers
         [HttpDelete("{id}")]    // Deletes a campsite
         public async Task<IActionResult> DeleteCampSite(int id)
         {
+            if (id <= 0)
+            {
+                return BadRequest("Id måste vara större än 0, silly goose");
+            }
             var campSite = await _service.GetByIdAsync(id);
             if (campSite == null)
                 return NotFound($"Finns ingen campingplats med id: {id}");
