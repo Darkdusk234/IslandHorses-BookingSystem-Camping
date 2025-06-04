@@ -42,7 +42,6 @@ public class CustomerController : ControllerBase
     [HttpPost(Name = "CreateCustomer")] 
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDto dto)
     {
-        
         if (!ModelState.IsValid)
         {
             return BadRequest(new
@@ -51,11 +50,17 @@ public class CustomerController : ControllerBase
                 details = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
             });
         }
-        
-        var newCustomer = dto.ToCustomer(); 
-        var createdCustomer = await _customerService.CreateCustomerAsync(newCustomer);
-        var response = createdCustomer.ToCustomerResponse(); 
-        
+
+        var newCustomer = dto.ToCustomer();
+
+        var (success, errorMessage) = await _customerService.CreateCustomerAsync(newCustomer);
+
+        if (!success)
+        {
+            return BadRequest(new { errorMessage });
+        }
+
+        var response = newCustomer.ToCustomerResponse(); 
         return CreatedAtAction(nameof(GetCustomerById), new { id = response.Id }, response);
     }
 
@@ -91,7 +96,13 @@ public class CustomerController : ControllerBase
         customerToUpdate.ZipCode = dto.ZipCode;
         customerToUpdate.City = dto.City;
 
-        await _customerService.UpdateCustomerAsync(customerToUpdate);
+        var (success, errorMessage) = await _customerService.UpdateCustomerAsync(customerToUpdate);
+
+        if (!success)
+        {
+            return BadRequest(new { errorMessage });
+        }
+
         return NoContent();
     }
 

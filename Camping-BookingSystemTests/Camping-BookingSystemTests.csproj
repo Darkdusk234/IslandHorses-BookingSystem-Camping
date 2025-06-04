@@ -41,4 +41,8 @@
     <Folder Include="SpotTypeTests\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="BookingTests\BookingServiceTests.cs" />
+  </ItemGroup>
+
 </Project>

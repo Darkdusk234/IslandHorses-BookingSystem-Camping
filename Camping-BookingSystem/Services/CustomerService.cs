@@ -23,22 +23,46 @@ public class CustomerService : ICustomerService
         return await _customerRepository.GetByIdAsync(id); 
     }
 
-    public async Task<Customer> CreateCustomerAsync(Customer customer)
+    public async Task<(bool Success, string? ErrorMessage)> CreateCustomerAsync(Customer customer)
     {
+        var validation = await ValidateCustomerAsync(customer);
+        if (!validation.IsValid)
+        {
+            return (false, validation.ErrorMessage);
+        }
+    
         await _customerRepository.AddAsync(customer);
         await _customerRepository.SaveAsync();
-        return customer; 
+        return (true, null);
     }
 
-    public async Task UpdateCustomerAsync(Customer customer)
+    public async Task<(bool Success, string? ErrorMessage)> UpdateCustomerAsync(Customer customer)
     {
+        var validation = await ValidateCustomerAsync(customer);
+        if (!validation.IsValid)
+        {
+            return (false, validation.ErrorMessage);
+        }
+    
         _customerRepository.Update(customer);
-        await _customerRepository.SaveAsync(); 
+        await _customerRepository.SaveAsync();
+        return (true, null);
     }
 
     public async Task DeleteCustomerAsync(Customer customer)
     {
         _customerRepository.Delete(customer);
         await _customerRepository.SaveAsync(); 
+    }
+
+    public async Task<(bool IsValid, string? ErrorMessage)> ValidateCustomerAsync(Customer customer)
+    {
+        var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(customer.Email);
+        if (existingCustomer != null && existingCustomer.Id != customer.Id)
+        {
+            return (false, "Email is already in use by another customer.");
+        }
+
+        return (true, null);
     }
 }
