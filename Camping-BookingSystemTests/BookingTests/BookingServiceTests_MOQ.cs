@@ -394,12 +394,14 @@ public class BookingServiceTests_MOQ
     {
         // Given: A camp spot that is not available for the requested dates
         var campSpotId = 1;
+        var typeId = 1;
         var startDate = DateTime.Today.AddDays(1);
         var endDate = DateTime.Today.AddDays(3);
         var numberOfPeople = 2;
         
         _campSpotRepoMock.Setup(repo => repo.GetCampSpotById(campSpotId))
-            .ReturnsAsync(new CampSpot { Id = campSpotId, SpotType = new SpotType { MaxPersonLimit = 10 } });
+            .ReturnsAsync(new CampSpot { Id = campSpotId, TypeId = typeId });
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new SpotType { MaxPersonLimit = 10 });
         
         var existingBooking = new Booking
         {
