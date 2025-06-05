@@ -15,6 +15,12 @@ namespace BookingSystem_ClassLibrary.Models
         [Required]
         public int NumberOfPeople { get; set; }
 
+        public bool Parking { get; set; } = false;
+
+        public bool Wifi { get; set; } = false;
+
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
+
         //Navigational Properties
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Customer? Customer { get; set; }
