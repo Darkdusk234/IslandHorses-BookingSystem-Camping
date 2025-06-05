@@ -60,7 +60,7 @@ namespace Camping_BookingSystem.Controllers
 
             if (id != request.Id)   // check if the ID in the URL matches the ID in the request body
             {
-                return BadRequest("No ID for taht type");
+                return BadRequest("No ID for that type");
             }
             var existingSpotType = await _spotTypeService.GetSpotTypeByIdAsync(id);
             if (existingSpotType == null)
