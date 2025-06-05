@@ -109,7 +109,9 @@ In addition to above there are CRUD operations for Customer, CampSpot, CampSite,
 
 ---
 
-## ✅ Testing Strategy
+## ✅ Testing
+
+### ✅ Testing Strategy
 
 | Type | Tool | Coverage |
 |------|------|----------|
@@ -120,6 +122,16 @@ In addition to above there are CRUD operations for Customer, CampSpot, CampSite,
 In addtionm, EF Core and `SQLite In-Memory`has been used for in-memory database creation for testing repositories.
 
 > All critical flows are tested: model data creation, modification, cancellation, and availability validation for camp spots.
+
+### ✅ Strategy evaluation
+
+All test on end points are working within expected parameters. 
+
+Original plan was to do TDD (Test Driven Development). Once started - it was tricky, especially in the early development phases when setting up APIs etc. In the end, only a minor part of the development was done according to TDD. 
+
+Challenges with testing includes:
+- How to create unit tests for different levels of the endpoints (controller, repository and service-layer).
+- A bit tricky to switch to js again for postman scripts.
 
 ---
 
