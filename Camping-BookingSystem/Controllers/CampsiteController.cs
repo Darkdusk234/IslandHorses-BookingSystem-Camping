@@ -79,7 +79,7 @@ namespace Camping_BookingSystem.Controllers
             if (id <= 2) // Protect core test data (IDs 1-3)
             {
                 return BadRequest("Cannot delete core test data (ID 1-3)");
-
+            }
             if (id <= 0)
             {
                 return BadRequest("Id måste vara större än 0, silly goose");
