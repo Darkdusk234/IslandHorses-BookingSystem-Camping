@@ -75,7 +75,7 @@ namespace Camping_BookingSystem.Controllers
         [HttpDelete("{id}")]    // Deletes a campsite
         public async Task<IActionResult> DeleteCampSite(int id)
         {
-            if (id <= 3) // Protect core test data (IDs 1-3)
+            if (id <= 2) // Protect core test data (IDs 1-3)
             {
                 return BadRequest("Cannot delete core test data (ID 1-3)");
             }
