@@ -44,7 +44,7 @@ EF Core / DbContext (SQL Server or SQLite)
 ```
 
 - 🧾 DTOs for input/output separation
-- 🧪 TDD-first approach with MSTest & Moq
+- 🧪 Parts developed with TDD-first approach with MSTest & Moq
 - 🔐 Optional: JWT authentication & role-based access
 
 ---
@@ -58,17 +58,17 @@ Id, FirstName, LastName, Email, PhoneNumber, StreetAddress, ZipCode, City
 
 ### 🏕️ CampSpot
 ```csharp
-Id, CampSiteId, SpotTypeId, Electricity, MaxPersonLimit
+Id, CampSiteId, SpotTypeId, Electricity
 ```
 
 ### 🔖 SpotType
 ```csharp
-Id, Name, Price
+Id, Name, Price, MaxPersonLimit
 ```
 
 ### 📍 CampSite
 ```csharp
-Id, Name
+Id, Name, Description, Address
 ```
 
 ### 📅 Booking
@@ -87,6 +87,7 @@ Parking (bool), Wifi (bool), Status (enum: Pending, Confirmed, Completed, Cancel
 | `POST` | `/api/booking/CreateBooking` | Create a booking as guest |
 | `PATCH` | `/api/booking/Addons/{id}` | Update WiFi and parking add-ons |
 | `PATCH` | `/api/booking/GuestCancelBooking/{id}` | Cancel your booking |
+| `GET` | `/api/CampSpot/searchAvailableSpotsMatchingDates | Search for available camps spots matching inputed dates |
 
 ### 🧑‍💼 Receptionist
 | Method | Endpoint | Description |
@@ -95,12 +96,16 @@ Parking (bool), Wifi (bool), Status (enum: Pending, Confirmed, Completed, Cancel
 | `PUT` | `/api/booking/UpdateBooking/{id}` | Update existing booking |
 | `GET` | `/api/booking/{id}` | Get booking by ID |
 | `GET` | `/api/booking/customer/{customerId}` | Get bookings by customer |
+| `GET` | `/api/CampSpot/SearchAvailableSpot | Search for available spots based on dates, type, spot, electricity and number of guests |
 
 ### 🧑‍🌾 Camp Owner
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/booking/campsite/{campSiteId}` | Get all bookings for a specific campsite |
 | `DELETE` | `/api/booking/{id}` | Delete a booking |
+
+### CRUD operations
+In addition to above there are CRUD operations for Customer, CampSpot, CampSite, SpotType, Booking models/tables.
 
 ---
 
@@ -110,10 +115,11 @@ Parking (bool), Wifi (bool), Status (enum: Pending, Confirmed, Completed, Cancel
 |------|------|----------|
 | Unit Tests | `MSTest` | Services (BookingService, validation, calculations) |
 | Mocking | `Moq` | For external dependencies |
-| EF Core | `SQLite In-Memory` | Full support for `EF.Functions.DateDiffDay()` |
 | Integration Tests | `Postman / Swagger` | Endpoint-level testing |
 
-> All critical flows are tested: booking creation, modification, cancellation, and availability validation.
+In addtionm, EF Core and `SQLite In-Memory`has been used for in-memory database creation for testing repositories.
+
+> All critical flows are tested: model data creation, modification, cancellation, and availability validation for camp spots.
 
 ---
 
@@ -126,7 +132,6 @@ Parking (bool), Wifi (bool), Status (enum: Pending, Confirmed, Completed, Cancel
 - MSTest + Moq
 - Swagger / OpenAPI
 - AutoMapper (optional)
-- JWT Authentication (optional)
 
 ---
 
