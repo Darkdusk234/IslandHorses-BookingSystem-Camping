@@ -340,7 +340,7 @@ public class CampSiteControllerTests
     public async Task DeleteCampSite_ValidId_ReturnsVeriNice()
     {
         // Arrange
-        var campSiteId = 1;
+        var campSiteId = 5;
         var campToDelete = new CampSite
         {
             Id = campSiteId,
@@ -421,7 +421,7 @@ public class CampSiteControllerTests
     public async Task DeleteCampSite_ServiceThrowsException_PropagatesException()
     {
         // Arrange
-        var campSiteId = 1;
+        var campSiteId = 5;
         var existingCampSite = new CampSite { Id = campSiteId, Name = "Test Camp" };
 
         _mockCampSite
