@@ -40,7 +40,6 @@ namespace Camping_BookingSystem.Mapping
                 ? $"{booking.Customer.FirstName} {booking.Customer.LastName}"
                 : string.Empty
 
-
             };
         }
     }

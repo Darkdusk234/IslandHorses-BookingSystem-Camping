@@ -126,7 +126,6 @@ namespace Camping_BookingSystem.Repositories
         {
             return await _context.Bookings.ToListAsync();
         }
-
         public async Task<Booking?> GetByIdAsync(int id)
         {
             return await _context.Bookings.FindAsync(id);

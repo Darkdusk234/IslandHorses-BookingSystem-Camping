@@ -31,7 +31,7 @@ namespace Camping_BookingSystem.Services
 
             if (string.IsNullOrWhiteSpace(campSite.Name))   // check if name is empty or whitespace
                 throw new ArgumentException("Name cannot be empty or whitespace", nameof(campSite));
-
+                
             await _campSiteRepository.CreateCampSiteAsync(campSite);
             return campSite;
         }

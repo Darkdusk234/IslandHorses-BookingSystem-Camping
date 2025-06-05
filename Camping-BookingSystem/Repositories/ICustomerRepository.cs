@@ -13,5 +13,4 @@ public interface ICustomerRepository
 
     //Custom method for validating customer by email
     Task<Customer?> GetCustomerByEmailAsync(string email);
-
 }

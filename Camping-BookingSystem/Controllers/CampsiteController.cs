@@ -75,7 +75,6 @@ namespace Camping_BookingSystem.Controllers
         [HttpDelete("{id}")]    // Deletes a campsite
         public async Task<IActionResult> DeleteCampSite(int id)
         {
-
             if (id <= 0)
             {
                 return BadRequest("Id måste vara större än 0, silly goose");
@@ -85,7 +84,6 @@ namespace Camping_BookingSystem.Controllers
             {
                 return BadRequest("Cannot delete core test data (ID 1-3)");
             }
-
             var campSite = await _service.GetByIdAsync(id);
             if (campSite == null)
                 return NotFound($"Finns ingen campingplats med id: {id}");

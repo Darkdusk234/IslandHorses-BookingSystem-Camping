@@ -53,7 +53,7 @@ namespace BookingSystem_ClassLibrary.Migrations
 
                     b.Property<bool>("Wifi")
                         .HasColumnType("bit");
-
+                        
                     b.HasKey("Id");
 
                     b.HasIndex("CampSpotId");

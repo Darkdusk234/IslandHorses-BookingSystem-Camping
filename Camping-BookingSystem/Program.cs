@@ -1,4 +1,5 @@
 
+
 using System.Text.Json.Serialization;
 using Camping_BookingSystem.Repositories;
 using Camping_BookingSystem.Services;
@@ -28,7 +29,6 @@ namespace Camping_BookingSystem
             builder.Services.AddControllers()
                 .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = 
                     ReferenceHandler.IgnoreCycles);
-            
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

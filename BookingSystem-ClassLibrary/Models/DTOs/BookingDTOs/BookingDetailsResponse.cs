@@ -21,5 +21,4 @@ namespace BookingSystem_ClassLibrary.Models.DTOs.BookingDTOs
         public int NumberOfNights { get; set; }
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = string.Empty;
-    }
 }

@@ -28,7 +28,6 @@ namespace BookingSystem_ClassLibrary.Data
                 .HasOne(cs => cs.SpotType)
                 .WithMany(st => st.CampSpots)
                 .HasForeignKey(cs => cs.TypeId);
-
         }
 
         private void SeedData(ModelBuilder modelBuilder)
@@ -151,7 +150,6 @@ namespace BookingSystem_ClassLibrary.Data
                     City = "Göteborg"
                 }
             );
-
             modelBuilder.Entity<Booking>().HasData(
                 new Booking
                 {
@@ -244,7 +242,6 @@ namespace BookingSystem_ClassLibrary.Data
                     NumberOfPeople = 6
                 }
             );
-
         }
     }
 }
