@@ -83,12 +83,17 @@ namespace Camping_BookingSystem.Repositories
                 query = query.Where(cs => cs.TypeId == searchDto.SpotTypeId);
             }
             
+            if (searchDto.NumberOfPeople > 0)   // Check if a specific number of people is specified
+            {
+                query = query.Where(cs => cs.SpotType != null && cs.SpotType.MaxPersonLimit >= searchDto.NumberOfPeople);
+            }
+
             if (searchDto.RequiresElectricity.HasValue)   // Check if electricity is required
             {
                 query = query.Where(cs => cs.Electricity == searchDto.RequiresElectricity.Value);
             }
 
-            query = query.Where(predicate: cs => !cs.Bookings.Any(b =>     // Check if spot is already booked
+            query = query.Where(predicate: cs => cs.Bookings != null && !cs.Bookings.Any(b =>     // Check if spot is already booked
             b.StartDate < searchDto.EndDate &&                  // Booking starts before the search end date
             b.EndDate > searchDto.StartDate));                  // Booking ends after the search start date
 

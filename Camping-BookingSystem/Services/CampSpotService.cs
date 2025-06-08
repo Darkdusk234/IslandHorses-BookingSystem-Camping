@@ -2,6 +2,7 @@
 using BookingSystem_ClassLibrary.Models;
 using BookingSystem_ClassLibrary.Models.DTOs.CampSpotDTOs;
 using Camping_BookingSystem.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Camping_BookingSystem.Services
 {
@@ -9,11 +10,13 @@ namespace Camping_BookingSystem.Services
     {
         private readonly ICampSpotRepository _campSpotRepository;
         private readonly ICampSiteRepository _campSiteRepository;
+        private readonly CampingDbContext _context; 
 
-        public CampSpotService(ICampSpotRepository campSpotRepository, ICampSiteRepository campSiteRepository)
+        public CampSpotService(ICampSpotRepository campSpotRepository, ICampSiteRepository campSiteRepository, CampingDbContext context)
         {
             _campSpotRepository = campSpotRepository;
             _campSiteRepository = campSiteRepository;
+            _context = context;
         }
 
         public async Task<CampSpot> AddCampSpotAsync(CampSpot campSpot)
@@ -75,12 +78,12 @@ namespace Camping_BookingSystem.Services
 
             return (true, null);
         }
-        
+
         public async Task<SearchResult<CampSpot>> SearchAvailableSpotsAsync(SearchAvailableSpotsDto searchDto)
         {
             try
             {
-                // Valedation checks
+                // Validation checks
                 if (searchDto == null)
                 {
                     return new SearchResult<CampSpot>
@@ -125,7 +128,23 @@ namespace Camping_BookingSystem.Services
                     };
                 }
 
-                // Anropa repository
+                // Kontrollera MaxPersonLimit om en specifik SpotType är vald
+                if (searchDto.SpotTypeId > 0 && searchDto.NumberOfPeople > 0)
+                {
+                    var spotType = await _context.SpotTypes.FindAsync(searchDto.SpotTypeId);
+                    if (spotType != null && searchDto.NumberOfPeople > spotType.MaxPersonLimit)
+                    {
+                        return new SearchResult<CampSpot>
+                        {
+                            IsSuccess = false,
+                            Message = $"För många personer! Platstypen '{spotType.Name}' kan max ta {spotType.MaxPersonLimit} personer, men du sökte för {searchDto.NumberOfPeople} personer.",
+                            AvaiableSpotsCount = 0,
+                            AvailableSpots = new List<CampSpot>()
+                        };
+                    }
+                }
+
+                // FLYTTADE DENNA KOD UTANFÖR IF-SATSEN
                 var availableSpots = await _campSpotRepository.SearchAvailableSpots(searchDto);
                 var spotsList = availableSpots.ToList();
 
