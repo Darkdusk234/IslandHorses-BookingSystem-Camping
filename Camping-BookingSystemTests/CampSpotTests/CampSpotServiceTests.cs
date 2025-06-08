@@ -16,6 +16,7 @@ public class CampSpotServiceTests
     private CampSpotService _campSpotService;
     private Mock<ICampSpotRepository> _campSpotRepoMock;
     private Mock<ICampSiteRepository> _campSiteRepoMock;
+    private CampingDbContext _context;
 
     [TestInitialize]
     public void Initialize()
@@ -23,8 +24,15 @@ public class CampSpotServiceTests
         _campSpotRepoMock = new Mock<ICampSpotRepository>();
         _campSiteRepoMock = new Mock<ICampSiteRepository>();
 
-        _campSpotService = new CampSpotService(_campSpotRepoMock.Object, _campSiteRepoMock.Object);
+        var options = new DbContextOptionsBuilder<CampingDbContext>()
+                 .UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}")
+                 .Options;
+
+        _context = new CampingDbContext(options);
+
+        _campSpotService = new CampSpotService(_campSpotRepoMock.Object, _campSiteRepoMock.Object, _context);
     }
+
 
     [TestMethod]
     public async Task AddCampSpotAsync_InputtingValidCampSpot_CampSpotThatWasAddedAsync()
