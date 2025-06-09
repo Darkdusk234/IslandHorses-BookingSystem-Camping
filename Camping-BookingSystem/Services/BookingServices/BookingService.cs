@@ -68,56 +68,67 @@ namespace Camping_BookingSystem.Services
         // Method to create a booking and add a customer (Receptionist)
         public async Task<ActionResult> CreateBookingWithCustomerAsync(CreateBookingAndCustomer request)
         {
-            var (isValid, errorMessage) = await _bookingValidator.ValidateCreateAsync(request);
-            if (!isValid)
+            try
             {
-               return new BadRequestObjectResult(errorMessage);
-            }
-
-            var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
-            Customer customer;
-            if (existingCustomer != null)
-            {
-                customer = existingCustomer;
-            }
-            else
-                customer = new Customer
+                var (isValid, errorMessage) = await _bookingValidator.ValidateCreateAsync(request);
+                if (!isValid)
                 {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email,
-                    PhoneNumber = request.PhoneNumber,
-                    StreetAddress = request.StreetAddress,
-                    ZipCode = request.ZipCode,
-                    City = request.City
+                    return new BadRequestObjectResult(errorMessage);
+                }
+
+                var existingCustomer = await _customerRepository.GetCustomerByEmailAsync(request.Email);
+                Customer customer;
+                if (existingCustomer != null)
+                {
+                    customer = existingCustomer;
+                }
+                else
+                    customer = new Customer
+                    {
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
+                        Email = request.Email,
+                        PhoneNumber = request.PhoneNumber,
+                        StreetAddress = request.StreetAddress,
+                        ZipCode = request.ZipCode,
+                        City = request.City
+                    };
+
+                var available = await IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate,
+                    request.NumberOfPeople);
+
+                if (!available.IsAvailable)
+                {
+                    return new BadRequestObjectResult(available.Reason);
+                }
+
+                var booking = new Booking
+                {
+                    Customer = customer,
+                    CampSpotId = request.CampSpotId,
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    NumberOfPeople = request.NumberOfPeople,
+                    Parking = request.Parking,
+                    Wifi = request.Wifi,
+                    Status = BookingStatus.Pending
+
                 };
 
-            var available = await IsCampSpotAvailableAsync(request.CampSpotId, request.StartDate, request.EndDate, request.NumberOfPeople);
+                await _bookingRepository.AddAsync(booking);
+                await _bookingRepository.SaveAsync();
 
-            if(!available.IsAvailable)
-            {
-                return new BadRequestObjectResult(available.Reason);
+                var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
+
+                return response == null ? new NotFoundResult() : new OkObjectResult(response);
             }
-
-            var booking = new Booking
+            catch (Exception ex)
             {
-                Customer = customer,
-                CampSpotId = request.CampSpotId,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                NumberOfPeople = request.NumberOfPeople,
-                Parking = request.Parking,
-                Wifi = request.Wifi,
-                Status = BookingStatus.Pending
-                
-            };
-
-            await _bookingRepository.AddAsync(booking);
-            await _bookingRepository.SaveAsync();
-
-            var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
-
-            return response == null? new NotFoundResult(): new OkObjectResult(response);
+                return new ObjectResult($"Internal server error: {ex.Message}")
+                {
+                    StatusCode = 500
+                };
+            }
         }
 
         // Method to delete a booking (Camp Owner)
@@ -181,7 +192,7 @@ namespace Camping_BookingSystem.Services
             {
                 return (false, "Camp spot can not accommodate the number of people.");
             }
-           var overlappedBookings = await _bookingRepository.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate);
+            var overlappedBookings = await _bookingRepository.GetBookingsByCampSpotAndDate(campSpotId, startDate, endDate);
 
             if (overlappedBookings.Any())
             {

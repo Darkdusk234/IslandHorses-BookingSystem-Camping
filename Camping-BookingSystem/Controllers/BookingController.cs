@@ -61,7 +61,6 @@ namespace Camping_BookingSystem.Controllers
             var response = await _bookingService.CreateBookingWithCustomerAsync(request);
                 
             return response;
-          
         }
 
         [Tags("Receptionist")]
