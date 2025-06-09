@@ -93,6 +93,7 @@ namespace Camping_BookingSystem.Services.BookingServices
                 if(book.Id == request.CustomerId)
                 {
                     overlappedBookings.Remove(book);
+                    break;
                 }
             }
 
