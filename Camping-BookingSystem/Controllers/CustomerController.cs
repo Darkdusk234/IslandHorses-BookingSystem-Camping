@@ -106,7 +106,7 @@ public class CustomerController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete(Name = "DeleteCustomer")]
+    [HttpDelete("{id}", Name = "DeleteCustomer")]
     public async Task<IActionResult> DeleteCustomer([FromRoute] int id)
     {
         if (id <= 0)
