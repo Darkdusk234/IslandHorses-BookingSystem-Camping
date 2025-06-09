@@ -14,7 +14,7 @@ namespace Camping_BookingSystem.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Booking>> GetBookingsByCampSpotAndDate(int campSpotId, DateTime startDate, DateTime endDate)
+        public async Task<ICollection<Booking>> GetBookingsByCampSpotAndDate(int campSpotId, DateTime startDate, DateTime endDate)
         {
             return await _context.Bookings
                 .Where(b => 
