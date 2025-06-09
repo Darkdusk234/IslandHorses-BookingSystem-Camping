@@ -88,6 +88,14 @@ namespace Camping_BookingSystem.Services.BookingServices
                     request.CampSpotId,
                     request.StartDate,
                     request.EndDate);
+            foreach(var book in overlappedBookings)
+            {
+                if(book.Id == request.CustomerId)
+                {
+                    overlappedBookings.Remove(book);
+                }
+            }
+
             if (overlappedBookings.Any())
                 return (false, "Camp spot is not available for the selected dates.");
 
