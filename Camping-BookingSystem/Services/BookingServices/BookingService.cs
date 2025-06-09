@@ -244,10 +244,10 @@ namespace Camping_BookingSystem.Services
 
             _bookingRepository.Update(booking);
             await _bookingRepository.SaveAsync();
+            
 
-            var response = await _bookingRepository.GetBookingDetailsByCampSiteIdAsync(booking.Id);
+            var response = await _bookingRepository.GetBookingDetailsByIdAsync(booking.Id);
             return response == null ? new NotFoundResult() : new OkObjectResult(response);
-
         }
     }
 }
