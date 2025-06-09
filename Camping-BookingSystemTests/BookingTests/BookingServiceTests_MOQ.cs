@@ -239,9 +239,16 @@ public class BookingServiceTests_MOQ
             .Setup(repo => repo.GetCampSpotById(request.CampSpotId))
             .ReturnsAsync(new CampSpot { 
                 Id = request.CampSpotId, 
-                SpotType = new SpotType 
-                { MaxPersonLimit = 10 } });
+                TypeId = 1 });
 
+        _spotTypeRepoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(new SpotType
+            {
+                Id = 1,
+                Name = "Tent",
+                Price = 150,
+                MaxPersonLimit = 15
+            });
 
         _bookingRepoMock.Setup(r =>
         r.GetBookingsByCampSpotAndDate(
@@ -251,7 +258,7 @@ public class BookingServiceTests_MOQ
             .ReturnsAsync(new List<Booking> {existingBooking});
 
         // When: The ValidateCreateAsync method is called
-        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object);
+        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object, _spotTypeRepoMock.Object);
 
         var (isValid, errorMessage) = 
             await validator.ValidateCreateAsync(request);
@@ -488,7 +495,7 @@ public class BookingServiceTests_MOQ
         };
         
         _bookingRepoMock.Setup(repo => repo.GetByIdAsync(bookingId)).ReturnsAsync(booking);
-        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object);
+        var validator = new BookingValidator(_campSpotRepoMock.Object, _bookingRepoMock.Object, _spotTypeRepoMock.Object);
         // When: The ValidateDeleteAsync method is called
         var result = await validator.ValidateDeleteAsync(bookingId);
         
