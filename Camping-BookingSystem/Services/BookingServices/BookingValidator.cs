@@ -75,8 +75,13 @@ namespace Camping_BookingSystem.Services.BookingServices
             if (campSpot == null)
                 return (false, "Camp spot not found.");
 
-            if (request.NumberOfPeople > campSpot.SpotType.MaxPersonLimit)
-                return (false, $"Too many people for this camp spot. Max allowed is {campSpot.SpotType.MaxPersonLimit}.");
+            var spotType = await _spotTypeRepository.GetByIdAsync(campSpot.TypeId);
+            if (spotType == null)
+            {
+                return (false, "Camp spot is not connected to a spot type");
+            }
+            if (request.NumberOfPeople > spotType.MaxPersonLimit)
+                return (false, $"Too many people for this camp spot. Max allowed is {spotType.MaxPersonLimit}.");
 
             var overlappedBookings =
                 await _bookingRepository.GetBookingsByCampSpotAndDate(
